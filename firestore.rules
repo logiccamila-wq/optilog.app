@@ -43,7 +43,7 @@ service cloud.firestore {
 
     // Posts: leitura pública apenas se publicado; escrita pelo autor
     match /posts/{postId} {
-      allow read: if resource.data.is_published == true;
+      allow read: if resource.data.is_published == true || (isSignedIn() && resource.data.author_id == request.auth.uid);
       allow create: if isSignedIn() && request.resource.data.author_id == request.auth.uid;
       allow update, delete: if isSignedIn() && resource.data.author_id == request.auth.uid;
     }

@@ -20,7 +20,10 @@ export default function HomePage() {
           <Button component={Link} href="/signup" variant="outlined" color="secondary" size="large">
             Acessar Plataforma
           </Button>
-        </Paper>
+          <Button component={Link} href="/dashboard" variant="outlined" color="primary" size="large">
+            Dashboard Cloud Run
+          </Button>
+        </Box>
       </Paper>
     </main>
   );

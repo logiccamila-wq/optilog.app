@@ -1,0 +1,38 @@
+{
+  "app\\login\\page.tsx -> firebase/auth": {
+    "id": "app\\login\\page.tsx -> firebase/auth",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_firebase_auth_dist_esm_index_esm_js.js"
+    ]
+  },
+  "app\\signup\\page.tsx -> firebase/auth": {
+    "id": "app\\signup\\page.tsx -> firebase/auth",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_firebase_auth_dist_esm_index_esm_js.js"
+    ]
+  },
+  "app\\status\\page.tsx -> firebase/auth": {
+    "id": "app\\status\\page.tsx -> firebase/auth",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_firebase_auth_dist_esm_index_esm_js.js"
+    ]
+  },
+  "app\\status\\page.tsx -> firebase/firestore": {
+    "id": "app\\status\\page.tsx -> firebase/firestore",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_firebase_firestore_dist_esm_index_esm_js.js"
+    ]
+  },
+  "lib\\firebaseClient.ts -> firebase/auth": {
+    "id": "lib\\firebaseClient.ts -> firebase/auth",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_firebase_auth_dist_esm_index_esm_js.js"
+    ]
+  },
+  "lib\\firebaseClient.ts -> firebase/firestore": {
+    "id": "lib\\firebaseClient.ts -> firebase/firestore",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_firebase_firestore_dist_esm_index_esm_js.js"
+    ]
+  }
+}

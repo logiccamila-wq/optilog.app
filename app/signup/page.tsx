@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { auth, isConfigured } from '@/lib/firebaseClient';
+import { getAuthInstance } from '@/lib/firebaseClient';
 import { Box, TextField, Button, Typography, Alert, Paper, CircularProgress } from '@mui/material';
 import { useToast } from '@/components/ui/ToastProvider';
 
@@ -50,7 +50,8 @@ export default function SignupPage() {
     setError(null);
     setInfo(null);
     setLastErrorCode(null);
-    if (!isConfigured || !auth) {
+    const auth = await getAuthInstance();
+    if (!auth) {
       setError('Firebase não configurado. Preencha NEXT_PUBLIC_FIREBASE_* no .env.local');
       return;
     }
@@ -76,7 +77,8 @@ export default function SignupPage() {
   const onResetPassword = async () => {
     setError(null);
     setInfo(null);
-    if (!isConfigured || !auth) {
+    const auth = await getAuthInstance();
+    if (!auth) {
       setError('Firebase não configurado. Preencha NEXT_PUBLIC_FIREBASE_* no .env.local');
       return;
     }

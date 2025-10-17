@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Box, Typography, TextField, Button, Paper, Alert, CircularProgress } from '@mui/material';
+import { Box, Typography, TextField, Button, Paper, Alert, CircularProgress, ToggleButtonGroup, ToggleButton } from '@mui/material';
 
 export default function AIPage() {
   const [prompt, setPrompt] = useState(
@@ -8,10 +8,11 @@ export default function AIPage() {
   );
   const [loading, setLoading] = useState(false);
   const [resp, setResp] = useState<any>(null);
+  const [provider, setProvider] = useState<'openai' | 'gemini'>('gemini');
 
   const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
   const region = "us-central1";
-  const functionName = "openaiProxy";
+  const functionName = provider === 'gemini' ? 'geminiProxy' : 'openaiProxy';
   const url = projectId
     ? `https://${region}-${projectId}.cloudfunctions.net/${functionName}`
     : "";
@@ -23,7 +24,7 @@ export default function AIPage() {
       const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt, model: provider === 'gemini' ? 'gemini-1.5-flash-latest' : 'gpt-4o-mini' }),
       });
       const data = await res.json();
       setResp({ status: res.status, data });
@@ -41,6 +42,18 @@ export default function AIPage() {
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
           URL: {url || "defina NEXT_PUBLIC_FIREBASE_PROJECT_ID"}
         </Typography>
+        <Box sx={{ mt: 1 }}>
+          <ToggleButtonGroup
+            color="primary"
+            value={provider}
+            exclusive
+            onChange={(_, val) => val && setProvider(val)}
+            size="small"
+          >
+            <ToggleButton value="gemini">Gemini</ToggleButton>
+            <ToggleButton value="openai">OpenAI</ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
       </Paper>
 
       <Box sx={{ display: 'grid', gap: 2 }}>

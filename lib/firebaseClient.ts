@@ -1,38 +1,27 @@
-import { initializeApp, getApps, getApp } from "firebase/app";
+import { initializeApp, getApp, getApps } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
-const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
-const authDomain = process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN;
-const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-const storageBucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
-const messagingSenderId = process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID;
-const appId = process.env.NEXT_PUBLIC_FIREBASE_APP_ID;
-
-const hasConfig = Boolean(apiKey && authDomain && projectId && appId);
-
+// Simple client-side Firebase bootstrap using NEXT_PUBLIC_* env vars
 const firebaseConfig = {
-  apiKey,
-  authDomain,
-  projectId,
-  storageBucket,
-  messagingSenderId,
-  appId,
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-export const app = hasConfig
-  ? !getApps().length
-    ? initializeApp(firebaseConfig as any)
-    : getApp()
-  : (null as any);
+export const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+export const db = getFirestore(app);
+export const auth = getAuth(app);
 
-// Lazy client-only accessors to avoid bundling Node-only variants
+// Backwards-compatible helper used across the app modules
 export async function getDb() {
-  if (!hasConfig || !app || typeof window === 'undefined') return null as any;
-  const { getFirestore } = await import('firebase/firestore');
-  return getFirestore(app);
+  return db;
 }
 
+// Helper para compatibilidade: retorna a instância de Auth
 export async function getAuthInstance() {
-  if (!hasConfig || !app || typeof window === 'undefined') return null as any;
-  const { getAuth } = await import('firebase/auth');
-  return getAuth(app);
+  return auth;
 }

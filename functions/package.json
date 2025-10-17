@@ -1,0 +1,13 @@
+{
+  "name": "optilog-functions",
+  "private": true,
+  "main": "index.js",
+  "type": "module",
+  "engines": { "node": "^18 || ^20" },
+  "dependencies": {
+    "firebase-functions": "^4.4.0",
+    "firebase-admin": "^12.6.0",
+    "csv-parser": "^3.0.0",
+    "@google-cloud/storage": "^7.11.2"
+  }
+}

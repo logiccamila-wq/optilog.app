@@ -2,7 +2,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": [
+        "./*"
+      ]
     },
     "target": "ES2017",
     "lib": [
@@ -20,7 +22,7 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+"jsx": "preserve",
     "plugins": [
       {
         "name": "next"
@@ -37,7 +39,8 @@
     "utils/**/*.ts",
     "utils/**/*.tsx",
     "lib/**/*.ts",
-    "lib/**/*.tsx"
+    "lib/**/*.tsx",
+    "dist/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

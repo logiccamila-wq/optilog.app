@@ -9,6 +9,8 @@ export default function StatusPage() {
   const [authChecks, setAuthChecks] = useState<Check[]>([]);
   const [fsChecks, setFsChecks] = useState<Check[]>([]);
   const [fnChecks, setFnChecks] = useState<Check[]>([]);
+  const isDev = process.env.NODE_ENV !== 'production';
+  const dashboardUrl = process.env.NEXT_PUBLIC_DASHBOARD_URL || '';
 
   useEffect(() => {
     const run = async () => {
@@ -62,7 +64,8 @@ export default function StatusPage() {
         const j = await r.json();
         checksFn.push({ name: 'Functions', ok: !!j.ok, detail: j.ok ? 'HTTP disponível' : (j.error || `status=${j.status}`) });
       } catch (e: any) {
-        checksFn.push({ name: 'Functions', ok: false, detail: e?.message || String(e) });
+        const msg = e?.message || String(e);
+        checksFn.push({ name: 'Functions', ok: false, detail: isDev ? `Dev: chamada /api/functions-status falhou (possível ausência de função local ou credenciais). Detalhe: ${msg}` : msg });
       }
 
       setAuthChecks(checksAuth);
@@ -106,9 +109,17 @@ export default function StatusPage() {
             <Typography variant="caption" sx={{ display: 'block' }}>
               Projeto: {process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '—'} | Domínio Auth: {process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '—'}
             </Typography>
+            <Typography variant="caption" sx={{ display: 'block' }}>
+              Ambiente: {isDev ? 'Desenvolvimento' : 'Produção'} | Dashboard URL: {dashboardUrl || '—'}
+            </Typography>
             {!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && (
               <Typography variant="caption" color="text.secondary">
                 Defina variáveis NEXT_PUBLIC_FIREBASE_* para dados completos.
+              </Typography>
+            )}
+            {!dashboardUrl && (
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                Opcional: defina NEXT_PUBLIC_DASHBOARD_URL para habilitar redirecionamento automático em /dashboard.
               </Typography>
             )}
           </Paper>
