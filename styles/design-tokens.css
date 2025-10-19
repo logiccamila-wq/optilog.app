@@ -1,0 +1,12 @@
+:root {
+  /* Defaults keep original dark appearance; ThemeProvider overrides dynamically */
+  --color-brand: #0e539a;
+  --color-secondary: #272F44;
+  --color-border: #1f2937;
+  --color-bg: #0d111b;
+  --color-text: #ffffff;
+  --color-on-brand: #ffffff;
+  --font-sans: 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  --spacing-base: 1rem;
+  --radius: 12px;
+}

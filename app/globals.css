@@ -1,9 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
   margin: 0;
   padding: 0;
-  font-family: "Segoe UI Variable", "Segoe UI", sans-serif;
-  background: #0D111B; /* garante fundo mesmo em elementos fora do MUI */
-  color: #FFFFFF;
+  font-family: var(--font-sans, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif);
+  background: var(--color-bg, #ffffff);
+  color: var(--color-text, #111827);
+  text-align: var(--text-align, left);
 }
 
 .container {
@@ -18,12 +23,51 @@ body {
 }
 
 .post-card {
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-border);
   padding: 1rem;
   margin-bottom: 1rem;
-  border-radius: 4px;
+  border-radius: var(--radius);
 }
 
 .subheader {
-  color: #64748b;
+  color: var(--color-text);
+  opacity: 0.7;
+}
+
+/* Animations for Quem Somos cube and rays */
+@keyframes dash {
+  to { stroke-dashoffset: -100; }
+}
+@keyframes glow {
+  0%, 100% { opacity: .85; filter: drop-shadow(0 0 0 var(--color-brand)); }
+  50% { opacity: 1; filter: drop-shadow(0 0 10px var(--color-brand)); }
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-spin-slow { animation: spin 12s linear infinite; }
+
+/* Global focus styles and tokens usage */
+:root {
+  --focus-ring: var(--color-brand);
+}
+
+button, a, input, textarea, select {
+  border-radius: var(--radius, 10px);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+input, textarea, select {
+  border: 1px solid var(--color-border);
+  background: var(--color-secondary);
+  color: var(--color-text);
 }
