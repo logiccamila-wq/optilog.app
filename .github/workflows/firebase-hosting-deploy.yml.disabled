@@ -1,41 +1,30 @@
-# Nome do workflow que aparecerá na aba "Actions" do GitHub
-name: Deploy to Firebase Hosting on PR
+name: Deploy to Firebase Hosting (Service Account)
 
-# Define o gatilho (trigger) para este workflow.
-# Ele será executado quando um Pull Request for aberto, reaberto ou atualizado.
 on:
-  pull_request:
-    types: [opened, reopened, synchronize]
+  workflow_dispatch:
+  push:
+    branches:
+      - main
 
-# Permissões necessárias para o GitHub Actions se autenticar com o Google Cloud
-# e para postar um comentário no Pull Request.
 permissions:
   contents: read
-  pull-requests: write
-  id-token: write
 
 jobs:
-  build_and_preview:
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
-    # O job será executado em uma máquina virtual com a versão mais recente do Ubuntu
+  build_and_deploy:
     runs-on: ubuntu-latest
     steps:
-      # 1. Baixa o código do seu repositório para a máquina virtual
       - name: Checkout repository
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
 
-      # 3. Configura o ambiente Node.js na versão 20
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '20'
           cache: 'npm'
 
-      # 4. Instala as dependências
       - name: Install Dependencies
         run: npm ci
 
-      # 5. Roda o linter e testes se existirem (não falha se não houver)
       - name: Lint (if available)
         run: |
           if npm run | grep -q "lint"; then
@@ -52,10 +41,8 @@ jobs:
             echo "No test script defined; skipping"
           fi
 
-      # 6. Faz o build do projeto Next.js
       - name: Build Project
-        run: |
-          npm run build
+        run: npm run build
         env:
           NEXT_PUBLIC_FIREBASE_API_KEY: ${{ vars.NEXT_PUBLIC_FIREBASE_API_KEY }}
           NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ vars.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
@@ -65,11 +52,16 @@ jobs:
           NEXT_PUBLIC_FIREBASE_APP_ID: ${{ vars.NEXT_PUBLIC_FIREBASE_APP_ID }}
           NEXT_PUBLIC_DASHBOARD_URL: ${{ vars.NEXT_PUBLIC_DASHBOARD_URL }}
 
-      # 7. Faz o deploy para um canal de preview no Firebase Hosting
+      - name: Generate Workbox precache (injectManifest)
+        run: |
+          if [ -f "workbox.config.cjs" ]; then
+            npx workbox-cli@6 injectManifest --config workbox.config.cjs
+          fi
+
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@092436dca3ec6dacb231d965ae56f7ff6c09f258
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
           projectId: ${{ vars.GCP_PROJECT_ID }}
-          # O canal de preview expira automaticamente após 7 dias
-          expires: 7d
+          channelId: live

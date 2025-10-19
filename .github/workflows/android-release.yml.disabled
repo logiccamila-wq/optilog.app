@@ -3,7 +3,7 @@ name: Android Release (signed APK)
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build-sign-release:

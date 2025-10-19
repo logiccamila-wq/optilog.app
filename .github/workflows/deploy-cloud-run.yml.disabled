@@ -2,7 +2,7 @@ name: Build & Deploy to Cloud Run
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -29,4 +29,5 @@ jobs:
             --source . \
             --region ${{ secrets.GCP_REGION }} \
             --platform managed \
-            --allow-unauthenticated
+            --allow-unauthenticated \
+            --set-env-vars "DATABASE_URL=${{ secrets.DATABASE_URL }},NEXT_PUBLIC_BACKEND_URL=${{ vars.NEXT_PUBLIC_BACKEND_URL }},NEXT_PUBLIC_IOT_WS_URL=${{ vars.NEXT_PUBLIC_IOT_WS_URL }},NEXT_PUBLIC_ORS_PROXY_URL=${{ vars.NEXT_PUBLIC_ORS_PROXY_URL }},NEXT_PUBLIC_DASHBOARD_URL=${{ vars.NEXT_PUBLIC_DASHBOARD_URL }},NEXT_PUBLIC_DEFAULT_LOCALE=${{ vars.NEXT_PUBLIC_DEFAULT_LOCALE }},NEXT_PUBLIC_MAPBOX_TOKEN=${{ vars.NEXT_PUBLIC_MAPBOX_TOKEN }},NEXT_PUBLIC_POSTS_API_URL=${{ vars.NEXT_PUBLIC_POSTS_API_URL }}"
