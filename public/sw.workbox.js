@@ -2,7 +2,9 @@
 // It mirrors the runtime caching setup used locally, but relies on self.__WB_MANIFEST for precache.
 
 // eslint-disable-next-line no-restricted-globals
-try { importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.5.4/workbox-sw.js'); } catch (e) {}
+try {
+  importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.5.4/workbox-sw.js');
+} catch (e) {}
 
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
@@ -30,7 +32,12 @@ if (self.workbox) {
     ({ request }) => request.destination === 'image',
     new workbox.strategies.CacheFirst({
       cacheName: 'images',
-      plugins: [new workbox.expiration.ExpirationPlugin({ maxEntries: 60, maxAgeSeconds: 30 * 24 * 60 * 60 })]
+      plugins: [
+        new workbox.expiration.ExpirationPlugin({
+          maxEntries: 60,
+          maxAgeSeconds: 30 * 24 * 60 * 60,
+        }),
+      ],
     })
   );
 

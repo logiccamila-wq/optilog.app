@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { useState } from 'react';
 import { Box, TextField, Button, Typography, Alert, Paper } from '@mui/material';
 import { getDb } from '@/lib/firebaseClient';
@@ -18,7 +18,10 @@ export default function CadastroMotoristasPage() {
     setSaving(true);
     try {
       const db = await getDb();
-      if (!db) throw new Error('Firestore não configurado. Preencha NEXT_PUBLIC_FIREBASE_* no .env.local.');
+      if (!db)
+        throw new Error(
+          'Firestore não configurado. Preencha NEXT_PUBLIC_FIREBASE_* no .env.local.'
+        );
       const { collection, addDoc, serverTimestamp } = await import('firebase/firestore');
       const ref = await addDoc(collection(db, 'motoristas'), {
         name,
@@ -29,7 +32,9 @@ export default function CadastroMotoristasPage() {
         created_server: serverTimestamp(),
       });
       setOk(`Motorista cadastrado: ${ref.id}`);
-      setName(''); setCnh(''); setPhone('');
+      setName('');
+      setCnh('');
+      setPhone('');
     } catch (err: any) {
       setError(err?.message || 'Falha ao salvar motorista.');
     } finally {

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -48,13 +48,12 @@ export default function LoginPage() {
     setError(null);
     const auth = await getAuthInstance();
     if (!auth) {
-      setError('Firebase não configurado. Preencha NEXT_PUBLIC_FIREBASE_* no .env.local');
+      setError('Autenticação não configurada. Defina variáveis NEXT_PUBLIC_* no .env.local');
       return;
     }
     setLoading(true);
     try {
-      const { signInWithEmailAndPassword } = await import('firebase/auth');
-      await signInWithEmailAndPassword(auth, email, password);
+      throw new Error('Autenticação via Firebase removida');
       toast.show('Login realizado com sucesso!', 'success');
       router.push('/');
     } catch (err: any) {
@@ -79,8 +78,7 @@ export default function LoginPage() {
       return;
     }
     try {
-      const { sendPasswordResetEmail } = await import('firebase/auth');
-      await sendPasswordResetEmail(auth, email);
+      throw new Error('Recuperação de senha via Firebase removida');
       const msg = 'Enviamos um link de redefinição de senha para seu email.';
       setInfo(msg);
       toast.show(msg, 'info');
@@ -93,24 +91,58 @@ export default function LoginPage() {
 
   return (
     <main className="container">
-      <Typography variant="h4" sx={{ mb: 2 }}>Login</Typography>
+      <Typography variant="h4" sx={{ mb: 2 }}>
+        Login
+      </Typography>
       <Paper sx={{ p: 2, mb: 2 }} variant="outlined">
         <Typography variant="caption">
-          Projeto: {process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '—'} | Domínio Auth: {process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '—'}
+          Projeto: {process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '—'} | Domínio Auth:{' '}
+          {process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '—'}
         </Typography>
       </Paper>
       <Box aria-live="polite">
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-        {info && <Alert severity="info" sx={{ mb: 2 }}>{info}</Alert>}
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+        {info && (
+          <Alert severity="info" sx={{ mb: 2 }}>
+            {info}
+          </Alert>
+        )}
       </Box>
       <Box component="form" onSubmit={onSubmit} sx={{ display: 'grid', gap: 2, maxWidth: 420 }}>
-        <TextField label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required fullWidth disabled={loading} />
-        <TextField label="Senha" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required fullWidth disabled={loading} />
-        <Button type="submit" variant="contained" disabled={loading} startIcon={loading ? <CircularProgress color="inherit" size={16} /> : undefined}>
+        <TextField
+          label="Email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          fullWidth
+          disabled={loading}
+        />
+        <TextField
+          label="Senha"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          fullWidth
+          disabled={loading}
+        />
+        <Button
+          type="submit"
+          variant="contained"
+          disabled={loading}
+          startIcon={loading ? <CircularProgress color="inherit" size={16} /> : undefined}
+        >
           {loading ? 'Entrando...' : 'Entrar'}
         </Button>
       </Box>
-      <Button type="button" onClick={onResetPassword} sx={{ mt: 1 }} disabled={loading}>Esqueci minha senha</Button>
+      <Button type="button" onClick={onResetPassword} sx={{ mt: 1 }} disabled={loading}>
+        Esqueci minha senha
+      </Button>
       <Typography sx={{ mt: 2 }}>
         Não tem conta? <Link href="/signup">Cadastre-se</Link>
       </Typography>

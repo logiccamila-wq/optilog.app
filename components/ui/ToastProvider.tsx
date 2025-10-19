@@ -1,9 +1,26 @@
-"use client";
+'use client';
 import { createContext, useContext, useMemo, useState } from 'react';
-import { ThemeProvider, createTheme, CssBaseline, Snackbar, Alert } from '@mui/material';
+import { ThemeProvider as MUIThemeProvider, createTheme, CssBaseline, Snackbar, Alert, Button } from '@mui/material';
+import { useTheme as useAppTheme } from '@/app/providers/ThemeProvider';
 
-type ToastState = { open: boolean; message: string; severity: 'success' | 'error' | 'info' | 'warning' };
-type ToastContextType = { show: (message: string, severity?: ToastState['severity']) => void };
+type ToastState = {
+  open: boolean;
+  message: string;
+  severity: 'success' | 'error' | 'info' | 'warning';
+  actionLabel?: string;
+  onAction?: (() => void) | null;
+  duration?: number;
+};
+type ToastContextType = {
+  show: (message: string, severity?: ToastState['severity']) => void;
+  showWithAction: (opts: {
+    message: string;
+    severity?: ToastState['severity'];
+    actionLabel?: string;
+    onAction?: () => void;
+    duration?: number;
+  }) => void;
+};
 
 const ToastContext = createContext<ToastContextType | null>(null);
 
@@ -14,40 +31,97 @@ export function useToast(): ToastContextType {
 }
 
 export default function ToastProvider({ children }: { children: React.ReactNode }) {
-  const [toast, setToast] = useState<ToastState>({ open: false, message: '', severity: 'info' });
+  const [toast, setToast] = useState<ToastState>({
+    open: false,
+    message: '',
+    severity: 'info',
+    actionLabel: undefined,
+    onAction: null,
+    duration: 3000,
+  });
 
-  const theme = useMemo(() => createTheme({
-    palette: {
-      mode: 'dark',
-      primary: { main: '#0E539A' },
-      background: { default: '#0D111B', paper: '#272F44' },
-      text: { primary: '#FFFFFF', secondary: '#909095' }
-    },
-    typography: {
-      fontFamily: '"Segoe UI Variable", "Segoe UI", sans-serif'
-    }
-  }), []);
+  const { accent, text, bg, secondary, font, effectiveMode } = useAppTheme();
 
-  const value = useMemo(() => ({
-    show: (message: string, severity: ToastState['severity'] = 'info') => setToast({ open: true, message, severity })
-  }), []);
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode: effectiveMode,
+          primary: { main: accent },
+          background: { default: bg, paper: secondary },
+          text: { primary: text },
+        },
+        typography: {
+          fontFamily: font,
+        },
+      }),
+    [accent, text, bg, secondary, font, effectiveMode]
+  );
+
+  const value = useMemo(
+    () => ({
+      show: (message: string, severity: ToastState['severity'] = 'info') =>
+        setToast({
+          open: true,
+          message,
+          severity,
+          actionLabel: undefined,
+          onAction: null,
+          duration: 3000,
+        }),
+      showWithAction: (opts: {
+        message: string;
+        severity?: ToastState['severity'];
+        actionLabel?: string;
+        onAction?: () => void;
+        duration?: number;
+      }) =>
+        setToast({
+          open: true,
+          message: opts.message,
+          severity: opts.severity ?? 'info',
+          actionLabel: opts.actionLabel,
+          onAction: opts.onAction ?? null,
+          duration: opts.duration ?? 5000,
+        }),
+    }),
+    []
+  );
 
   return (
-    <ThemeProvider theme={theme}>
+    <MUIThemeProvider theme={theme}>
       <CssBaseline />
       <ToastContext.Provider value={value}>
         {children}
         <Snackbar
           open={toast.open}
-          autoHideDuration={3000}
+          autoHideDuration={toast.duration ?? 3000}
           onClose={() => setToast((t) => ({ ...t, open: false }))}
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         >
-          <Alert severity={toast.severity} onClose={() => setToast((t) => ({ ...t, open: false }))} sx={{ width: '100%' }}>
+          <Alert
+            severity={toast.severity}
+            onClose={() => setToast((t) => ({ ...t, open: false }))}
+            sx={{ width: '100%' }}
+            action={
+              toast.onAction ? (
+                <Button
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    toast.onAction?.();
+                    setToast((t) => ({ ...t, open: false }));
+                  }}
+                >
+                  {toast.actionLabel || 'Desfazer'}
+                </Button>
+              ) : undefined
+            }
+          >
             {toast.message}
           </Alert>
         </Snackbar>
       </ToastContext.Provider>
-    </ThemeProvider>
+    </MUIThemeProvider>
   );
 }

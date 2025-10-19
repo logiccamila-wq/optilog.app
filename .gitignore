@@ -1,18 +1,89 @@
 
-# Dependencies
-node_modules
-
-# Next.js build output
-.next
-out
-
-# Local Environment Variables
-.env*.local
-
-# Misc
-.DS_Store
-
-# Logs
+# Node / Next
+node_modules/
+.next/
+out/
+dist/
+build/
+.cache/
+.vercel/
+.netlify/
+.npm/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-lock.yaml
+
+# Firebase local state
+.firebase/
+# Keep project configs
+data/firebase.json
+.firebaserc
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.iml
+
+# Logs
+logs/
+*.log
+
+# Builds / executáveis
+*.exe
+*.msi
+*.dll
+*.so
+*.dylib
+*.apk
+*.aab
+*.zip
+*.7z
+*.rar
+
+# Flutter / Dart
+.flutter-plugins
+.flutter-plugins-dependencies
+.dart_tool/
+.packages
+build/
+.pub/
+.pub-cache/
+pubspec.lock
+# Local flutter assets (example)
+frontend/src/flutter_*/*
+
+# Android / Gradle
+.gradle/
+**/build/
+local.properties
+android/.gradle/
+android/.idea/
+android/app/build/
+
+# iOS
+Pods/
+Podfile.lock
+DerivedData/
+*.xcuserstate
+
+# Databases / secrets / envs
+*.sqlite
+*.db
+*.sql
+*.sqlite3
+.env
+.env.local
+.env.*.local
+.env.*.secret
+backend/.env
+
+# Misc large / caches
+coverage/
+tmp/
+temp/
+.cache/

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import AgentAvatar from '@/components/chat/AgentAvatar';
 
 export default function ChatMessage({ text, fromAgent }: { text: string; fromAgent?: boolean }) {

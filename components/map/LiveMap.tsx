@@ -1,10 +1,48 @@
-"use client";
-import { useEffect, useRef } from 'react';
+'use client';
+import { useEffect, useRef, useState } from 'react';
+import { io } from 'socket.io-client';
 
-type Shipment = { id: string; lat?: number; lng?: number; location?: { lat?: number; lng?: number }; geo?: { lat?: number; lng?: number }; status?: string };
+type Shipment = {
+  id: string;
+  lat?: number;
+  lng?: number;
+  location?: { lat?: number; lng?: number };
+  geo?: { lat?: number; lng?: number };
+  status?: string;
+};
 
-export default function LiveMap({ shipments, showStops, showRoutes, showAlerts }: { shipments: Shipment[]; showStops?: boolean; showRoutes?: boolean; showAlerts?: boolean }) {
+export default function LiveMap({
+  shipments,
+  showStops,
+  showRoutes,
+  showAlerts,
+}: {
+  shipments: Shipment[];
+  showStops?: boolean;
+  showRoutes?: boolean;
+  showAlerts?: boolean;
+}) {
   const ref = useRef<HTMLDivElement | null>(null);
+  const [liveShipments, setLiveShipments] = useState<Shipment[]>(shipments || []);
+
+  // Atualiza shipments locais quando prop muda
+  useEffect(() => {
+    setLiveShipments(shipments || []);
+  }, [shipments]);
+
+  // Conexão com WS (Socket.IO) para atualizações em tempo real
+  useEffect(() => {
+    const wsUrl = process.env.NEXT_PUBLIC_IOT_WS_URL || 'ws://localhost:4010';
+    let socket: ReturnType<typeof io> | null = null;
+    try {
+      socket = io(wsUrl, { transports: ['websocket'] });
+      socket.on('shipments:init', (data: Shipment[]) => setLiveShipments(data || []));
+      socket.on('shipments:changed', (data: Shipment[]) => setLiveShipments(data || []));
+    } catch {}
+    return () => {
+      try { socket?.disconnect(); } catch {}
+    };
+  }, []);
 
   useEffect(() => {
     const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
@@ -48,7 +86,7 @@ export default function LiveMap({ shipments, showStops, showRoutes, showAlerts }
         });
         map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
-        const coords = shipments
+        const coords = liveShipments
           .map((s) => ({
             id: s.id,
             lat: s.lat ?? s.location?.lat ?? s.geo?.lat,
@@ -69,14 +107,31 @@ export default function LiveMap({ shipments, showStops, showRoutes, showAlerts }
           el.style.width = '10px';
           el.style.height = '10px';
           el.style.borderRadius = '50%';
-          el.style.background = c.status === 'delayed' ? '#e53935' : c.status === 'in_transit' ? '#43a047' : '#1976d2';
+          el.style.background =
+            c.status === 'delayed' ? '#e53935' : c.status === 'in_transit' ? '#43a047' : '#1976d2';
           new mapboxgl.Marker(el).setLngLat([c.lng!, c.lat!]).addTo(map);
         });
 
-        // Options (stops/routes/alerts) can be layered later; placeholder for visual toggles
+        // Rotas via ORS (proxy) se habilitado
         if (showRoutes) {
-          // Example placeholder line
-          const route = coords.slice(0, 5).map((c) => [c.lng!, c.lat!]);
+          const base = coords.slice(0, 10).map((c) => [c.lng!, c.lat!]);
+          let route = base;
+          try {
+            const url = process.env.NEXT_PUBLIC_ORS_PROXY_URL || 'http://localhost:4001/route';
+            if (base.length >= 2) {
+              const resp = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ coordinates: base }),
+              });
+              const json = await resp.json();
+              if (resp.ok) {
+                const r = (json?.features?.[0]?.geometry?.coordinates || []) as Array<any>;
+                route = r.map((p) => [p[0], p[1]]);
+              }
+            }
+          } catch {}
+
           if (route.length >= 2) {
             map.on('load', () => {
               map.addSource('route-line', {
@@ -101,9 +156,11 @@ export default function LiveMap({ shipments, showStops, showRoutes, showAlerts }
     })();
 
     return () => {
-      try { (map as any)?.remove?.(); } catch {}
+      try {
+        (map as any)?.remove?.();
+      } catch {}
     };
-  }, [shipments, showStops, showRoutes, showAlerts]);
+  }, [liveShipments, showStops, showRoutes, showAlerts]);
 
   return <div ref={ref} style={{ width: '100%', height: '100%' }} />;
 }

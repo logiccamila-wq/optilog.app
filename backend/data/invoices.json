@@ -1,0 +1,5 @@
+[
+  {"id":"INV-5001","status":"open","amount":1200.50,"due":"2025-11-05"},
+  {"id":"INV-5002","status":"paid","amount":870.00,"due":"2025-10-01"},
+  {"id":"INV-5003","status":"overdue","amount":430.75,"due":"2025-10-15"}
+]

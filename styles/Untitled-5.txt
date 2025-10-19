@@ -1,0 +1,9 @@
+✓ Compiled /quem-somos in 4.8s (1501 modules)
+GET /quem-somos 200 in 98ms
+GET /quem-somos?ide_webview_request_time=... 200
+○ Compiling /driver ...
+✓ Compiled /driver in 6.8s
+○ Compiling /modules/tms ...
+✓ Compiled /modules/scm in 8.6s
+○ Compiling /modules/roadmap ...
+✓ Compiled /modules/oms in 7s

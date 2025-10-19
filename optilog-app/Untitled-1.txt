@@ -1,0 +1,29 @@
+// getOpenAIKey()
+// ... existing code ...
+async function getGeminiKey(): Promise<string> {
+  const name = "projects/435822865745/secrets/GEMINI_API_KEY/versions/latest";
+  try {
+    const [version] = await secretManagerClient.accessSecretVersion({ name });
+    const payload = version.payload?.data?.toString();
+    if (!payload) throw new Error("Secret payload is empty.");
+    return payload;
+  } catch (error) {
+    console.error("Error accessing Gemini key:", error);
+    throw new functions.https.HttpsError("internal", "Could not retrieve GEMINI API key.");
+  }
+}
+// ... existing code ...// getOpenAIKey()
+// ... existing code ...
+async function getGeminiKey(): Promise<string> {
+  const name = "projects/435822865745/secrets/GEMINI_API_KEY/versions/latest";
+  try {
+    const [version] = await secretManagerClient.accessSecretVersion({ name });
+    const payload = version.payload?.data?.toString();
+    if (!payload) throw new Error("Secret payload is empty.");
+    return payload;
+  } catch (error) {
+    console.error("Error accessing Gemini key:", error);
+    throw new functions.https.HttpsError("internal", "Could not retrieve GEMINI API key.");
+  }
+}
+// ... existing code ...

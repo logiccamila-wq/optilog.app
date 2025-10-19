@@ -1,5 +1,10 @@
 {
-    "recommendations": [
-        "marscode.marscode-extension"
-    ]
+  "recommendations": [
+    "marscode.marscode-extension",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "ms-azuretools.vscode-docker",
+    "ms-vscode-remote.remote-containers"
+  ]
 }

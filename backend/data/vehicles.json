@@ -1,0 +1,5 @@
+[
+  { "id": "VH-001", "plate": "ABC-1234", "model": "Volvo FH", "km": 188000 },
+  { "id": "VH-002", "plate": "DEF-5678", "model": "Scania R440", "km": 226500 },
+  { "id": "VH-003", "plate": "GHI-9012", "model": "Mercedes Actros", "km": 94000 }
+]

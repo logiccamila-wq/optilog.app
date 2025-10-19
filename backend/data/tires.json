@@ -1,0 +1,26 @@
+[
+  {
+    "id": "PN-1001",
+    "position": "Dianteiro Esquerdo",
+    "vehicle": "CAM-5678",
+    "life": 12,
+    "pressure": 28.5,
+    "temperature": 39.1
+  },
+  {
+    "id": "PN-1002",
+    "position": "Dianteiro Direito",
+    "vehicle": "CAM-5678",
+    "life": 18,
+    "pressure": 29.0,
+    "temperature": 40.3
+  },
+  {
+    "id": "PN-1003",
+    "position": "Traseiro Esquerdo",
+    "vehicle": "CAM-9123",
+    "life": 25,
+    "pressure": 30.1,
+    "temperature": 37.0
+  }
+]

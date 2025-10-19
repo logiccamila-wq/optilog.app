@@ -23,7 +23,15 @@ export async function GET() {
   );
 
   const results = attempts.map((r, i) =>
-    r.status === 'fulfilled' ? r.value : { region: regions[i], url: `https://${regions[i]}-${projectId}.cloudfunctions.net/${functionName}`, ok: false, status: null, error: (r as any)?.reason || 'unknown error' }
+    r.status === 'fulfilled'
+      ? r.value
+      : {
+          region: regions[i],
+          url: `https://${regions[i]}-${projectId}.cloudfunctions.net/${functionName}`,
+          ok: false,
+          status: null,
+          error: (r as any)?.reason || 'unknown error',
+        }
   );
   const firstOk = results.find((r: any) => r.ok);
   const ok = !!firstOk;

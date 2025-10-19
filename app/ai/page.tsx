@@ -1,30 +1,43 @@
-"use client";
-import { useState } from "react";
-import { Box, Typography, TextField, Button, Paper, Alert, CircularProgress, ToggleButtonGroup, ToggleButton } from '@mui/material';
+'use client';
+import { useState } from 'react';
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Paper,
+  Alert,
+  CircularProgress,
+  ToggleButtonGroup,
+  ToggleButton,
+} from '@mui/material';
 
 export default function AIPage() {
   const [prompt, setPrompt] = useState(
-    "Explique rapidamente WMS e TMS (conceitos, diferenças e como se integram) e sugira 3 melhorias logísticas práticas para e-commerce no Brasil, considerando last-mile e níveis de serviço."
+    'Explique rapidamente WMS e TMS (conceitos, diferenças e como se integram) e sugira 3 melhorias logísticas práticas para e-commerce no Brasil, considerando last-mile e níveis de serviço.'
   );
   const [loading, setLoading] = useState(false);
   const [resp, setResp] = useState<any>(null);
-  const [provider, setProvider] = useState<'openai' | 'gemini'>('gemini');
+  const [provider, setProvider] = useState<'openai' | 'gemini'>('openai');
 
   const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-  const region = "us-central1";
+  const region = 'us-central1';
   const functionName = provider === 'gemini' ? 'geminiProxy' : 'openaiProxy';
   const url = projectId
     ? `https://${region}-${projectId}.cloudfunctions.net/${functionName}`
-    : "";
+    : '/api/ai';
 
   async function send() {
     setLoading(true);
     setResp(null);
     try {
       const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, model: provider === 'gemini' ? 'gemini-1.5-flash-latest' : 'gpt-4o-mini' }),
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt,
+          model: provider === 'gemini' ? 'gemini-1.5-flash-latest' : 'gpt-4o-mini',
+        }),
       });
       const data = await res.json();
       setResp({ status: res.status, data });
@@ -37,10 +50,12 @@ export default function AIPage() {
 
   return (
     <main className="container">
-      <Typography variant="h5" sx={{ mb: 2 }}>Teste IA via openaiProxy</Typography>
+      <Typography variant="h5" sx={{ mb: 2 }}>
+        Teste IA via /api/ai
+      </Typography>
       <Paper variant="outlined" sx={{ p: 2, mb: 2 }}>
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-          URL: {url || "defina NEXT_PUBLIC_FIREBASE_PROJECT_ID"}
+          URL: {url}
         </Typography>
         <Box sx={{ mt: 1 }}>
           <ToggleButtonGroup
@@ -50,8 +65,8 @@ export default function AIPage() {
             onChange={(_, val) => val && setProvider(val)}
             size="small"
           >
-            <ToggleButton value="gemini">Gemini</ToggleButton>
             <ToggleButton value="openai">OpenAI</ToggleButton>
+            <ToggleButton value="gemini">Gemini</ToggleButton>
           </ToggleButtonGroup>
         </Box>
       </Paper>
@@ -67,7 +82,12 @@ export default function AIPage() {
           disabled={loading || !url}
         />
         <Box>
-          <Button variant="contained" onClick={send} disabled={!url || loading} startIcon={loading ? <CircularProgress color="inherit" size={16} /> : undefined}>
+          <Button
+            variant="contained"
+            onClick={send}
+            disabled={!url || loading}
+            startIcon={loading ? <CircularProgress color="inherit" size={16} /> : undefined}
+          >
             {loading ? 'Enviando...' : 'Enviar'}
           </Button>
         </Box>
@@ -76,7 +96,11 @@ export default function AIPage() {
       {resp ? (
         <Paper variant="outlined" sx={{ p: 2, mt: 2 }}>
           <Box aria-live="polite">
-            {resp.error && <Alert severity="error" sx={{ mb: 2 }}>{resp.error}</Alert>}
+            {resp.error && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {resp.error}
+              </Alert>
+            )}
           </Box>
           <Typography component="pre" sx={{ whiteSpace: 'pre-wrap', m: 0 }}>
             {JSON.stringify(resp, null, 2)}
@@ -84,7 +108,9 @@ export default function AIPage() {
         </Paper>
       ) : (
         <Paper variant="outlined" sx={{ p: 2, mt: 2 }}>
-          <Typography variant="body2" color="text.secondary">Digite um prompt e clique em Enviar para ver a resposta.</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Digite um prompt e clique em Enviar para ver a resposta.
+          </Typography>
         </Paper>
       )}
     </main>

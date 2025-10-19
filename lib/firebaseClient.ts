@@ -1,27 +1,17 @@
-import { initializeApp, getApp, getApps } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+// Firebase stub: retorna null e evita imports de firebase/* quando desativado
+const disabled = process.env.NEXT_PUBLIC_DISABLE_FIREBASE === '1' || process.env.NEXT_PUBLIC_DISABLE_FIREBASE === 'true';
 
-// Simple client-side Firebase bootstrap using NEXT_PUBLIC_* env vars
-const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-};
+export const app: any = null;
+export const auth: any = null;
 
-export const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-export const db = getFirestore(app);
-export const auth = getAuth(app);
-
-// Backwards-compatible helper used across the app modules
-export async function getDb() {
-  return db;
+export async function getDb(): Promise<null> {
+  return null;
 }
 
-// Helper para compatibilidade: retorna a instância de Auth
-export async function getAuthInstance() {
-  return auth;
+export async function getAuthInstance(): Promise<null> {
+  return null;
+}
+
+export function isFirebaseConfigured(): boolean {
+  return !disabled && false;
 }

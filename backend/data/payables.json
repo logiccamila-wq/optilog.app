@@ -1,0 +1,5 @@
+[
+  {"id":"PAY-8001","status":"open","amount":980.25},
+  {"id":"PAY-8002","status":"scheduled","amount":450.00},
+  {"id":"PAY-8003","status":"paid","amount":210.75}
+]

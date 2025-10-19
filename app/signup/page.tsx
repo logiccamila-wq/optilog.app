@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -26,7 +26,7 @@ function translateAuthError(err: any): string {
     case 'auth/operation-not-allowed':
       return 'Login por email/senha desativado no projeto.';
     case 'auth/unauthorized-domain':
-      return 'Domínio não autorizado no Firebase Auth.';
+      return 'Domínio não autorizado no provedor de autenticação.';
     case 'auth/invalid-api-key':
       return 'API key inválida ou não configurada.';
     default:
@@ -52,18 +52,12 @@ export default function SignupPage() {
     setLastErrorCode(null);
     const auth = await getAuthInstance();
     if (!auth) {
-      setError('Firebase não configurado. Preencha NEXT_PUBLIC_FIREBASE_* no .env.local');
+      setError('Autenticação não configurada. Defina variáveis NEXT_PUBLIC_* no .env.local');
       return;
     }
     setLoading(true);
     try {
-      const { createUserWithEmailAndPassword, updateProfile } = await import('firebase/auth');
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
-      if (name) {
-        await updateProfile(cred.user, { displayName: name });
-      }
-      toast.show('Cadastro realizado com sucesso!', 'success');
-      router.push('/');
+      throw new Error('Cadastro via Firebase removido');
     } catch (err: any) {
       const msg = translateAuthError(err);
       setError(msg);
@@ -87,11 +81,7 @@ export default function SignupPage() {
       return;
     }
     try {
-      const { sendPasswordResetEmail } = await import('firebase/auth');
-      await sendPasswordResetEmail(auth, email);
-      const msg = 'Enviamos um link de redefinição de senha para seu email.';
-      setInfo(msg);
-      toast.show(msg, 'info');
+      throw new Error('Recuperação de senha via Firebase removida');
     } catch (err: any) {
       const msg = translateAuthError(err);
       setError(msg);
@@ -101,28 +91,72 @@ export default function SignupPage() {
 
   return (
     <main className="container">
-      <Typography variant="h4" sx={{ mb: 2 }}>Cadastro</Typography>
+      <Typography variant="h4" sx={{ mb: 2 }}>
+        Cadastro
+      </Typography>
       <Paper sx={{ p: 2, mb: 2 }} variant="outlined">
         <Typography variant="caption">
-          Projeto: {process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '—'} | Domínio Auth: {process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '—'}
+          Projeto: {process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '—'} | Domínio Auth:{' '}
+          {process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '—'}
         </Typography>
       </Paper>
       <Box aria-live="polite">
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-        {info && <Alert severity="info" sx={{ mb: 2 }}>{info}</Alert>}
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+        {info && (
+          <Alert severity="info" sx={{ mb: 2 }}>
+            {info}
+          </Alert>
+        )}
       </Box>
       <Box component="form" onSubmit={onSubmit} sx={{ display: 'grid', gap: 2, maxWidth: 420 }}>
-        <TextField label="Nome" type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Opcional" fullWidth disabled={loading} />
-        <TextField label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required fullWidth disabled={loading} />
-        <TextField label="Senha" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required fullWidth disabled={loading} />
-        <Button type="submit" variant="contained" disabled={loading} startIcon={loading ? <CircularProgress color="inherit" size={16} /> : undefined}>
+        <TextField
+          label="Nome"
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Opcional"
+          fullWidth
+          disabled={loading}
+        />
+        <TextField
+          label="Email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          fullWidth
+          disabled={loading}
+        />
+        <TextField
+          label="Senha"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          fullWidth
+          disabled={loading}
+        />
+        <Button
+          type="submit"
+          variant="contained"
+          disabled={loading}
+          startIcon={loading ? <CircularProgress color="inherit" size={16} /> : undefined}
+        >
           {loading ? 'Cadastrando...' : 'Cadastrar'}
         </Button>
       </Box>
       {lastErrorCode === 'auth/email-already-in-use' && (
         <Box sx={{ mt: 2 }}>
-          <Button type="button" onClick={onResetPassword} sx={{ mr: 1 }} disabled={loading}>Redefinir senha</Button>
-          <Button component={Link} href="/login">Ir para Login</Button>
+          <Button type="button" onClick={onResetPassword} sx={{ mr: 1 }} disabled={loading}>
+            Redefinir senha
+          </Button>
+          <Button component={Link} href="/login">
+            Ir para Login
+          </Button>
         </Box>
       )}
       <Typography sx={{ mt: 2 }}>

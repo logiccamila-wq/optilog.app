@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { useEffect, useRef, useState } from 'react';
 import { Snackbar, Button, Alert } from '@mui/material';
 
@@ -26,7 +26,14 @@ export default function SWUpdateSnackbar() {
 
   return (
     <Snackbar open={open} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
-      <Alert severity="info" action={<Button color="inherit" size="small" onClick={applyUpdate}>Atualizar</Button>}>
+      <Alert
+        severity="info"
+        action={
+          <Button color="inherit" size="small" onClick={applyUpdate}>
+            Atualizar
+          </Button>
+        }
+      >
         Nova versão disponível do aplicativo.
       </Alert>
     </Snackbar>

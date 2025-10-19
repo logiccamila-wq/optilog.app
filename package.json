@@ -3,35 +3,58 @@
   "version": "1.0.0",
   "private": true,
   "engines": {
-    "node": "20"
+    "node": "20.19.5"
   },
   "scripts": {
     "dev": "next dev",
+    "dev:turbo": "next dev --turbo",
+    "dev:3001": "next dev --turbo -p 3001",
     "build": "next build",
     "start": "node scripts/start.js",
     "lint": "next lint",
-    "test:rules": "vitest run --config vitest.config.ts"
+    "format": "prettier --write .",
+    "api": "node backend/server.js",
+    "scaffold": "node scripts/scaffold.js",
+    "scaffold:backend:express-basic": "node scripts/scaffold.js backend express-basic",
+    "scaffold:backend:ors-route": "node scripts/scaffold.js backend ors-route-proxy",
+    "scaffold:backend:ws-basic": "node scripts/scaffold.js backend ws-basic",
+    "scaffold:frontend:module": "node scripts/scaffold.js frontend next-module",
+    "scaffold:frontend:livemap": "node scripts/scaffold.js frontend livemap",
+    "scaffold:init-basic": "npm run scaffold:backend:express-basic && npm run scaffold:backend:ors-route && npm run scaffold:backend:ws-basic && npm run scaffold:frontend:module && npm run scaffold:frontend:livemap",
+    "db:seed": "node scripts/seed.mjs"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@mui/material": "^5.15.20",
     "@mui/x-data-grid": "^6.19.5",
-    "xlsx": "^0.18.5",
-    "firebase": "^10.7.0",
+    "@neondatabase/serverless": "^0.9.0",
+    "firebase": "^12.4.0",
+    "jose": "^6.1.0",
+    "lucide-react": "^0.546.0",
     "next": "^14.2.11",
+    "openai": "^6.5.0",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "socket.io-client": "^4.8.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.14",
     "@types/node": "24.7.2",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
+    "autoprefixer": "^10.4.21",
     "eslint": "8.47.0",
     "eslint-config-next": "14.2.11",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-unused-imports": "^4.2.0",
+    "postcss": "^8.5.6",
+    "prettier": "^3.6.2",
+    "tailwindcss": "^4.1.14",
+    "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.3.0",
-    "vitest": "^1.5.0",
-    "@firebase/rules-unit-testing": "^3.0.0"
+    "vitest": "^1.5.0"
   },
   "browser": {
     "undici": false,

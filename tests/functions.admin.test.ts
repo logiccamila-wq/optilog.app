@@ -20,10 +20,22 @@ function makeRes() {
     statusCode: 200,
     headers: {},
     body: undefined,
-    status(code) { this.statusCode = code; return this; },
-    json(obj) { this.body = obj; return this; },
-    send(txt) { this.body = txt; return this; },
-    set(h, v) { this.headers[h] = v; return this; },
+    status(code) {
+      this.statusCode = code;
+      return this;
+    },
+    json(obj) {
+      this.body = obj;
+      return this;
+    },
+    send(txt) {
+      this.body = txt;
+      return this;
+    },
+    set(h, v) {
+      this.headers[h] = v;
+      return this;
+    },
   };
   return res;
 }

@@ -1,0 +1,5 @@
+[
+  {"id":"REC-7001","status":"open","amount":650.00},
+  {"id":"REC-7002","status":"pending","amount":300.50},
+  {"id":"REC-7003","status":"closed","amount":1020.00}
+]

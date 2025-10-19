@@ -1,17 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" aria-labelledby="title desc" role="img">
+  <title>PULSEOPS Favicon</title>
+  <desc>Isolated icon with neon/tech gradient</desc>
   <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0E539A"/>
-      <stop offset="100%" stop-color="#6C4DF5"/>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="50%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#EC4899"/>
     </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="12" fill="#0D111B"/>
-  <g stroke="url(#g)" stroke-width="3" fill="none">
-    <polygon points="32,6 54,20 46,50 18,50 10,20"/>
-    <circle cx="32" cy="6" r="2" fill="#0E539A"/>
-    <circle cx="54" cy="20" r="2" fill="#6C4DF5"/>
-    <circle cx="46" cy="50" r="2" fill="#6C4DF5"/>
-    <circle cx="18" cy="50" r="2" fill="#0E539A"/>
-    <circle cx="10" cy="20" r="2" fill="#0E539A"/>
-  </g>
+  <path fill="url(#grad)"
+        d="M78 50c0-10.5-8.5-19-19-19-7.8 0-14.6 4.7-17.3 11.5-1.6-.5-3.3-.8-5-.8-9.9 0-18 8.1-18 18s8.1 18 18 18h53c8.8 0 16-7.2 16-16s-7.2-16-16-16c-3 0-5.8.8-8.2 2.2-1.3-5.1-6-8.9-11.5-8.9z"/>
+  <rect x="92" y="24" width="10" height="10" rx="2" fill="url(#grad)"/>
+  <rect x="106" y="18" width="12" height="12" rx="2" fill="url(#grad)"/>
+  <rect x="120" y="30" width="8" height="8" rx="2" fill="url(#grad)"/>
 </svg>

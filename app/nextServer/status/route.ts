@@ -1,15 +1,12 @@
 export async function GET() {
-  return new Response(
-    JSON.stringify({ ok: true, status: 'ready', timestamp: Date.now() }),
-    {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-store',
-        'Access-Control-Allow-Origin': '*',
-      },
-    }
-  );
+  return new Response(JSON.stringify({ ok: true, status: 'ready', timestamp: Date.now() }), {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-store',
+      'Access-Control-Allow-Origin': '*',
+    },
+  });
 }
 
 export async function OPTIONS() {

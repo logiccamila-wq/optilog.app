@@ -9,8 +9,9 @@ export function sanitizeHtml(input: string): string {
   // Bloqueia javascript: em href/src
   html = html.replace(/(href|src)\s*=\s*(["'])\s*javascript:[^\2]*\2/gi, '$1="#"');
   // Remove handlers on*
-  html = html.replace(/\son[a-z]+\s*=\s*"[^"]*"/gi, '')
-             .replace(/\son[a-z]+\s*=\s*'[^']*'/gi, '')
-             .replace(/\son[a-z]+\s*=\s*[^\s>]+/gi, '');
+  html = html
+    .replace(/\son[a-z]+\s*=\s*"[^"]*"/gi, '')
+    .replace(/\son[a-z]+\s*=\s*'[^']*'/gi, '')
+    .replace(/\son[a-z]+\s*=\s*[^\s>]+/gi, '');
   return html;
 }

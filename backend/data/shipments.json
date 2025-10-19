@@ -1,0 +1,7 @@
+[
+  { "id": "SHP-001", "lat": -23.55052, "lng": -46.63331, "status": "in_transit" },
+  { "id": "SHP-002", "lat": -23.56168, "lng": -46.65590, "status": "delayed" },
+  { "id": "SHP-003", "lat": -23.52803, "lng": -46.63954, "status": "in_transit" },
+  { "id": "SHP-004", "lat": -23.58600, "lng": -46.65100, "status": "stopped" },
+  { "id": "SHP-005", "lat": -23.52077, "lng": -46.69978, "status": "in_transit" }
+]

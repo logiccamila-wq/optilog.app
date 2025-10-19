@@ -1,5 +1,5 @@
-import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 // Helper function to decode JWT and get user ID
 function getUserIdFromJwt(token: string): string | null {
@@ -9,14 +9,15 @@ function getUserIdFromJwt(token: string): string | null {
     const jwtPayload = JSON.parse(decoded);
     return jwtPayload.sub; // 'sub' claim is the user ID in Supabase JWTs
   } catch (e) {
-    console.error("Error decoding JWT:", e);
+    console.error('Error decoding JWT:', e);
     return null;
   }
 }
 
 serve(async (req: Request) => {
   // This function is called for every request
-  if (req.method !== 'POST') { // Using POST for simplicity, but PUT or PATCH are also options
+  if (req.method !== 'POST') {
+    // Using POST for simplicity, but PUT or PATCH are also options
     return new Response('Method Not Allowed', { status: 405 });
   }
 
@@ -27,13 +28,17 @@ serve(async (req: Request) => {
     const userId = getUserIdFromJwt(token);
 
     if (!userId) {
-      return new Response(JSON.stringify({ error: 'Invalid or missing authentication token' }), { status: 401 });
+      return new Response(JSON.stringify({ error: 'Invalid or missing authentication token' }), {
+        status: 401,
+      });
     }
 
     // 2. Get updated post data from request body
     const { post_id, title, content } = await req.json();
     if (!post_id || !title || !content) {
-      return new Response(JSON.stringify({ error: 'Missing post_id, title, or content' }), { status: 400 });
+      return new Response(JSON.stringify({ error: 'Missing post_id, title, or content' }), {
+        status: 400,
+      });
     }
 
     // 3. Create an admin client to update the data
@@ -52,13 +57,12 @@ serve(async (req: Request) => {
       .single();
 
     if (error) throw error;
-    if (!data) throw new Error("Post not found or user is not authorized to edit this post.");
+    if (!data) throw new Error('Post not found or user is not authorized to edit this post.');
 
     return new Response(JSON.stringify(data), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
-
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,

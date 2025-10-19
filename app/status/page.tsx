@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { useEffect, useState } from 'react';
 import { app, getDb, getAuthInstance } from '@/lib/firebaseClient';
 import { Paper, Typography, List, ListItem, ListItemText, Chip, Box, Stack } from '@mui/material';
@@ -24,36 +24,30 @@ export default function StatusPage() {
 
       // Auth via SDK modular (carregado dinamicamente no client)
       try {
-        const hasApp = !!app;
-        checksAuth.push({ name: 'Firebase App', ok: hasApp, detail: hasApp ? `projectId=${pid}` : 'App não inicializado' });
-        if (hasApp) {
-          const auth = await getAuthInstance();
-          let currentUser = auth?.currentUser || null;
-          if (!currentUser && auth) {
-            await new Promise<void>(async (resolve) => {
-              const { onAuthStateChanged } = await import('firebase/auth');
-              const unsub = onAuthStateChanged(auth!, () => { unsub(); resolve(); });
-            });
-            currentUser = auth?.currentUser || null;
-          }
-          checksAuth.push({ name: 'Sessão', ok: !!currentUser, detail: currentUser ? (currentUser.email || 'logado') : 'não logado' });
-          checksAuth.push({ name: 'Domínio Auth', ok: !!domain, detail: domain });
-        }
+        // Autenticação desativada
+        checksAuth.push({
+          name: 'Firebase App',
+          ok: false,
+          detail: 'Autenticação via Firebase desativada',
+        });
+        checksAuth.push({
+          name: 'Sessão',
+          ok: false,
+          detail: 'Autenticação via Firebase desativada',
+        });
+        checksAuth.push({ name: 'Domínio Auth', ok: !!domain, detail: domain });
       } catch (e: any) {
         checksAuth.push({ name: 'Auth erro', ok: false, detail: e?.message || String(e) });
       }
 
       // Firestore
       try {
-        const db = await getDb();
-        const hasDb = !!db;
-        checksFs.push({ name: 'Firestore', ok: hasDb, detail: hasDb ? 'db inicializado' : 'db não inicializado' });
-        if (hasDb) {
-          const { collection, getDocs, limit, query, where } = await import('firebase/firestore');
-          const q = query(collection(db!, 'posts'), where('is_published', '==', true), limit(1));
-          const snap = await getDocs(q);
-          checksFs.push({ name: 'Leitura posts publicados', ok: true, detail: `docs=${snap.size}` });
-        }
+        // Firestore desativado
+        checksFs.push({
+          name: 'Firestore',
+          ok: false,
+          detail: 'Firestore desativado',
+        });
       } catch (e: any) {
         checksFs.push({ name: 'Leitura posts erro', ok: false, detail: e?.message || String(e) });
       }
@@ -62,10 +56,20 @@ export default function StatusPage() {
       try {
         const r = await fetch('/api/functions-status');
         const j = await r.json();
-        checksFn.push({ name: 'Functions', ok: !!j.ok, detail: j.ok ? 'HTTP disponível' : (j.error || `status=${j.status}`) });
+        checksFn.push({
+          name: 'Functions',
+          ok: !!j.ok,
+          detail: j.ok ? 'HTTP disponível' : j.error || `status=${j.status}`,
+        });
       } catch (e: any) {
         const msg = e?.message || String(e);
-        checksFn.push({ name: 'Functions', ok: false, detail: isDev ? `Dev: chamada /api/functions-status falhou (possível ausência de função local ou credenciais). Detalhe: ${msg}` : msg });
+        checksFn.push({
+          name: 'Functions',
+          ok: false,
+          detail: isDev
+            ? `Dev: chamada /api/functions-status falhou (possível ausência de função local ou credenciais). Detalhe: ${msg}`
+            : msg,
+        });
       }
 
       setAuthChecks(checksAuth);
@@ -75,11 +79,15 @@ export default function StatusPage() {
     run();
   }, []);
 
-  const Section = ({ title, items }: { title: string, items: Check[] }) => (
+  const Section = ({ title, items }: { title: string; items: Check[] }) => (
     <Paper variant="outlined" sx={{ p: 2 }}>
-      <Typography variant="h6" sx={{ mb: 1 }}>{title}</Typography>
+      <Typography variant="h6" sx={{ mb: 1 }}>
+        {title}
+      </Typography>
       {items.length === 0 ? (
-        <Typography variant="body2" color="text.secondary">Sem dados no momento.</Typography>
+        <Typography variant="body2" color="text.secondary">
+          Sem dados no momento.
+        </Typography>
       ) : (
         <List dense>
           {items.map((c, i) => (
@@ -88,10 +96,26 @@ export default function StatusPage() {
                 primary={
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <span>{c.name}</span>
-                    <Chip size="small" color={c.ok ? 'success' : 'error'} label={c.ok ? 'OK' : (c.name === 'Sessão' ? 'NÃO LOGADO' : (c.name === 'Functions' ? 'N/A' : 'ERRO'))} />
+                    <Chip
+                      size="small"
+                      color={c.ok ? 'success' : 'error'}
+                      label={
+                        c.ok
+                          ? 'OK'
+                          : c.name === 'Sessão'
+                            ? 'NÃO LOGADO'
+                            : c.name === 'Functions'
+                              ? 'N/A'
+                              : 'ERRO'
+                      }
+                    />
                   </Box>
                 }
-                secondary={<Typography variant="caption" color="text.secondary">{c.detail}</Typography>}
+                secondary={
+                  <Typography variant="caption" color="text.secondary">
+                    {c.detail}
+                  </Typography>
+                }
               />
             </ListItem>
           ))}
@@ -104,13 +128,17 @@ export default function StatusPage() {
     <main className="container">
       <Stack spacing={2}>
         <Box>
-          <Typography variant="h5" sx={{ mb: 1 }}>Status do Backend</Typography>
+          <Typography variant="h5" sx={{ mb: 1 }}>
+            Status do Backend
+          </Typography>
           <Paper variant="outlined" sx={{ p: 1 }}>
             <Typography variant="caption" sx={{ display: 'block' }}>
-              Projeto: {process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '—'} | Domínio Auth: {process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '—'}
+              Projeto: {process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '—'} | Domínio Auth:{' '}
+              {process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '—'}
             </Typography>
             <Typography variant="caption" sx={{ display: 'block' }}>
-              Ambiente: {isDev ? 'Desenvolvimento' : 'Produção'} | Dashboard URL: {dashboardUrl || '—'}
+              Ambiente: {isDev ? 'Desenvolvimento' : 'Produção'} | Dashboard URL:{' '}
+              {dashboardUrl || '—'}
             </Typography>
             {!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && (
               <Typography variant="caption" color="text.secondary">
@@ -119,7 +147,8 @@ export default function StatusPage() {
             )}
             {!dashboardUrl && (
               <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
-                Opcional: defina NEXT_PUBLIC_DASHBOARD_URL para habilitar redirecionamento automático em /dashboard.
+                Opcional: defina NEXT_PUBLIC_DASHBOARD_URL para habilitar redirecionamento
+                automático em /dashboard.
               </Typography>
             )}
           </Paper>

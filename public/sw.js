@@ -1,6 +1,8 @@
 // Workbox + fallback SW para ambientes sem Workbox
 // eslint-disable-next-line no-restricted-globals
-try { importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.5.4/workbox-sw.js'); } catch (e) {}
+try {
+  importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.5.4/workbox-sw.js');
+} catch (e) {}
 
 const PRECACHE_ASSETS = [
   '/',
@@ -19,7 +21,7 @@ const PRECACHE_ASSETS = [
   '/dashboard',
   '/status',
   '/ai',
-  '/chat'
+  '/chat',
 ];
 
 self.addEventListener('message', (event) => {
@@ -42,7 +44,7 @@ if (self.workbox) {
     ({ request }) => request.mode === 'navigate',
     new workbox.strategies.NetworkFirst({
       cacheName: 'pages',
-      networkTimeoutSeconds: 4
+      networkTimeoutSeconds: 4,
     })
   );
 
@@ -57,7 +59,12 @@ if (self.workbox) {
     ({ request }) => request.destination === 'image',
     new workbox.strategies.CacheFirst({
       cacheName: 'images',
-      plugins: [new workbox.expiration.ExpirationPlugin({ maxEntries: 60, maxAgeSeconds: 30 * 24 * 60 * 60 })]
+      plugins: [
+        new workbox.expiration.ExpirationPlugin({
+          maxEntries: 60,
+          maxAgeSeconds: 30 * 24 * 60 * 60,
+        }),
+      ],
     })
   );
 
@@ -74,28 +81,30 @@ if (self.workbox) {
   const CACHE_NAME = 'ejg-optilog-v3';
   const ASSETS_TO_CACHE = PRECACHE_ASSETS;
 
-  self.addEventListener('install', event => {
-    event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS_TO_CACHE)));
+  self.addEventListener('install', (event) => {
+    event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE)));
     self.skipWaiting();
   });
 
-  self.addEventListener('activate', event => {
+  self.addEventListener('activate', (event) => {
     event.waitUntil(
-      caches.keys().then(keys => Promise.all(keys.map(k => k !== CACHE_NAME ? caches.delete(k) : null)))
+      caches
+        .keys()
+        .then((keys) => Promise.all(keys.map((k) => (k !== CACHE_NAME ? caches.delete(k) : null))))
     );
     self.clients.claim();
   });
 
-  self.addEventListener('fetch', event => {
+  self.addEventListener('fetch', (event) => {
     if (event.request.method !== 'GET') return;
     const req = event.request;
 
     if (req.mode === 'navigate' || (req.headers.get('accept') || '').includes('text/html')) {
       event.respondWith(
         fetch(req)
-          .then(res => {
+          .then((res) => {
             const copy = res.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put(req, copy).catch(() => {}));
+            caches.open(CACHE_NAME).then((cache) => cache.put(req, copy).catch(() => {}));
             return res;
           })
           .catch(async () => (await caches.match(req)) || (await caches.match('/offline.html')))
@@ -104,11 +113,11 @@ if (self.workbox) {
     }
 
     event.respondWith(
-      caches.match(req).then(cached => {
+      caches.match(req).then((cached) => {
         const fetchPromise = fetch(req)
-          .then(res => {
+          .then((res) => {
             const copy = res.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put(req, copy).catch(() => {}));
+            caches.open(CACHE_NAME).then((cache) => cache.put(req, copy).catch(() => {}));
             return res;
           })
           .catch(() => cached || caches.match('/offline.html'));

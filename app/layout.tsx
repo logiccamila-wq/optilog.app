@@ -8,6 +8,9 @@ import ServiceWorkerRegister from '@/app/providers/ServiceWorker';
 import SWUpdateSnackbar from '@/components/pwa/SWUpdateSnackbar';
 import { I18nProvider } from '@/app/providers/I18nProvider';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata = {
   metadataBase: new URL('https://studio-4793785332-8ea02.web.app'),
   title: {
