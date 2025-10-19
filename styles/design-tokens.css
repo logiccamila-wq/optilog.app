@@ -1,12 +1,28 @@
 :root {
-  /* Defaults keep original dark appearance; ThemeProvider overrides dynamically */
-  --color-brand: #0e539a;
-  --color-secondary: #272F44;
-  --color-border: #1f2937;
-  --color-bg: #0d111b;
-  --color-text: #ffffff;
+  /* Light baseline — aligns with ThemeProvider default */
+  --color-bg: #ffffff;
+  --color-secondary: #f5f7fb;
+  --color-surface: #f5f7fb;
+  --color-border: #e5e7eb;
+  --color-brand: #1e3a8a; /* deep blue */
+  --color-text: #111827;  /* gray-900 */
   --color-on-brand: #ffffff;
+  --color-success: #16a34a; /* green-600 */
+  --color-danger: #ef4444;  /* red-500 */
   --font-sans: 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
   --spacing-base: 1rem;
   --radius: 12px;
+}
+
+/* Dark theme overrides applied when ThemeProvider sets data-theme="dark" */
+[data-theme="dark"] {
+  --color-bg: #0d111b;
+  --color-secondary: #0c1422;
+  --color-surface: #0c1422;
+  --color-border: #1f2937;
+  --color-brand: #0E539A;
+  --color-text: #ffffff;
+  --color-on-brand: #ffffff;
+  --color-success: #22c55e; /* slightly brighter green */
+  --color-danger: #f87171;  /* slightly softer red */
 }

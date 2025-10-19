@@ -1,3 +1,4 @@
+import '../styles/design-tokens.css';
 import './globals.css';
 import { ReactNode } from 'react';
 import Header from './Header';
@@ -5,14 +6,15 @@ import ToastProvider from '@/components/ui/ToastProvider';
 import { ThemeProvider } from '@/app/providers/ThemeProvider';
 import ServiceWorkerRegister from '@/app/providers/ServiceWorker';
 import SWUpdateSnackbar from '@/components/pwa/SWUpdateSnackbar';
+import { I18nProvider } from '@/app/providers/I18nProvider';
 
 export const metadata = {
   metadataBase: new URL('https://studio-4793785332-8ea02.web.app'),
   title: {
-    default: 'OptiLog • Plataforma de Insights',
-    template: '%s • OptiLog',
+    default: 'PulseOps • Plataforma de Insights',
+    template: '%s • PulseOps',
   },
-  description: 'OptiLog: conteúdo e ferramentas com IA em tema escuro.',
+  description: 'PulseOps: dados e operações com IA em visual neon/tech.',
   icons: {
     icon: '/favicon.svg',
     shortcut: '/favicon.svg',
@@ -21,25 +23,23 @@ export const metadata = {
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
-    title: 'EJG Optilog',
+    title: 'PulseOps',
     statusBarStyle: 'default',
   },
   openGraph: {
-    title: 'OptiLog • Plataforma de Insights',
-    description: 'UI escura inspirada no Copilot, com destaque azul.',
+    title: 'PulseOps • Plataforma de Insights',
+    description: 'UI neon/tech com destaque azul → roxo → magenta.',
     url: '/',
-    siteName: 'OptiLog',
-    images: [
-      { url: '/logo-xyz.svg', width: 512, height: 512, alt: 'OptiLog' },
-    ],
+    siteName: 'PulseOps',
+    images: [{ url: '/logo.svg', width: 512, height: 512, alt: 'PulseOps' }],
     locale: 'pt_BR',
     type: 'website',
   },
   twitter: {
     card: 'summary',
-    title: 'OptiLog',
-    description: 'UI escura com MUI e integração com IA.',
-    images: ['/logo-xyz.svg'],
+    title: 'PulseOps',
+    description: 'UI neon/tech com IA e dados.',
+    images: ['/logo.svg'],
   },
 };
 
@@ -52,12 +52,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="pt-BR">
       <body>
         <ThemeProvider>
-          <ToastProvider>
-            <Header />
-            {children}
-            <ServiceWorkerRegister />
-            <SWUpdateSnackbar />
-          </ToastProvider>
+          <I18nProvider>
+            <ToastProvider>
+              <Header />
+              {children}
+              <ServiceWorkerRegister />
+              <SWUpdateSnackbar />
+            </ToastProvider>
+          </I18nProvider>
         </ThemeProvider>
       </body>
     </html>
