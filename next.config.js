@@ -1,3 +1,4 @@
+const isVercel = !!process.env.VERCEL;
 const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
@@ -8,7 +9,7 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   // Optimize for containerized/App Hosting deployments
-  output: 'standalone',
+  // output: 'standalone',
   // Usa o tracing padrão para builds standalone
   // (recomendado para produção; em ambientes Windows/OneDrive, prefira rodar build fora de pastas sincronizadas ou via WSL)
   // Avoid forcing ESM externals resolution which can break CJS expectations in some libs (e.g., @babel/runtime used by MUI)
@@ -58,5 +59,9 @@ const nextConfig = {
   //     return config;
   //   },
 };
+
+if (!isVercel) {
+  nextConfig.output = 'standalone';
+}
 
 module.exports = nextConfig;
