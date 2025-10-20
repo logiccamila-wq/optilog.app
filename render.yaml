@@ -1,0 +1,54 @@
+services:
+  - type: web
+    name: optilog-frontend
+    env: node
+    branch: main
+    rootDir: .
+    autoDeploy: true
+    buildCommand: npm ci && npm run build
+    startCommand: node .next/standalone/server.js
+    healthCheckPath: /status
+    envVars:
+      - key: NODE_VERSION
+        value: 20.19.5
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+      - key: NEXT_PUBLIC_DISABLE_FIREBASE
+        value: "1"
+      - key: NEXT_PUBLIC_POSTS_API_URL
+        sync: false
+      - key: NEXT_PUBLIC_BACKEND_URL
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_URL_UNPOOLED
+        sync: false
+      - key: NEON_AUTH_JWKS_URL
+        sync: false
+      - key: NEON_AUTH_ISSUER
+        sync: false
+      - key: NEON_AUTH_AUDIENCE
+        sync: false
+      - key: ADMIN_EMAILS
+        sync: false
+
+  - type: web
+    name: optilog-backend
+    env: node
+    branch: main
+    rootDir: backend
+    autoDeploy: true
+    buildCommand: npm ci
+    startCommand: node app.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 20.19.5
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false

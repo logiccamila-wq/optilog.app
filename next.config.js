@@ -1,3 +1,4 @@
+const isVercel = !!process.env.VERCEL;
 const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
@@ -7,8 +8,14 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Optimize for containerized/App Hosting deployments
+  compress: false,
+  distDir: '.next-aggressive',
   output: 'standalone',
+  experimental: {
+    serverActions: false,
+  },
+  // Optimize for containerized/App Hosting deployments
+  // output: 'standalone',
   // Usa o tracing padrão para builds standalone
   // (recomendado para produção; em ambientes Windows/OneDrive, prefira rodar build fora de pastas sincronizadas ou via WSL)
   // Avoid forcing ESM externals resolution which can break CJS expectations in some libs (e.g., @babel/runtime used by MUI)
