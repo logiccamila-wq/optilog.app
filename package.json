@@ -21,7 +21,8 @@
     "scaffold:frontend:module": "node scripts/scaffold.js frontend next-module",
     "scaffold:frontend:livemap": "node scripts/scaffold.js frontend livemap",
     "scaffold:init-basic": "npm run scaffold:backend:express-basic && npm run scaffold:backend:ors-route && npm run scaffold:backend:ws-basic && npm run scaffold:frontend:module && npm run scaffold:frontend:livemap",
-    "db:seed": "node scripts/seed.mjs"
+    "db:seed": "node scripts/seed.mjs",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
@@ -49,6 +50,7 @@
     "eslint-config-next": "14.2.11",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-unused-imports": "^4.2.0",
+    "husky": "^9.1.7",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
     "tailwindcss": "^4.1.14",
