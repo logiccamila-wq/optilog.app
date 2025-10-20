@@ -34,11 +34,15 @@
          if (Test-Path $modPath) { 
              $backupDir = Join-Path $modPath "backup_extras" 
              New-Item -ItemType Directory -Force -Path $backupDir | Out-Null 
-             Get-ChildItem $modPath -Recurse -File | Where-Object { 
-                 $_.Extension -notin ".py",".env",".md",".json",".ts",".js",".tsx",".css",".png",".jpg",".jpeg",".svg" 
-             } | ForEach-Object { 
-                 Move-Item $_.FullName -Destination $backupDir -Force 
-             } 
+             Get-ChildItem $modPath -Recurse -File | Where-Object {
+                $_.Extension -notin ".py",".mjs",".cjs",".jsx",".env",".md",".json",".ts",".js",".tsx",".css",".png",".jpg",".jpeg",".svg"
+            } | ForEach-Object {
+                try {
+                    Move-Item $_.FullName -Destination $backupDir -Force -ErrorAction Stop
+                } catch {
+                    Write-Log "Backup skip: $($_.FullName) -> $backupDir ($($_.Exception.Message))"
+                }
+            } 
          } 
      } 
  } 
@@ -105,11 +109,11 @@
   }
   
   # Backend principal 
-  Start-ServiceWindow "Backend" "npm run dev" (Join-Path $ScriptDir "backend") 
+  Start-ServiceWindow "Backend" "$env:PORT=$BackendPort; npm run dev" (Join-Path $ScriptDir "backend") 
   # Next.js 
   Start-ServiceWindow "Next.js" "npm run dev" $ScriptDir 
  # Tire Ops backend/frontend 
- Start-ServiceWindow "TireOps Backend" "npm run dev" (Join-Path $ScriptDir "tire-ops\backend") 
+ Start-ServiceWindow "TireOps Backend" "$env:PORT=$TireOpsPort; npm run dev" (Join-Path $ScriptDir "tire-ops\backend") 
  Start-ServiceWindow "TireOps Frontend" "npm run dev" (Join-Path $ScriptDir "tire-ops\frontend") 
  # ML Service 
  Start-ServiceWindow "ML Service" "python app.py" (Join-Path $ScriptDir "ml-service") 
