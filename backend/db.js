@@ -1,8 +1,21 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const dotenv = require('dotenv');
+dotenv.config();
 
-const dbPath = path.join(__dirname, 'optilog.db');
-const db = new sqlite3.Database(dbPath);
+const defaultPath = path.join(__dirname, 'optilog.db');
+const envPath = process.env.DB_PATH;
+const dbPath = envPath
+  ? (path.isAbsolute(envPath) ? envPath : path.join(__dirname, envPath))
+  : defaultPath;
+
+const db = new sqlite3.Database(dbPath, (err) => {
+  if (err) {
+    console.error('Erro ao conectar ao banco:', err.message);
+  } else {
+    console.log(`Banco conectado em: ${dbPath}`);
+  }
+});
 
 function initDb(callback) {
   db.serialize(() => {
