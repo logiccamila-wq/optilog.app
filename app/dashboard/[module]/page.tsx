@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import SimpleBarChart from '@/components/charts/SimpleBarChart';
 import SimpleDonutChart from '@/components/charts/SimpleDonutChart';
-import { getDb } from '@/lib/firebaseClient';
+
 import { Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
 import GridLite from '@/components/ui/GridLite';
 import { apiFetch } from '@/utils/api';
@@ -327,106 +327,53 @@ const [riskByShipment, setRiskByShipment] = useState<Record<string, { risk_proba
       setReady(false);
       setError(null);
       setMetrics([]);
-      const db = await getDb();
-      const dbAvailable = !!db;
-      if (!dbAvailable) {
-        setError('Ambiente sem Firestore; usando backend para dados disponíveis.');
-      }
+
       try {
-        const { collection, getDocs, where, limit, query, orderBy } = await import(
-          'firebase/firestore'
-        );
         const data: Metric[] = [];
-        if (dbAvailable) {
-          // KPIs básicos comuns
-          const postsQ = query(
-            collection(db, 'posts'),
-            where('is_published', '==', true),
-            limit(10)
-          );
-          const postsSnap = await getDocs(postsQ);
-          data.push({ label: 'Posts publicados', value: postsSnap.size, ok: true });
-          const shipmentsSnap = await getDocs(collection(db, 'shipments'));
-          data.push({ label: 'Shipments', value: shipmentsSnap.size, ok: true });
-          // KPIs de logística
-          const inTransitSnap = await getDocs(
-            query(collection(db, 'shipments'), where('status', '==', 'in_transit'))
-          );
-          data.push({ label: 'Em trânsito', value: inTransitSnap.size, ok: true });
-          const delayedSnap = await getDocs(
-            query(collection(db, 'shipments'), where('status', '==', 'delayed'))
-          );
-          data.push({ label: 'Atrasados', value: delayedSnap.size, ok: true });
-          const deliveredSnap = await getDocs(
-            query(collection(db, 'shipments'), where('status', '==', 'delivered'))
-          );
-          data.push({ label: 'Entregues', value: deliveredSnap.size, ok: true });
-          const veiculosSnap = await getDocs(collection(db, 'veiculos'));
-          data.push({ label: 'Veículos', value: veiculosSnap.size, ok: true });
-          try {
-            const vOpts = veiculosSnap.docs.map((d) => {
-              const v = d.data() as any;
-              return { id: d.id, plate: v.placa || v.plate, name: v.modelo || v.name };
-            });
-            setVehicleOptions(vOpts);
-          } catch {}
-          const pneusSnap = await getDocs(collection(db, 'pneus'));
-          data.push({ label: 'Pneus', value: pneusSnap.size, ok: true });
-          // Custos de logística (usa snapshot de shipments já obtido)
-          try {
-            let totalCost = 0;
-            let countCost = 0;
-            const shipmentsCostDocs = shipmentsSnap.docs.map((d) => ({
-              id: d.id,
-              ...(d.data() as any),
-            }));
-            const orderedByCost = shipmentsCostDocs.sort((a, b) => (b.cost || 0) - (a.cost || 0));
-            for (const s of shipmentsCostDocs) {
-              if (typeof s.cost === 'number') {
-                totalCost += s.cost;
-                countCost++;
-              }
-            }
-            if (countCost > 0) {
-              const avg = totalCost / countCost;
-              data.push({
-                label: 'Custo total (shipments)',
-                value: totalCost.toFixed(2),
-                ok: true,
-              });
-              data.push({ label: 'Custo médio', value: avg.toFixed(2), ok: true });
-            }
-            setCostTop(orderedByCost.slice(0, 5));
-          } catch {}
-        }
+        try {
+          const shipments: any[] = await apiFetch('/shipments');
+          data.push({ label: 'Shipments', value: shipments.length, ok: true });
+          const inTransit = shipments.filter((s: any) => s.status === 'in_transit').length;
+          const delayed = shipments.filter((s: any) => s.status === 'delayed').length;
+          const delivered = shipments.filter((s: any) => s.status === 'delivered').length;
+          data.push({ label: 'Em trânsito', value: inTransit, ok: true });
+          data.push({ label: 'Atrasados', value: delayed, ok: true });
+          data.push({ label: 'Entregues', value: delivered, ok: true });
+
+          const vehicles: any[] = await apiFetch('/vehicles');
+          data.push({ label: 'Veículos', value: vehicles.length, ok: true });
+
+          const tires: any[] = await apiFetch('/tires');
+          data.push({ label: 'Pneus', value: tires.length, ok: true });
+
+          let totalCost = 0, countCost = 0;
+          const orderedByCost = [...shipments].sort((a: any, b: any) => (b.cost || 0) - (a.cost || 0));
+          for (const s of shipments) {
+            if (typeof s.cost === 'number') { totalCost += s.cost; countCost++; }
+          }
+          if (countCost > 0) {
+            const avg = totalCost / countCost;
+            data.push({ label: 'Custo total (shipments)', value: totalCost.toFixed(2), ok: true });
+            data.push({ label: 'Custo médio', value: avg.toFixed(2), ok: true });
+          }
+          setCostTop(orderedByCost.slice(0, 5));
+        } catch {}
 
         // Pedidos
         if (mod?.key === 'pedidos') {
           try {
-            const pedidosQ = query(
-              collection(db, 'orders'),
-              orderBy('created_at', 'desc'),
-              limit(50)
-            );
-            const pedidosSnap = await getDocs(pedidosQ);
-            const list = pedidosSnap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
+            const orders: any[] = await apiFetch('/orders', {
+              headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
+            const list = orders.slice(0, 50).map((o: any) => ({
+              id: String(o.id),
+              status: o.status || 'open',
+              created_at: typeof o.created_at === 'number' ? o.created_at : 0,
+              sla: typeof o.sla === 'number' ? o.sla : undefined,
+            }));
             setOrdersData(list);
-            data.push({ label: 'Pedidos (últimos)', value: pedidosSnap.size, ok: true });
-          } catch {
-            try {
-              const orders: any[] = await apiFetch('/orders', {
-                headers: token ? { Authorization: `Bearer ${token}` } : {},
-              });
-              const list = orders.slice(0, 50).map((o: any) => ({
-                id: String(o.id),
-                status: o.status || 'open',
-                created_at: typeof o.created_at === 'number' ? o.created_at : 0,
-                sla: typeof o.sla === 'number' ? o.sla : undefined,
-              }));
-              setOrdersData(list);
-              data.push({ label: 'Pedidos (via backend)', value: orders.length, ok: true });
-            } catch {}
-          }
+            data.push({ label: 'Pedidos (via backend)', value: orders.length, ok: true });
+          } catch {}
         }
 
         // Financeiro
@@ -496,33 +443,17 @@ const [riskByShipment, setRiskByShipment] = useState<Record<string, { risk_proba
 
         // Logística
         if (mod?.key === 'logistica') {
-          if (dbAvailable) {
-            const latestQ = query(
-              collection(db, 'shipments'),
-              orderBy('created_at', 'desc'),
-              limit(5)
-            );
-            const latestDocs = await getDocs(latestQ);
-            const latest = latestDocs.docs
+          try {
+            const shipments: any[] = await apiFetch('/shipments');
+            const latest = shipments
               .slice(0, 5)
-              .map((d) => ({ id: d.id, ...(d.data() as any) }));
+              .map((s: any) => ({ id: String(s.id), ...(s as any) }));
             setLatestShipments(latest);
             setMapShipments(
-              latestDocs.docs.slice(0, 50).map((d) => ({ id: d.id, ...(d.data() as any) }))
+              shipments.slice(0, 50).map((s: any) => ({ id: String(s.id), ...(s as any) }))
             );
-          } else {
-            try {
-              const shipments: any[] = await apiFetch('/shipments');
-              const latest = shipments
-                .slice(0, 5)
-                .map((s: any) => ({ id: String(s.id), ...(s as any) }));
-              setLatestShipments(latest);
-              setMapShipments(
-                shipments.slice(0, 50).map((s: any) => ({ id: String(s.id), ...(s as any) }))
-              );
-              data.push({ label: 'Shipments (backend)', value: shipments.length, ok: true });
-            } catch {}
-          }
+            data.push({ label: 'Shipments (backend)', value: shipments.length, ok: true });
+          } catch {}
           try {
             const alertsData: any[] = await apiFetch('/alerts');
             setAlerts(alertsData.slice(0, 5));
@@ -535,134 +466,67 @@ const [riskByShipment, setRiskByShipment] = useState<Record<string, { risk_proba
 
         // Frota
         if (mod?.key === 'frota') {
-          if (dbAvailable) {
-            const veiculosSnap2 = await getDocs(collection(db, 'veiculos'));
-            data.push({ label: 'Veículos', value: veiculosSnap2.size, ok: true });
-            const manutencoesSnap = await getDocs(collection(db, 'manutencoes'));
-            data.push({ label: 'Manutenções', value: manutencoesSnap.size, ok: true });
-            const pneusSnap2 = await getDocs(collection(db, 'pneus'));
-            data.push({ label: 'Pneus', value: pneusSnap2.size, ok: true });
+          try {
+            const vs: any[] = await apiFetch('/vehicles');
+            data.push({ label: 'Veículos', value: vs.length, ok: true });
+            const maints: any[] = await apiFetch('/maintenances');
+            data.push({ label: 'Manutenções', value: maints.length, ok: true });
+            const pneus: any[] = await apiFetch('/tires');
+            data.push({ label: 'Pneus', value: pneus.length, ok: true });
 
-            try {
-              const vs = veiculosSnap2.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
-              const pneus = pneusSnap2.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
-              setVehiclesData(vs);
-              let kmSum = 0,
-                kmCount = 0,
-                consSum = 0,
-                consCount = 0;
-              for (const v of vs) {
-                const km =
-                  typeof v.km === 'number'
-                    ? v.km
-                    : typeof v.odometer === 'number'
-                      ? v.odometer
-                      : null;
-                if (typeof km === 'number') {
-                  kmSum += km;
-                  kmCount++;
-                }
-                const cons =
-                  typeof v.avg_consumption === 'number'
-                    ? v.avg_consumption
-                    : typeof v.consumption === 'number'
-                      ? v.consumption
-                      : null;
-                if (typeof cons === 'number') {
-                  consSum += cons;
-                  consCount++;
-                }
+            setVehiclesData(vs.map((v: any) => ({ id: String(v.id), ...(v as any) })));
+            let kmSum = 0,
+              kmCount = 0,
+              consSum = 0,
+              consCount = 0;
+            for (const v of vs) {
+              const km =
+                typeof v.km === 'number'
+                  ? v.km
+                  : typeof v.odometer === 'number'
+                    ? v.odometer
+                    : null;
+              if (typeof km === 'number') {
+                kmSum += km;
+                kmCount++;
               }
-              const avgKm = kmCount ? kmSum / kmCount : 0;
-              const avgConsumption = consCount ? consSum / consCount : 0;
-              const preventiveUpcoming = manutencoesSnap.docs.filter((d) => {
-                const v = d.data() as any;
-                const status = v.status || 'scheduled';
-                return status === 'scheduled';
-              }).length;
-              setFleetHealth({ avgKm, avgConsumption, preventiveUpcoming });
-              const low = pneus
-                .filter((p) => typeof p.life === 'number' && p.life <= 20)
-                .sort((a, b) => (a.life || 0) - (b.life || 0))
-                .slice(0, 5);
-              setLowLifeTires(low);
-            } catch {}
-          } else {
-            try {
-              const vs: any[] = await apiFetch('/vehicles');
-              data.push({ label: 'Veículos', value: vs.length, ok: true });
-              const maints: any[] = await apiFetch('/maintenances');
-              data.push({ label: 'Manutenções', value: maints.length, ok: true });
-              const pneus: any[] = await apiFetch('/tires');
-              data.push({ label: 'Pneus', value: pneus.length, ok: true });
-
-              setVehiclesData(vs.map((v: any) => ({ id: String(v.id), ...(v as any) })));
-              let kmSum = 0,
-                kmCount = 0,
-                consSum = 0,
-                consCount = 0;
-              for (const v of vs) {
-                const km =
-                  typeof v.km === 'number'
-                    ? v.km
-                    : typeof v.odometer === 'number'
-                      ? v.odometer
-                      : null;
-                if (typeof km === 'number') {
-                  kmSum += km;
-                  kmCount++;
-                }
-                const cons =
-                  typeof v.avg_consumption === 'number'
-                    ? v.avg_consumption
-                    : typeof v.consumption === 'number'
-                      ? v.consumption
-                      : null;
-                if (typeof cons === 'number') {
-                  consSum += cons;
-                  consCount++;
-                }
+              const cons =
+                typeof v.avg_consumption === 'number'
+                  ? v.avg_consumption
+                  : typeof v.consumption === 'number'
+                    ? v.consumption
+                    : null;
+              if (typeof cons === 'number') {
+                consSum += cons;
+                consCount++;
               }
-              const avgKm = kmCount ? kmSum / kmCount : 0;
-              const avgConsumption = consCount ? consSum / consCount : 0;
-              const preventiveUpcoming = maints.filter((m: any) => {
-                const status = m.status || 'scheduled';
-                return status === 'scheduled';
-              }).length;
-              setFleetHealth({ avgKm, avgConsumption, preventiveUpcoming });
-              const low = pneus
-                .filter((p: any) => typeof p.life === 'number' && p.life <= 20)
-                .sort((a: any, b: any) => (a.life || 0) - (b.life || 0))
-                .slice(0, 5);
-              setLowLifeTires(low);
-            } catch {}
-          }
+            }
+            const avgKm = kmCount ? kmSum / kmCount : 0;
+            const avgConsumption = consCount ? consSum / consCount : 0;
+            const preventiveUpcoming = maints.filter((m: any) => {
+              const status = m.status || 'scheduled';
+              return status === 'scheduled';
+            }).length;
+            setFleetHealth({ avgKm, avgConsumption, preventiveUpcoming });
+            const low = pneus
+              .filter((p: any) => typeof p.life === 'number' && p.life <= 20)
+              .sort((a: any, b: any) => (a.life || 0) - (b.life || 0))
+              .slice(0, 5);
+            setLowLifeTires(low);
+          } catch {}
         }
 
         // Pneus
         if (mod?.key === 'pneus') {
-          if (dbAvailable) {
-            const pneusSnap = await getDocs(collection(db, 'pneus'));
-            data.push({ label: 'Pneus', value: pneusSnap.size, ok: true });
-            try {
-              const pneus = pneusSnap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
-              const low = pneus
-                .filter((p) => typeof p.life === 'number' && p.life <= 20)
-                .sort((a, b) => (a.life || 0) - (b.life || 0))
-                .slice(0, 20);
-              setLowLifeTires(low);
-            } catch {}
-          } else {
-            try {
-              const pneus: any[] = await apiFetch('/tires');
-              data.push({ label: 'Pneus', value: pneus.length, ok: true });
-              const low = pneus
-                .filter((p: any) => typeof p.life === 'number' && p.life <= 20)
-                .sort((a: any, b: any) => (a.life || 0) - (b.life || 0))
-                .slice(0, 20);
-              setLowLifeTires(low);
-            } catch {}
-          }
+          try {
+            const pneus: any[] = await apiFetch('/tires');
+            data.push({ label: 'Pneus', value: pneus.length, ok: true });
+            const low = pneus
+              .filter((p: any) => typeof p.life === 'number' && p.life <= 20)
+              .sort((a: any, b: any) => (a.life || 0) - (b.life || 0))
+              .slice(0, 20);
+            setLowLifeTires(low);
+          } catch {}
         }
 
         // Logística

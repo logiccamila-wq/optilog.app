@@ -18,26 +18,9 @@ export default function CadastroVeiculosPage() {
     setOk(null);
     setSaving(true);
     try {
-      const db = await getDb();
-      if (!db)
-        throw new Error(
-          'Firestore não configurado. Preencha NEXT_PUBLIC_FIREBASE_* no .env.local.'
-        );
-      const { collection, addDoc, serverTimestamp } = await import('firebase/firestore');
-      const ref = await addDoc(collection(db, 'veiculos'), {
-        plate,
-        modelo: model,
-        year: typeof year === 'number' ? year : null,
-        odometer: typeof odometer === 'number' ? odometer : null,
-        status: 'active',
-        created_at: Date.now(),
-        created_server: serverTimestamp(),
-      });
-      setOk(`Veículo cadastrado: ${ref.id}`);
-      setPlate('');
-      setModel('');
-      setYear('');
-      setOdometer('');
+      // Firestore removido deste projeto: cadastro desativado
+      await getDb();
+      throw new Error('Cadastro de veículos desativado (Firebase removido).');
     } catch (err: any) {
       setError(err?.message || 'Falha ao salvar veículo.');
     } finally {

@@ -7,10 +7,24 @@ export async function POST(req: Request) {
     const model: string = body?.model ?? 'gpt-4o-mini';
 
     const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) {
-      return new Response(JSON.stringify({ error: 'OPENAI_API_KEY não definida no servidor.' }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
+    if (!apiKey || body?.stub === true) {
+      const mocked = {
+        id: 'mock-response',
+        mock: true,
+        model,
+        input: prompt,
+        output: [
+          {
+            type: 'message',
+            role: 'assistant',
+            content: [{ type: 'text', text: `Simulado (sem OPENAI_API_KEY): ${prompt}` }],
+          },
+        ],
+        created: Math.floor(Date.now() / 1000),
+      };
+      return new Response(JSON.stringify(mocked), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json', 'x-mock': 'true' },
       });
     }
 

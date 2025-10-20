@@ -1,12 +1,19 @@
 {
   "name": "Optilog Dev",
-  "image": "mcr.microsoft.com/vscode/devcontainers/javascript-node:20",
-  "workspaceFolder": "/workspace",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "postCreateCommand": "bash .devcontainer/postcreate.sh",
+  "updateContentCommand": "bash .devcontainer/postcreate.sh",
+  "containerEnv": {
+    "PLAYWRIGHT_BROWSERS_PATH": "/workspaces/.cache/ms-playwright"
+  },
   "forwardPorts": [3000, 3011, 5173],
   "customizations": {
     "vscode": {
-      "extensions": ["esbenp.prettier-vscode", "ms-vscode.js-debug"]
+      "extensions": ["esbenp.prettier-vscode", "ms-vscode.js-debug", "ms-playwright.playwright"]
     }
   }
 }

@@ -2,6 +2,7 @@
 # Node / Next
 node_modules/
 .next/
+.next-aggressive/
 out/
 dist/
 build/

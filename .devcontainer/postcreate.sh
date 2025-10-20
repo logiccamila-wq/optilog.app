@@ -11,4 +11,13 @@ install_deps .
 install_deps "frontend"
 install_deps "functions"
 
+# Install Playwright browsers and dependencies (cache to workspace)
+export PLAYWRIGHT_BROWSERS_PATH="/workspaces/.cache/ms-playwright"
+if command -v npx >/dev/null 2>&1; then
+  echo "[postcreate] Installing Playwright Chromium with deps..."
+  npx --yes playwright install --with-deps chromium || true
+else
+  echo "[postcreate] Skipping Playwright install (npx not found)"
+fi
+
 echo "[postcreate] Done."

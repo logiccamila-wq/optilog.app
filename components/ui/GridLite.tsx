@@ -27,77 +27,18 @@ export default function GridLite({
   density = 'compact',
   exportFileName = 'export',
 }: Props) {
-  const [DG, setDG] = useState<any>(null);
-  const [GridToolbar, setGridToolbar] = useState<any>(null);
   const [xlsxReady, setXlsxReady] = useState<boolean>(false);
 
   useEffect(() => {
-    let cancelled = false;
-    // Attempt dynamic import; if not installed, fall back to simple table.
-    import('@mui/x-data-grid')
-      .then((mod) => {
-        if (cancelled) return;
-        setDG(mod.DataGrid);
-        setGridToolbar(mod.GridToolbar);
-      })
-      .catch(() => {
-        // Ignore missing module; fallback rendering will be used.
-      });
-    // Check if xlsx is available
+    // Check if xlsx is available (optional dependency)
     import('xlsx').then(() => setXlsxReady(true)).catch(() => setXlsxReady(false));
-    return () => {
-      cancelled = true;
-    };
   }, []);
 
   const processedRows = useMemo(() => {
     return rows.map((r, idx) => ({ id: r.id ?? idx, ...r }));
   }, [rows]);
 
-  if (DG) {
-    return (
-      <div style={{ height }}>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginBottom: 8 }}>
-          <button
-            onClick={() => exportCSV(processedRows, columns, `${exportFileName}.csv`)}
-            style={{ border: '1px solid #333', borderRadius: 6, padding: '4px 8px' }}
-          >
-            Exportar CSV
-          </button>
-          {xlsxReady && (
-            <button
-              onClick={() => exportXLSX(processedRows, columns, `${exportFileName}.xlsx`)}
-              style={{ border: '1px solid #333', borderRadius: 6, padding: '4px 8px' }}
-            >
-              Exportar XLSX
-            </button>
-          )}
-        </div>
-        <DG
-          rows={processedRows}
-          columns={columns.map((c) => ({
-            field: c.field,
-            headerName: c.headerName,
-            flex: c.flex,
-            width: c.width,
-            valueGetter: c.valueGetter ? (params: any) => c.valueGetter(params.row) : undefined,
-            valueFormatter: c.valueFormatter
-              ? (params: any) => c.valueFormatter(params.value, params.row)
-              : undefined,
-          }))}
-          disableRowSelectionOnClick
-          initialState={{
-            pagination: { paginationModel: { pageSize: pageSizeOptions[0] ?? 10 } },
-          }}
-          pageSizeOptions={pageSizeOptions}
-          density={density}
-          slots={GridToolbar ? { toolbar: GridToolbar } : undefined}
-        />
-      </div>
-    );
-  }
-
-  // Fallback simple table if DataGrid is unavailable
+  // Always render the simple table fallback to avoid heavy DataGrid dependency
   return (
     <div
       style={{
