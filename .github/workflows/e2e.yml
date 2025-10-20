@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - chore/render-backend-service
+      - chore/aggressive-deploy
   workflow_dispatch:
     inputs:
       base_url:

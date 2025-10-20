@@ -8,6 +8,12 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  compress: false,
+  distDir: '.next-aggressive',
+  output: 'standalone',
+  experimental: {
+    serverActions: false,
+  },
   // Optimize for containerized/App Hosting deployments
   // output: 'standalone',
   // Usa o tracing padrão para builds standalone
@@ -59,9 +65,5 @@ const nextConfig = {
   //     return config;
   //   },
 };
-
-if (!isVercel) {
-  nextConfig.output = 'standalone';
-}
 
 module.exports = nextConfig;
