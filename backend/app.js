@@ -27,7 +27,22 @@ const inventoryRouter = require('./routes/inventory');
 const app = express();
 const PORT = process.env.PORT || 3001; // evita conflito com Next dev em 3000
 
-app.use(cors());
+const allowedOrigins = (process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
+const corsOptions =
+  allowedOrigins.length > 0
+    ? {
+        origin: (origin, callback) => {
+          if (!origin) return callback(null, true);
+          if (allowedOrigins.includes(origin)) return callback(null, true);
+          return callback(new Error('Not allowed by CORS'));
+        },
+      }
+    : {};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json());
 
 // uploads estáticos
