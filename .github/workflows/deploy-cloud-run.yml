@@ -1,0 +1,31 @@
+name: Build & Deploy to Cloud Run
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          version: '427.0.0'
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ secrets.GCP_PROJECT }}
+
+      - name: Enable required services
+        run: |
+          gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com
+
+      - name: Deploy Next.js to Cloud Run from source
+        run: |
+          gcloud run deploy optilog-web \
+            --source optilog-app \
+            --region ${{ secrets.GCP_REGION }} \
+            --platform managed \
+            --allow-unauthenticated \
+            --set-env-vars "DATABASE_URL=${{ secrets.DATABASE_URL }},NEXT_PUBLIC_BACKEND_URL=${{ vars.NEXT_PUBLIC_BACKEND_URL }},NEXT_PUBLIC_IOT_WS_URL=${{ vars.NEXT_PUBLIC_IOT_WS_URL }},NEXT_PUBLIC_ORS_PROXY_URL=${{ vars.NEXT_PUBLIC_ORS_PROXY_URL }},NEXT_PUBLIC_DASHBOARD_URL=${{ vars.NEXT_PUBLIC_DASHBOARD_URL }},NEXT_PUBLIC_DEFAULT_LOCALE=${{ vars.NEXT_PUBLIC_DEFAULT_LOCALE }},NEXT_PUBLIC_MAPBOX_TOKEN=${{ vars.NEXT_PUBLIC_MAPBOX_TOKEN }},NEXT_PUBLIC_POSTS_API_URL=${{ vars.NEXT_PUBLIC_POSTS_API_URL }}"
