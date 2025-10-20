@@ -59,4 +59,11 @@ if (violations.length > 0) {
 }
 
 // Se chegou até aqui, tudo certo
+try {
+  execSync('npm run lint', { stdio: 'inherit' });
+  execSync('npx prettier --check .', { stdio: 'inherit' });
+} catch (e) {
+  console.error('\nPre-commit bloqueado: lint/prettier falharam.');
+  process.exit(1);
+}
 process.exit(0);

@@ -135,6 +135,37 @@ if ($patched -ne $contents) {
 # Instalar dependências backend
 Push-Location ".\backend"
 npm install
+
+# Provisionar Postgres (se disponível) e rodar setup do banco
+$backendEnv = ".\backend\.env"
+if (-Not (Test-Path $backendEnv)) {
+  @"
+PORT=3011
+DB_PATH=./optilog.db
+JWT_SECRET=sua_chave_segura_aqui
+OPENAI_API_KEY=
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/optilog
+"@ | Set-Content $backendEnv -Encoding UTF8
+  Write-Host "✅ .env criado para backend com DATABASE_URL padrão"
+} else {
+  # Garante que DATABASE_URL exista com fallback
+  $envText = Get-Content $backendEnv -Raw
+  if ($envText -notmatch "(?m)^DATABASE_URL=") {
+    Add-Content $backendEnv "`nDATABASE_URL=postgres://postgres:postgres@localhost:5432/optilog"
+    Write-Host "ℹ DATABASE_URL adicionado ao .env do backend"
+  }
+}
+
+try {
+  npm run db:setup
+  Write-Host "✅ Banco provisionado e seed concluído"
+} catch {
+  Write-Host "⚠ Não foi possível conectar/provisionar o banco automaticamente."
+  Write-Host "   - Se você tiver Docker, suba Postgres com:"
+  Write-Host "     cd ..\\tire-ops; docker compose up -d; cd ..\\optilog-app"
+  Write-Host "   - Depois, reexecute: cd backend; npm run db:setup"
+}
+
 Pop-Location
 
 # -----------------------------

@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "db:setup": "node scripts/db_setup.mjs",
+    "db:setup-full": "node scripts/db_setup_full.mjs"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -13,6 +15,7 @@
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
     "openai": "^6.5.0",
+    "pg": "^8.16.3",
     "socket.io": "^4.8.1",
     "sqlite3": "^5.1.6"
   }
