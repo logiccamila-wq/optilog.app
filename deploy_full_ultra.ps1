@@ -91,6 +91,27 @@
      } 
  } 
  
+ # Dependências Python (ML e Streamlit)
+ if (Get-Command pip -ErrorAction SilentlyContinue) {
+     Write-Log "Instalando dependências Python (pip)"
+     # ML Service
+     $mlPath = Join-Path $ScriptDir "ml-service"
+     if (Test-Path (Join-Path $mlPath "requirements.txt")) {
+         Push-Location $mlPath
+         pip install -r requirements.txt 2>&1 | ForEach-Object { Write-Log $_ }
+         Pop-Location
+     } else {
+         Write-Log "ml-service/requirements.txt não encontrado; pulando"
+     }
+     # Streamlit
+     $stPath = Join-Path $ScriptDir "streamlit-app"
+     Push-Location $stPath
+     pip install streamlit 2>&1 | ForEach-Object { Write-Log $_ }
+     Pop-Location
+ } else {
+     Write-Log "pip não encontrado; pulando instalação de dependências Python"
+ }
+ 
  # DB Setup 
  Push-Location (Join-Path $ScriptDir "backend") 
  if ($FullResetDb) { 
@@ -109,7 +130,7 @@
   }
   
   # Backend principal 
-  Start-ServiceWindow "Backend" "$env:PORT=$BackendPort; npm run dev" (Join-Path $ScriptDir "backend") 
+  Start-ServiceWindow "Backend" "$env:PORT=$BackendPort; npm start" (Join-Path $ScriptDir "backend") 
   # Next.js 
   Start-ServiceWindow "Next.js" "npm run dev" $ScriptDir 
  # Tire Ops backend/frontend 
@@ -121,11 +142,12 @@
  Start-ServiceWindow "Streamlit" "streamlit run app.py" (Join-Path $ScriptDir "streamlit-app") 
  
  # Health Checks 
- Start-Sleep -Seconds 5 
+ Start-Sleep -Seconds 8 
  $HealthUrls = @( 
-     "Next API=http://localhost:3000/api/health", 
+     "Next Status=http://localhost:3000/nextServer/status", 
+     "Next DB=http://localhost:3000/api/health", 
      "Backend=http://localhost:$BackendPort/health", 
-     "TireOps=http://localhost:$TireOpsPort/tires/health", 
+     "TireOps=http://localhost:$TireOpsPort/api/health", 
      "Streamlit=http://localhost:8501" 
  ) 
  foreach ($h in $HealthUrls) { 
@@ -133,7 +155,7 @@
      $name = $parts[0] 
      $url = $parts[1] 
      try { 
-         $resp = Invoke-WebRequest -Uri $url -UseBasicParsing -TimeoutSec 5 
+         $resp = Invoke-WebRequest -Uri $url -UseBasicParsing -TimeoutSec 10 
          if ($resp.StatusCode -eq 200) { 
              Write-Log "$name OK - $url" 
          } else { 
