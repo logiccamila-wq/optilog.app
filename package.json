@@ -37,7 +37,6 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "@next/swc-win32-x64-msvc": "^14.2.33",
     "@playwright/test": "^1.48.2",
     "@tailwindcss/postcss": "^4.1.14",
     "@types/node": "24.7.2",
