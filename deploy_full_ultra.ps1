@@ -1,92 +1,137 @@
-# deploy_full_ultra.ps1
-# Ultra-aggressive full deployment do projeto OpTiLog
-
-$ErrorActionPreference = 'Stop'
-
-# --- Configurações ---
-$backendPath       = "C:\Users\Pichau\devoptilog-app\optilog-app\backend"
-$frontendPath      = "C:\Users\Pichau\devoptilog-app\optilog-app"
-$tireOpsBackend    = "C:\Users\Pichau\devoptilog-app\tire-ops\backend"
-$tireOpsFrontend   = "C:\Users\Pichau\devoptilog-app\tire-ops\frontend"
-$mlServicePath     = "C:\Users\Pichau\devoptilog-app\ml-service"
-$streamlitPath     = "C:\Users\Pichau\devoptilog-app\optilog-app\streamlit-app"
-$dockerComposePath = "C:\Users\Pichau\devoptilog-app\tire-ops"
-$envFile           = "$backendPath\.env"
-
-# --- Função para criar backup de arquivos não pertencentes ao projeto ---
-function Backup-Extras($path) {
-    $backupPath = "$path\backup_extras"
-    if (!(Test-Path $backupPath)) { New-Item -ItemType Directory -Path $backupPath | Out-Null }
-    Get-ChildItem $path -File |
-      Where-Object { $_.Name -notmatch "package|package-lock|yarn.lock|Dockerfile|docker-compose|\.json|\.env|\.ts$|\.js$|\.tsx$|\.mjs$|\.ps1$|\.css$|\.html$|\.md$|\.yaml$|\.yml$|\.gitignore|\.nvmrc|\.npmrc|\.prettierrc|\.prettierignore|\.eslintrc|tsconfig|tailwind\.config|postcss\.config|next\.config|vercel\.json|render\.yaml|apphosting\.yaml" } |
-      ForEach-Object { Move-Item $_.FullName $backupPath -Force }
-}
-
-# --- Passo 1: Docker Compose (Postgres + pgAdmin) ---
-Write-Host "🚀 Subindo Postgres/pgAdmin via Docker..."
-Set-Location $dockerComposePath
-if (Get-Command docker -ErrorAction SilentlyContinue) {
-  try { docker compose down -v } catch { try { docker-compose down -v } catch { Write-Host "⚠ Falha ao derrubar stack docker" } }
-  try { docker compose up -d } catch { try { docker-compose up -d } catch { Write-Host "⚠ Falha ao subir stack docker" } }
-} else {
-  Write-Host "ℹ Docker não encontrado. Continuando sem provisionamento via Docker."
-}
-
-# --- Passo 2: Instalação de dependências ---
-Write-Host "📦 Instalando dependências..."
-Set-Location $backendPath;  npm install
-Set-Location $frontendPath; npm install
-Set-Location $tireOpsBackend;  npm install
-Set-Location $tireOpsFrontend; npm install
-
-# --- Passo 3: Configurar .env se não existir ---
-if (!(Test-Path $envFile)) {
-    Write-Host "⚙️ Criando arquivo .env com DATABASE_URL padrão..."
-@"
-DATABASE_URL=postgres://postgres:postgres@localhost:5432/optilog
-"@ | Out-File $envFile -Encoding UTF8
-} else {
-    $envText = Get-Content $envFile -Raw
-    if ($envText -notmatch "(?m)^DATABASE_URL=") {
-        Add-Content $envFile "`nDATABASE_URL=postgres://postgres:postgres@localhost:5432/optilog"
-        Write-Host "ℹ DATABASE_URL adicionado ao .env do backend"
-    }
-}
-
-# --- Passo 4: Reset completo do banco + seed ---
-Write-Host "🗄️ Resetando banco e aplicando seeds..."
-Set-Location $backendPath
-npm run db:setup-full
-
-# --- Passo 5: Backup de arquivos extras ---
-Write-Host "💾 Fazendo backup de arquivos extras fora do padrão..."
-Backup-Extras $frontendPath
-Backup-Extras $backendPath
-Backup-Extras $tireOpsBackend
-Backup-Extras $tireOpsFrontend
-
-# --- Passo 6: Inicialização de serviços ---
-Write-Host "⚡ Inicializando serviços..."
-
-# Backend principal
-Start-Process "powershell" -ArgumentList "-NoExit", "-Command cd '$backendPath'; npm run start"
-
-# Microserviço Tire Ops
-Start-Process "powershell" -ArgumentList "-NoExit", "-Command cd '$tireOpsBackend'; npm run start"
-
-# Frontend Next.js
-Start-Process "powershell" -ArgumentList "-NoExit", "-Command cd '$frontendPath'; npm run dev"
-
-# ML Service (ajuste para app.py)
-Start-Process "powershell" -ArgumentList "-NoExit", "-Command cd '$mlServicePath'; python app.py"
-
-# Streamlit Dashboard
-Start-Process "powershell" -ArgumentList "-NoExit", "-Command cd '$streamlitPath'; streamlit run app.py"
-
-# --- Passo 7: Health Check (básico) ---
-Write-Host "🔍 Validando endpoints..."
-try { Invoke-WebRequest http://localhost:3000/api/health -UseBasicParsing | Out-Null; Write-Host "Frontend Next.js OK" } catch { Write-Host "Frontend Next.js indisponível" }
-try { Invoke-WebRequest http://localhost:3011/health -UseBasicParsing | Out-Null; Write-Host "Backend principal OK" } catch { Write-Host "Backend principal indisponível" }
-try { Invoke-WebRequest http://localhost:3001/tires/health -UseBasicParsing | Out-Null; Write-Host "Tire Ops OK" } catch { Write-Host "Tire Ops Backend indisponível" }
-
-Write-Host "✅ Deploy completo executado. Todos os serviços rodando!"
+<# 
+ .SYNOPSIS 
+ Deploy completo ultra-hardcore para o projeto Optilog. 
+ Inclui backend, frontend, microserviço Tire Ops, ML Service, Streamlit, Postgres/pgAdmin via Docker, backups, seeds e health checks. 
+ 
+ .PARAMETER SkipDocker 
+ Pula provisionamento Docker. 
+ 
+ .PARAMETER SkipBackupExtras 
+ Evita mover arquivos “extras” para backup. 
+ 
+ .PARAMETER FullResetDb 
+ Força DROP+CREATE+SEED completo do banco. 
+ #> 
+ 
+ param( 
+     [switch]$SkipDocker, 
+     [switch]$SkipBackupExtras, 
+     [switch]$FullResetDb 
+ ) 
+ 
+ # Caminhos principais 
+ $Root = "C:\Users\Pichau\devoptilog-app\optilog-app" 
+ $Backend = "$Root\backend" 
+ $Frontend = "$Root" 
+ $TireOpsBackend = "C:\Users\Pichau\devoptilog-app\tire-ops\backend" 
+ $TireOpsFrontend = "C:\Users\Pichau\devoptilog-app\tire-ops\frontend" 
+ $MLService = "C:\Users\Pichau\devoptilog-app\ml-service" 
+ $StreamlitApp = "$Root\streamlit-app" 
+ $DockerComposeFile = "C:\Users\Pichau\devoptilog-app\tire-ops\docker-compose.yml" 
+ $LogFile = "$Root\deploy_full_ultra.log" 
+ 
+ # Função para log 
+ function Log($message) { 
+     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss" 
+     "$timestamp : $message" | Tee-Object -FilePath $LogFile -Append 
+ } 
+ 
+ Log "=== Início do Deploy Ultra-Hardcore ===" 
+ 
+ # 1. Provisionar Docker/Postgres 
+ if (-not $SkipDocker) { 
+     if (Get-Command docker -ErrorAction SilentlyContinue) { 
+         Log "Verificando Docker Compose..." 
+         Push-Location (Split-Path $DockerComposeFile) 
+         docker compose up -d 
+         Pop-Location 
+         Log "Docker Compose executado." 
+     } else { 
+         Log "Docker não encontrado, pulando provisionamento de Postgres/pgAdmin." 
+     } 
+ } 
+ 
+ # 2. Instalar dependências 
+ $dirs = @($Backend, $Frontend, $TireOpsBackend, $TireOpsFrontend) 
+ foreach ($d in $dirs) { 
+     if (Test-Path $d) { 
+         Log "Instalando dependências em $d" 
+         Push-Location $d 
+         npm install 
+         Pop-Location 
+     } 
+ } 
+ 
+ # 3. Garantir DATABASE_URL 
+ $EnvFile = "$Backend\.env" 
+ if (!(Test-Path $EnvFile)) { New-Item $EnvFile -ItemType File } 
+ if (-not (Get-Content $EnvFile | Select-String "DATABASE_URL")) { 
+     Add-Content $EnvFile "DATABASE_URL=postgres://postgres:postgres@localhost:5432/optilog" 
+     Log "DATABASE_URL padrão adicionado ao .env" 
+ } else { 
+     Log "DATABASE_URL já presente, não sobrescrevendo" 
+ } 
+ 
+ # 4. Backup de arquivos extras 
+ if (-not $SkipBackupExtras) { 
+     $modules = @($Backend, $Frontend, $TireOpsBackend, $TireOpsFrontend, $MLService, $StreamlitApp) 
+     foreach ($m in $modules) { 
+         $backupDir = Join-Path $m "backup_extras" 
+         if (!(Test-Path $backupDir)) { New-Item $backupDir -ItemType Directory } 
+         Get-ChildItem $m -File | Where-Object { $_.Extension -notin ".js",".ts",".json",".mjs",".tsx",".css",".html" } | 
+         ForEach-Object { 
+             Move-Item $_.FullName $backupDir -Force 
+             Log "Movido $($_.Name) para backup_extras em $m" 
+         } 
+     } 
+ } 
+ 
+ # 5. Reset e seed do banco 
+ Push-Location $Backend 
+ if ($FullResetDb) { 
+     Log "Executando db:setup-full (DROP+CREATE+SEED)" 
+     npm run db:setup-full 
+ } else { 
+     Log "Executando db:setup (seed idempotente)" 
+     npm run db:setup 
+ } 
+ Pop-Location 
+ 
+ # 6. Subir serviços 
+ Log "Iniciando serviços..." 
+ 
+ # Backend principal 
+ Start-Process "powershell" -ArgumentList "-NoExit","-Command `"$Backend\npm run dev`"" 
+ # Next.js 
+ Start-Process "powershell" -ArgumentList "-NoExit","-Command `"$Frontend\npm run dev`"" 
+ # Tire Ops backend 
+ Start-Process "powershell" -ArgumentList "-NoExit","-Command `"$TireOpsBackend\npm run dev`"" 
+ # Tire Ops frontend 
+ Start-Process "powershell" -ArgumentList "-NoExit","-Command `"$TireOpsFrontend\npm run dev`"" 
+ # ML Service 
+ Start-Process "python" -ArgumentList "$MLService\app.py" 
+ # Streamlit 
+ Start-Process "streamlit" -ArgumentList "run $StreamlitApp\app.py" 
+ 
+ # 7. Health checks 
+ $healthEndpoints = @{ 
+     "Next API" = "http://localhost:3000/api/health" 
+     "Backend Principal" = "http://localhost:3011/health" 
+     "Tire Ops" = "http://localhost:3001/tires/health" 
+     "Streamlit" = "http://localhost:8501" 
+ } 
+ 
+ foreach ($name in $healthEndpoints.Keys) { 
+     try { 
+         $resp = Invoke-WebRequest -Uri $healthEndpoints[$name] -UseBasicParsing -TimeoutSec 5 
+         if ($resp.StatusCode -eq 200) { 
+             Log "$name OK" 
+         } else { 
+             Log "$name NÃO OK (Status: $($resp.StatusCode))" 
+         } 
+     } catch { 
+         Log "$name NÃO OK (Erro: $_)" 
+     } 
+ } 
+ 
+ Log "=== Deploy Ultra-Hardcore Concluído ==="
