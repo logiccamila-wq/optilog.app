@@ -39,6 +39,7 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Build Next.js (prod)
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.base_url != '') }}
         run: npm run build
         env:
           NEXT_TELEMETRY_DISABLED: '1'
