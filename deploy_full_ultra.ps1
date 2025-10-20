@@ -99,15 +99,15 @@
  Pop-Location 
  
  # Start services 
- function Start-ServiceWindow($Name, $Command, $Path) { 
-     Write-Log "Iniciando $Name..." 
-     Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd `"$Path`"; $Command" 
- } 
- 
- # Backend principal 
- Start-ServiceWindow "Backend" "npm run dev" (Join-Path $ScriptDir "backend") 
- # Next.js 
- Start-ServiceWindow "Next.js" "npm run dev" $ScriptDir 
+  function Start-ServiceWindow($Name, $Command, $Path) {
+      Write-Log "Iniciando $Name..."
+      Start-Process pwsh -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-NoExit", "-Command", "cd `"$Path`"; $Command"
+  }
+  
+  # Backend principal 
+  Start-ServiceWindow "Backend" "npm run dev" (Join-Path $ScriptDir "backend") 
+  # Next.js 
+  Start-ServiceWindow "Next.js" "npm run dev" $ScriptDir 
  # Tire Ops backend/frontend 
  Start-ServiceWindow "TireOps Backend" "npm run dev" (Join-Path $ScriptDir "tire-ops\backend") 
  Start-ServiceWindow "TireOps Frontend" "npm run dev" (Join-Path $ScriptDir "tire-ops\frontend") 
