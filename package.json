@@ -19,7 +19,8 @@
     "scaffold:frontend:livemap": "node scripts/scaffold.js frontend livemap",
     "scaffold:init-basic": "npm run scaffold:backend:express-basic && npm run scaffold:backend:ors-route && npm run scaffold:backend:ws-basic && npm run scaffold:frontend:module && npm run scaffold:frontend:livemap",
     "db:seed": "node scripts/seed.mjs",
-    "prepare": "echo \"Skipping husky on Vercel\""
+    "prepare": "echo \"Skipping husky on Vercel\"",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
@@ -38,6 +39,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.48.2",
     "@tailwindcss/postcss": "^4.1.14",
     "@types/node": "24.7.2",
     "@types/react": "^19.2.2",
