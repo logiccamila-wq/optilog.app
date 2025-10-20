@@ -6,6 +6,12 @@ on:
     branches:
       - main
       - chore/render-backend-service
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: 'Base URL para rodar os testes (ex: https://<preview>.vercel.app)'
+        required: false
+        type: string
 
 concurrency:
   group: e2e-${{ github.ref }}
@@ -40,6 +46,7 @@ jobs:
         run: npx playwright test
         env:
           NEXT_TELEMETRY_DISABLED: '1'
+          PLAYWRIGHT_BASE_URL: ${{ inputs.base_url }}
 
       - name: Upload Playwright report
         if: always()
