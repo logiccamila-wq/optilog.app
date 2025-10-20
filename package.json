@@ -22,7 +22,7 @@
     "scaffold:frontend:livemap": "node scripts/scaffold.js frontend livemap",
     "scaffold:init-basic": "npm run scaffold:backend:express-basic && npm run scaffold:backend:ors-route && npm run scaffold:backend:ws-basic && npm run scaffold:frontend:module && npm run scaffold:frontend:livemap",
     "db:seed": "node scripts/seed.mjs",
-    "prepare": "husky install"
+    "prepare": "echo \"Skipping husky on Vercel\""
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
