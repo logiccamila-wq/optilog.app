@@ -10,7 +10,7 @@ O Render cria/atualiza serviços automaticamente conforme pushs no branch config
 ## Node.js
 
 - O `render.yaml` fixa `NODE_VERSION` em `20.19.5`. Você pode usar qualquer Node 20.x suportado pelo Render.
-- No projeto, `package.json` define `"engines.node": "20.x"` para compatibilidade com Vercel/Render.
+- No projeto, `package.json` define "engines.node": "20.x" para compatibilidade com Vercel/Render.
 
 ## Variáveis de ambiente (Frontend)
 Defina no serviço `optilog-frontend`:
@@ -42,14 +42,14 @@ O backend já implementa CORS dinâmico lendo `CORS_ORIGIN`. Se não definido, o
 
 ## Health checks
 
-- Frontend: `GET /status`
+- Frontend: `GET /api/health`
 - Backend: `GET /health`
 
 ## Build & Start
 
 - Frontend
   - Build: `npm ci && npm run build`
-  - Start: `node .next/standalone/server.js`
+  - Start: `npm run start`
 - Backend
   - Build: `npm ci`
   - Start: `node app.js`
