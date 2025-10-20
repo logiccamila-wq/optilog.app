@@ -73,3 +73,4 @@ coverage/
 tmp/
 temp/
 .cache/
+\n# Ignore temporários em app\napp/Untitled-*.txt\napp/*Next.js*\n
