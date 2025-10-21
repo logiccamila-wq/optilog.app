@@ -26,8 +26,9 @@ Configure no Render (Settings → Environment):
   - `CORS_ORIGIN` → origem permitida (ex.: `https://optilog-app.onrender.com`)
 
 Observações:
-- `render.yaml` já define os serviços e `healthCheckPath` (`/api/health` no frontend e `/health` no backend).
-- `output: 'standalone'` está habilitado no `next.config.js` para builds compatíveis com App Hosting.
+- `render.yaml` com secrets marcados `sync: false` devem ser preenchidos via Dashboard.
+- `output_directory` do Next recomendada: `.next/standalone` com `NEXT_OUTPUT=standalone`.
+- Mantenha blueprint único na raiz do repositório e remova duplicados em subpastas; defina `rootDir: optilog-app` para o frontend.
 
 ## Fluxo de Deploy
 1. Confirmar que o `main` foi atualizado (GitHub → `logiccamila-wq/optilog.app`).

@@ -66,6 +66,7 @@ O backend já implementa CORS dinâmico lendo `CORS_ORIGIN`. Se não definido, o
 
 ## Dicas
 
+- Mantenha somente um `render.yaml` na raiz do repositório (`c:\\Users\\Pichau\\devoptilog-app\\render.yaml`) com `rootDir: optilog-app`; remova duplicados dentro de subpastas.
 - Sincronize valores sensíveis via Dashboard do Render (marcadas como `sync: false` no `render.yaml`).
 - Para múltiplos ambientes (staging/prod), duplique os serviços com branches distintos.
 - Se o frontend consome o backend, mantenha `CORS_ORIGIN` e `NEXT_PUBLIC_BACKEND_URL` consistentes.
