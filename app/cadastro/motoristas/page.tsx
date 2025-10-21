@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { Box, TextField, Button, Typography, Alert, Paper } from '@mui/material';
-import { getDb } from '@/lib/firebaseClient';
 
 export default function CadastroMotoristasPage() {
   const [name, setName] = useState('');
@@ -17,9 +16,20 @@ export default function CadastroMotoristasPage() {
     setOk(null);
     setSaving(true);
     try {
-      // Firestore removido deste projeto: cadastro desativado
-      await getDb();
-      throw new Error('Cadastro de motoristas desativado (Firebase removido).');
+      const res = await fetch('/api/drivers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, cnh, phone }),
+      });
+      if (!res.ok) {
+        let msg = 'Falha ao salvar motorista.';
+        try {
+          const data = await res.json();
+          msg = data?.error || msg;
+        } catch {}
+        throw new Error(msg);
+      }
+      setOk('Motorista cadastrado com sucesso!');
     } catch (err: any) {
       setError(err?.message || 'Falha ao salvar motorista.');
     } finally {

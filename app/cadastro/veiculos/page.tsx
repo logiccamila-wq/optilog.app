@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { Box, TextField, Button, Typography, Alert, Paper } from '@mui/material';
-import { getDb } from '@/lib/firebaseClient';
 
 export default function CadastroVeiculosPage() {
   const [plate, setPlate] = useState('');
@@ -18,9 +17,20 @@ export default function CadastroVeiculosPage() {
     setOk(null);
     setSaving(true);
     try {
-      // Firestore removido deste projeto: cadastro desativado
-      await getDb();
-      throw new Error('Cadastro de veículos desativado (Firebase removido).');
+      const res = await fetch('/api/vehicles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plate, model, year: year || null, odometer: odometer || null }),
+      });
+      if (!res.ok) {
+        let msg = 'Falha ao salvar veículo.';
+        try {
+          const data = await res.json();
+          msg = data?.error || msg;
+        } catch {}
+        throw new Error(msg);
+      }
+      setOk('Veículo cadastrado com sucesso!');
     } catch (err: any) {
       setError(err?.message || 'Falha ao salvar veículo.');
     } finally {

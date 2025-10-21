@@ -6,13 +6,25 @@ const port = process.env.PORT || 3000;
 const standaloneServer = path.join('.next', 'standalone', 'server.js');
 const useStandalone = fs.existsSync(standaloneServer);
 
-let cmd = 'next';
-let args = ['start', '-p', String(port)];
-console.log('Using next start on port', port);
+let cmd;
+let args;
+
+if (useStandalone) {
+  // Prefer Next standalone server build for production/runtime environments
+  cmd = 'node';
+  args = [standaloneServer];
+  console.log('Using standalone server.js on port', port);
+} else {
+  // Fallback to next start (dev-like start)
+  cmd = 'next';
+  args = ['start', '-p', String(port)];
+  console.log('Using next start on port', port);
+}
 
 const child = spawn(cmd, args, {
   stdio: 'inherit',
   shell: process.platform === 'win32',
+  env: { ...process.env, PORT: String(port) },
 });
 
 child.on('exit', (code) => {

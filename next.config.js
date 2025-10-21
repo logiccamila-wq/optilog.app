@@ -1,3 +1,4 @@
+const path = require('path');
 const isVercel = !!process.env.VERCEL;
 const nextConfig = {
   eslint: {
@@ -26,6 +27,12 @@ const nextConfig = {
   // Ajusta cache do Webpack: memória em dev para hot-reload mais rápido; desativado em build
   webpack: (config, { dev }) => {
     config.cache = dev ? { type: 'memory' } : false;
+    // Garante que o alias '@' aponte para a raiz do projeto
+    config.resolve = config.resolve || {};
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      '@': path.resolve(__dirname),
+    };
     return config;
   },
   // Ensure certain ESM packages are handled correctly
