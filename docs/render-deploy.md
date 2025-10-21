@@ -24,6 +24,7 @@ Defina no serviço `optilog-frontend`:
 - `NEON_AUTH_ISSUER` — emissor do JWT
 - `NEON_AUTH_AUDIENCE` — audience do JWT
 - `ADMIN_EMAILS` — lista separada por vírgulas para liberar acesso administrativo
+- `OPENAI_API_KEY` — opcional; para a rota `/api/ai` no Next.js
 
 Observação: variáveis `NEXT_PUBLIC_*` são expostas no cliente.
 
