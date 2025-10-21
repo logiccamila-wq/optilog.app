@@ -1,46 +1,54 @@
-# Deploy na Vercel
+# Deploy na Vercel (Next.js + Neon/Postgres)
 
-Este projeto é um app Next.js com Firebase/Firestore. Use estas etapas para publicar com sucesso na Vercel.
+Este projeto é um app Next.js com rotas API que usam Postgres (Neon). O suporte direto a Firebase/Firestore foi removido/está desativado por padrão (veja `lib/firebaseClient.ts` e a página `app/status`).
 
 - Scripts prontos no `package.json`: `dev`, `build`, `start`.
 - A Vercel detecta automaticamente o build (`next build`).
-- `next.config.js` está configurado para não bloquear o build por erros de ESLint/TypeScript.
-- Node 20.x: o projeto define `engines.node = 20.x` no `package.json` para compatibilidade do runtime e evitar EBADENGINE.
+- `next.config.js` permite build sem travar por ESLint/TypeScript.
+- Node 20.x: o projeto define `engines.node = 20.x` no `package.json`.
 
 ## Variáveis de ambiente
 
 Defina em Project Settings → Environment Variables:
 
-- `NEXT_PUBLIC_FIREBASE_API_KEY`
-- `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
-- `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
-- `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` (opcional)
-- `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` (opcional)
-- `NEXT_PUBLIC_FIREBASE_APP_ID`
-- `NEXT_PUBLIC_POSTS_API_URL` (opcional; se usar API externa)
-- `NEXT_PUBLIC_BACKEND_URL` (opcional; se consumir backend externo)
-- `DATABASE_URL` (se usar Neon/DB nas rotas `app/api/*`)
-- `NEON_DATA_API_URL` (opcional)
-- `NEON_AUTH_JWKS_URL`, `NEON_AUTH_ISSUER`, `NEON_AUTH_AUDIENCE` (opcionais; para validação JWT)
+- `NEXT_PUBLIC_DISABLE_FIREBASE` — "1" para manter SDK Firebase desativado (padrão).
+- `DATABASE_URL` — conexão Neon usada pelas rotas `app/api/*` (driver serverless `@neondatabase/serverless`).
+- `DATABASE_URL_UNPOOLED` — opcional; conexão direta para DDL/migrações.
+- `NEON_DATA_API_URL` — opcional; base da Data API quando usar JWT nas rotas `api/data/*`.
+- `NEON_AUTH_JWKS_URL`, `NEON_AUTH_ISSUER`, `NEON_AUTH_AUDIENCE` — opcionais; validação JWT nas rotas Data API.
+- `NEXT_PUBLIC_POSTS_API_URL` — opcional; se consumir uma API externa para posts (base sem `/posts` no final; o app requisita `${BASE}/posts`).
+- `NEXT_PUBLIC_BACKEND_URL` — opcional; se o frontend consumir um backend externo (Express/Render). Garanta CORS no backend.
+- `ADMIN_EMAILS` — opcional; lista de e-mails admin liberados na aplicação.
 
-Sem estas variáveis o app usa dados de demonstração e a home exibirá um aviso.
+Observação: variáveis `NEXT_PUBLIC_*` são expostas no cliente.
 
-### Backend externo (opcional)
-- Se o frontend consumir um backend externo (ex.: Render), aponte `NEXT_PUBLIC_BACKEND_URL` para a URL pública do backend.
-- Garanta que o backend permita CORS via `CORS_ORIGIN` contendo a URL do domínio do Vercel.
+## Rotas e dados
 
-## Firestore
+- `GET /api/health` — saúde do app (responde `{"health":"ok"}`).
+- `GET /api/posts` — lista posts publicados via Neon (driver serverless). Sem JWT.
+- `GET /api/data/posts` e `GET /api/data/posts/[slug]` — integração com Neon Data API. Com JWT (RLS/claims), sem JWT cai para driver serverless com filtros de segurança.
+- Se `NEXT_PUBLIC_POSTS_API_URL` estiver definido, utilitário `utils/posts.ts` tenta primeiro `${BASE}/posts`; se falhar, cai para dados de demonstração.
 
-- Coleção: `posts`
-- Campos: `slug` (string), `title` (string), `content` (string), `is_published` (boolean)
-- Paginação atual ordena por `slug`. Para ordenar por data, adicione `created_at` e ajuste a consulta em `utils/posts.ts`.
+## Backend externo (opcional)
+
+- Defina `NEXT_PUBLIC_BACKEND_URL` com a URL pública do backend (ex.: Render).
+- No backend, configure `CORS_ORIGIN` para incluir o domínio da Vercel.
 
 ## Erros comuns
 
-- “Nenhum post encontrado”: verifique a coleção `posts` e os campos.
-- “Usando dados de demonstração”: confirme `NEXT_PUBLIC_FIREBASE_*` na Vercel e Firestore habilitado.
-- API externa sem paginação: se sua API não suporta `?limit=&after=`, o utilitário cai para Firestore ou demo.
+- "Usando dados de demonstração": sem `NEXT_PUBLIC_POSTS_API_URL` ou sem dados em `posts`. Solução: definir a variável para sua API externa ou popular a tabela `posts` no Neon.
+- "Token inválido" nas rotas `api/data/*`: revise `NEON_AUTH_*` e o JWT enviado no header `Authorization: Bearer <token>`.
+- "Nenhum post encontrado": verifique se a tabela `posts` está populada com `slug`, `title`, `content`, `is_published`, `created_at`.
 
-## Observações de monorepo
+## Verificação rápida
 
-O repositório possui pastas auxiliares (`functions/`, `frontend/`, `streamlit-app/`). A Vercel deve construir apenas o app Next.js na raiz. Não é necessário configurar monorepo.
+- Após o deploy, abra `https://<seu-site>.vercel.app/api/health`.
+- Se tiver dados em Neon, teste `https://<seu-site>.vercel.app/api/posts`.
+- Se usa Data API + JWT, teste:
+  ```bash
+  curl -H "Authorization: Bearer <JWT>" https://<seu-site>.vercel.app/api/data/posts
+  ```
+
+## Observações de estrutura
+
+O repositório contém pastas auxiliares (`functions/`, `frontend/`, `streamlit-app/`), mas a Vercel deve construir apenas o app Next.js em `optilog-app`. Não é necessário configurar monorepo.

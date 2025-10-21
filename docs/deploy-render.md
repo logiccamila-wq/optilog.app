@@ -18,6 +18,7 @@ Configure no Render (Settings → Environment):
   - `DATABASE_URL` → valor da conexão Neon
   - Opcional: `NEXT_PUBLIC_BACKEND_URL` → URL pública do backend
   - Opcional: `NEXT_PUBLIC_POSTS_API_URL`
+  - Opcional: `OPENAI_API_KEY` — para a rota `/api/ai` no Next.js
 - Backend (`optilog-backend`)
   - `NODE_VERSION=20.19.5`
   - `DATABASE_URL` → valor da conexão Neon
