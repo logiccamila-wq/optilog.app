@@ -3,19 +3,24 @@ const fs = require('fs');
 const path = require('path');
 
 const port = process.env.PORT || 3000;
-const standaloneServer = path.join('.next', 'standalone', 'server.js');
-const useStandalone = fs.existsSync(standaloneServer);
+// Detecta server standalone tanto em .next-aggressive quanto em .next
+const candidates = [
+  path.join('.next-aggressive', 'standalone', 'server.js'),
+  path.join('.next', 'standalone', 'server.js'),
+];
+const standaloneServer = candidates.find((p) => fs.existsSync(p));
+const useStandalone = !!standaloneServer;
 
 let cmd;
 let args;
 
 if (useStandalone) {
-  // Prefer Next standalone server build for production/runtime environments
+  // Prefer Next standalone server build para produção/hosts como Render
   cmd = 'node';
   args = [standaloneServer];
-  console.log('Using standalone server.js on port', port);
+  console.log('Using standalone server.js on port', port, '->', standaloneServer);
 } else {
-  // Fallback to next start (dev-like start)
+  // Fallback para next start
   cmd = 'next';
   args = ['start', '-p', String(port)];
   console.log('Using next start on port', port);

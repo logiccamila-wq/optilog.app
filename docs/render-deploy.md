@@ -55,6 +55,15 @@ O backend já implementa CORS dinâmico lendo `CORS_ORIGIN`. Se não definido, o
   - Build: `npm ci`
   - Start: `node app.js`
 
+## Troubleshooting
+
+- `Application Loading` por muito tempo:
+  - Verifique o log de start; o script agora detecta `standalone/server.js` tanto em `.next-aggressive` quanto em `.next`.
+  - Se o health `/api/health` não responder, confirme `DATABASE_URL` e `NODE_VERSION` nas variáveis do serviço.
+  - Se necessário, ajuste `NODE_VERSION` para uma versão suportada (ex.: `20.x`) nas Settings do Render.
+- Porta incorreta: o start usa `process.env.PORT` automaticamente.
+- Variáveis faltando: páginas API que usam Neon exigem `DATABASE_URL`. Sem esse valor, endpoints de DB falham.
+
 ## Dicas
 
 - Sincronize valores sensíveis via Dashboard do Render (marcadas como `sync: false` no `render.yaml`).
