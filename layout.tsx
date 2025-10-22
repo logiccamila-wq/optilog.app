@@ -2,8 +2,8 @@
 import './globals.css'; // ajuste se tiver outro nome
 
 export const metadata = {
-  title: 'OptiLog',
-  description: 'App',
+  title: 'Devoptilog',
+  description: 'Optimized Logistics Development',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

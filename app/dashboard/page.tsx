@@ -5,24 +5,29 @@ import { useRouter } from 'next/navigation';
 import AuthStatus from '@/app/AuthStatus';
 import { useTheme } from '@/app/providers/ThemeProvider';
 import { useI18n } from '@/app/providers/I18nProvider';
+import { useAuth } from '@/app/providers/AuthProvider';
+import { hasAnyRole } from '@/lib/rbac';
 
 export default function DashboardPage() {
   const { colors, spacing, typography } = useTheme();
   const { t } = useI18n();
   const externalUrl = process.env.NEXT_PUBLIC_DASHBOARD_URL;
   const router = useRouter();
+  const { user } = useAuth();
 
   const modules = [
-    { key: 'visao-geral', title: t('modules.overview.title'), desc: t('modules.overview.desc') },
-    { key: 'pedidos', title: t('modules.orders.title'), desc: t('modules.orders.desc') },
-    { key: 'crm', title: t('modules.crm.title'), desc: t('modules.crm.desc') },
-    { key: 'logistica', title: t('modules.logistics.title'), desc: t('modules.logistics.desc') },
-    { key: 'estoque', title: t('modules.inventory.title'), desc: t('modules.inventory.desc') },
-    { key: 'frota', title: t('modules.fleet.title'), desc: t('modules.fleet.desc') },
-    { key: 'pneus', title: t('modules.tires.title'), desc: t('modules.tires.desc') },
-    { key: 'financeiro', title: t('modules.finance.title'), desc: t('modules.finance.desc') },
-    { key: 'analise', title: t('modules.analytics.title'), desc: t('modules.analytics.desc') },
+    { key: 'visao-geral', title: t('modules.overview.title'), desc: t('modules.overview.desc'), icon: '📊', color: '#0ea5e9' },
+    { key: 'pedidos', title: t('modules.orders.title'), desc: t('modules.orders.desc'), icon: '📦', color: '#8b5cf6' },
+    { key: 'crm', title: t('modules.crm.title'), desc: t('modules.crm.desc'), icon: '👥', color: '#14b8a6' },
+    { key: 'logistica', title: t('modules.logistics.title'), desc: t('modules.logistics.desc'), icon: '🛣️', color: '#22c55e' },
+    { key: 'estoque', title: t('modules.inventory.title'), desc: t('modules.inventory.desc'), icon: '🏷️', color: '#f59e0b' },
+    { key: 'frota', title: t('modules.fleet.title'), desc: t('modules.fleet.desc'), icon: '🚚', color: '#ef4444' },
+    { key: 'pneus', title: t('modules.tires.title'), desc: t('modules.tires.desc'), icon: '🛞', color: '#64748b' },
+    { key: 'financeiro', title: t('modules.finance.title'), desc: t('modules.finance.desc'), icon: '💰', color: '#0f766e' },
+    { key: 'analise', title: t('modules.analytics.title'), desc: t('modules.analytics.desc'), icon: '🔎', color: '#334155' },
   ];
+
+  const filteredModules = modules.filter((m) => m.key !== 'financeiro' || hasAnyRole(user, ['admin', 'finance']));
 
   // Se existir URL externa configurada, redireciona automaticamente
   useEffect(() => {
@@ -54,7 +59,7 @@ export default function DashboardPage() {
       >
         <h3 style={{ marginTop: 0 }}>{t('common.modules')}</h3>
         <div style={{ display: 'grid', gap: spacing.small }}>
-          {modules.map((m) => (
+          {filteredModules.map((m) => (
             <Link key={m.key} href={`/dashboard/${m.key}`} style={{ textDecoration: 'none' }}>
               <div
                 style={{
@@ -63,10 +68,16 @@ export default function DashboardPage() {
                   padding: '8px 12px',
                   background: '#111',
                   color: '#ddd',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
                 }}
               >
-                <strong>{m.title}</strong>
-                <div style={{ color: '#888', fontSize: 12 }}>{m.desc}</div>
+                <span style={{ width: 28, height: 28, display: 'grid', placeItems: 'center', borderRadius: 8, backgroundColor: m.color }}>{m.icon}</span>
+                <div>
+                  <strong>{m.title}</strong>
+                  <div style={{ color: '#888', fontSize: 12 }}>{m.desc}</div>
+                </div>
               </div>
             </Link>
           ))}
@@ -158,18 +169,23 @@ export default function DashboardPage() {
             gap: spacing.medium,
           }}
         >
-          {modules.map((m) => (
+          {filteredModules.map((m) => (
             <Link key={m.key} href={`/dashboard/${m.key}`} style={{ textDecoration: 'none' }}>
               <div
                 style={{
                   border: `1px solid ${colors.border}`,
-                  borderRadius: 8,
+                  borderRadius: 12,
                   padding: spacing.medium,
                   backgroundColor: colors.surface,
                 }}
               >
-                <h2 style={{ fontSize: typography.h2, marginTop: 0 }}>{m.title}</h2>
-                <p style={{ color: colors.muted, marginBottom: 0 }}>{m.desc}</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={{ width: 40, height: 40, display: 'grid', placeItems: 'center', borderRadius: 12, backgroundColor: m.color, fontSize: 24 }}>{m.icon}</span>
+                  <div>
+                    <h2 style={{ fontSize: typography.h2, marginTop: 0, marginBottom: 4 }}>{m.title}</h2>
+                    <p style={{ color: colors.muted, marginBottom: 0 }}>{m.desc}</p>
+                  </div>
+                </div>
               </div>
             </Link>
           ))}

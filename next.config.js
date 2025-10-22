@@ -10,8 +10,7 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   compress: false,
-  ...(isVercel ? {} : { distDir: '.next-aggressive' }),
-  output: 'standalone',
+  distDir: '.next',
   // Server Actions are enabled by default in Next 14+. Removed legacy config.
   // Optimize for containerized/App Hosting deployments
   // output: 'standalone',

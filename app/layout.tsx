@@ -7,6 +7,7 @@ import { ThemeProvider } from '@/app/providers/ThemeProvider';
 import ServiceWorkerRegister from '@/app/providers/ServiceWorker';
 import SWUpdateSnackbar from '@/components/pwa/SWUpdateSnackbar';
 import { I18nProvider } from '@/app/providers/I18nProvider';
+import { AuthProvider } from '@/app/providers/AuthProvider';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -14,10 +15,10 @@ export const revalidate = 0;
 export const metadata = {
   metadataBase: new URL('https://studio-4793785332-8ea02.web.app'),
   title: {
-    default: 'PulseOps • Plataforma de Insights',
-    template: '%s • PulseOps',
+    default: 'Devoptilog',
+    template: '%s • Devoptilog',
   },
-  description: 'PulseOps: dados e operações com IA em visual neon/tech.',
+  description: 'Devoptilog: Optimized Logistics Development.',
   icons: {
     icon: '/favicon.svg',
     shortcut: '/favicon.svg',
@@ -26,22 +27,22 @@ export const metadata = {
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
-    title: 'PulseOps',
+    title: 'Devoptilog',
     statusBarStyle: 'default',
   },
   openGraph: {
-    title: 'PulseOps • Plataforma de Insights',
-    description: 'UI neon/tech com destaque azul → roxo → magenta.',
+    title: 'Devoptilog • Optimized Logistics',
+    description: 'Optimized logistics platform for operations and insights.',
     url: '/',
-    siteName: 'PulseOps',
-    images: [{ url: '/logo.svg', width: 512, height: 512, alt: 'PulseOps' }],
+    siteName: 'Devoptilog',
+    images: [{ url: '/logo.svg', width: 512, height: 512, alt: 'Devoptilog' }],
     locale: 'pt_BR',
     type: 'website',
   },
   twitter: {
     card: 'summary',
-    title: 'PulseOps',
-    description: 'UI neon/tech com IA e dados.',
+    title: 'Devoptilog',
+    description: 'Optimized Logistics Development.',
     images: ['/logo.svg'],
   },
 };
@@ -54,16 +55,18 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="pt-BR">
       <body>
-        <ThemeProvider>
-          <I18nProvider>
-            <ToastProvider>
-              <Header />
-              {children}
-              <ServiceWorkerRegister />
-              <SWUpdateSnackbar />
-            </ToastProvider>
-          </I18nProvider>
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider>
+            <I18nProvider>
+              <ToastProvider>
+                <Header />
+                {children}
+                <ServiceWorkerRegister />
+                <SWUpdateSnackbar />
+              </ToastProvider>
+            </I18nProvider>
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

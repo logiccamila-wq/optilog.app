@@ -34,25 +34,44 @@ body {
   opacity: 0.7;
 }
 
-/* Animations for Quem Somos cube and rays */
-@keyframes dash {
-  to { stroke-dashoffset: -100; }
+/* Animations removed to simplify home styling and reduce global effects */
+
+/* Global theme variables */
+:root {
+  /* Brand palette and dark mode tokens */
+  --primary-blue: #3badff;
+  --primary-purple: #6f5dff;
+  --secondary-green: #2ecc71;
+  /* Add magenta accent for neon/tech palette */
+  --primary-magenta: #ff2e79;
+
+  --accent-color: var(--primary-blue);
+
+  --dark-bg: #0f172a;
+  --darker-bg: #16213e;
+  --card-bg: rgba(16, 24, 40, 0.7);
+  --text-light: #e5e7eb;
+  --text-medium: #9ca3af;
+
+  /* Inputs and borders used across pages */
+  --input-bg: rgba(255, 255, 255, 0.08);
+  --border-color: rgba(255, 255, 255, 0.15);
+
+  /* Base radius for components */
+  --radius: 10px;
+
+  /* Focus ring follows accent by default */
+  --focus-ring: var(--accent-color);
 }
-@keyframes glow {
-  0%, 100% { opacity: .85; filter: drop-shadow(0 0 0 var(--color-brand)); }
-  50% { opacity: 1; filter: drop-shadow(0 0 10px var(--color-brand)); }
-}
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-.animate-spin-slow { animation: spin 12s linear infinite; }
+
+/* Theme toggles: set accent color */
+.theme-blue { --accent-color: var(--primary-blue); }
+.theme-purple { --accent-color: var(--primary-purple); }
+.theme-green { --accent-color: var(--secondary-green); }
+/* New: magenta accent */
+.theme-magenta { --accent-color: var(--primary-magenta); }
 
 /* Global focus styles and tokens usage */
-:root {
-  --focus-ring: var(--color-brand);
-}
-
 button, a, input, textarea, select {
   border-radius: var(--radius, 10px);
 }

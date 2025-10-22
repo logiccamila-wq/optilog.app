@@ -24,6 +24,7 @@ const dictionaries: Record<Lang, Record<string, string>> = {
     'nav.finance.risk': 'Risco',
     'nav.login': 'Login',
     'nav.signup': 'Cadastro',
+    'nav.supergestor': 'SuperGestor',
 
     'common.modules': 'Módulos',
     'common.shortcuts': 'Atalhos',
@@ -54,7 +55,7 @@ const dictionaries: Record<Lang, Record<string, string>> = {
     'dashboard.external.redirecting': 'Redirecionando para o Dashboard externo configurado...',
     'dashboard.external.click': 'Caso não redirecione automaticamente, clique:',
     'dashboard.explore': 'Explore os módulos locais abaixo. Para acessar dados reais, faça login ou cadastro.',
-    'dashboard.external.help': 'Para habilitar o redirecionamento automático, defina a variável de ambiente NEXT_PUBLIC_DASHBOARD_URL com a URL do Cloud Run.',
+    'dashboard.external.help': 'Para habilitar o redirecionamento automático, defina NEXT_PUBLIC_DASHBOARD_URL com a URL do seu dashboard externo (Render, Vercel, etc.).',
 
     // Dashboard módulo dinâmico
     'common.kpis': 'KPIs',
@@ -149,6 +150,7 @@ const dictionaries: Record<Lang, Record<string, string>> = {
     'nav.finance.risk': 'Risk',
     'nav.login': 'Login',
     'nav.signup': 'Sign Up',
+    'nav.supergestor': 'SuperGestor',
 
     'common.modules': 'Modules',
     'common.shortcuts': 'Shortcuts',
@@ -179,7 +181,7 @@ const dictionaries: Record<Lang, Record<string, string>> = {
     'dashboard.external.redirecting': 'Redirecting to the configured external Dashboard...',
     'dashboard.external.click': 'If it does not redirect automatically, click:',
     'dashboard.explore': 'Explore the local modules below. To access real data, log in or sign up.',
-    'dashboard.external.help': 'To enable automatic redirection, set NEXT_PUBLIC_DASHBOARD_URL with the Cloud Run URL.',
+    'dashboard.external.help': 'To enable automatic redirection, set NEXT_PUBLIC_DASHBOARD_URL with your external dashboard URL (Render, Vercel, etc.).',
 
     // Dynamic module dashboard
     'common.kpis': 'KPIs',
@@ -274,6 +276,7 @@ const dictionaries: Record<Lang, Record<string, string>> = {
     'nav.finance.risk': 'Riesgo',
     'nav.login': 'Iniciar sesión',
     'nav.signup': 'Registrarse',
+    'nav.supergestor': 'SuperGestor',
 
     'common.modules': 'Módulos',
     'common.shortcuts': 'Atajos',
@@ -304,7 +307,7 @@ const dictionaries: Record<Lang, Record<string, string>> = {
     'dashboard.external.redirecting': 'Redirigiendo al Panel externo configurado...',
     'dashboard.external.click': 'Si no redirige automáticamente, haga clic:',
     'dashboard.explore': 'Explora los módulos locales abajo. Para acceder a datos reales, inicia sesión o regístrate.',
-    'dashboard.external.help': 'Para habilitar la redirección automática, define NEXT_PUBLIC_DASHBOARD_URL con la URL de Cloud Run.',
+    'dashboard.external.help': 'Para habilitar la redirección automática, define NEXT_PUBLIC_DASHBOARD_URL con la URL de tu panel externo (Render, Vercel, etc.).',
 
     // Tablero de módulo dinámico
     'common.kpis': 'KPIs',

@@ -12,6 +12,7 @@ const defaults = {
   // Frontend/service endpoints
   NEXT_PUBLIC_POSTS_API_URL: 'http://localhost:3000/api',
   NEXT_PUBLIC_DASHBOARD_URL: '',
+  NEXT_PUBLIC_SUPERGESTOR_URL: '',
   NEXT_PUBLIC_MAPBOX_TOKEN: '',
   NEXT_PUBLIC_IOT_WS_URL: 'ws://localhost:4010',
   NEXT_PUBLIC_ORS_PROXY_URL: 'http://localhost:4001/route',

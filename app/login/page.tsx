@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getAuthInstance } from '@/lib/firebaseClient';
-import { Box, TextField, Button, Typography, Alert, Paper, CircularProgress } from '@mui/material';
 import { useToast } from '@/components/ui/ToastProvider';
+import styles from './page.module.css';
 
 function translateAuthError(err: any): string {
   const code = err?.code || '';
@@ -90,62 +90,68 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="container">
-      <Typography variant="h4" sx={{ mb: 2 }}>
-        Login
-      </Typography>
-      <Paper sx={{ p: 2, mb: 2 }} variant="outlined">
-        <Typography variant="caption">
-          Projeto: {process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '—'} | Domínio Auth:{' '}
-          {process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '—'}
-        </Typography>
-      </Paper>
-      <Box aria-live="polite">
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
-        {info && (
-          <Alert severity="info" sx={{ mb: 2 }}>
-            {info}
-          </Alert>
-        )}
-      </Box>
-      <Box component="form" onSubmit={onSubmit} sx={{ display: 'grid', gap: 2, maxWidth: 420 }}>
-        <TextField
-          label="Email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          fullWidth
-          disabled={loading}
-        />
-        <TextField
-          label="Senha"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          fullWidth
-          disabled={loading}
-        />
-        <Button
-          type="submit"
-          variant="contained"
-          disabled={loading}
-          startIcon={loading ? <CircularProgress color="inherit" size={16} /> : undefined}
-        >
-          {loading ? 'Entrando...' : 'Entrar'}
-        </Button>
-      </Box>
-      <Button type="button" onClick={onResetPassword} sx={{ mt: 1 }} disabled={loading}>
-        Esqueci minha senha
-      </Button>
-      <Typography sx={{ mt: 2 }}>
-        Não tem conta? <Link href="/signup">Cadastre-se</Link>
-      </Typography>
-    </main>
+    <div className={styles.container}>
+      <div className={styles.backgroundEffect} />
+
+      <section className={styles.loginCard} aria-label="Login Devoptilog">
+        <div className={styles.logoSection}>
+          <img src="https://i.imgur.com/your_devoptilog_favicon_url.png" alt="Logo Devoptilog" />
+          <h2>Devoptilog</h2>
+        </div>
+        <p className={styles.slogan}>Optimized Logistics Development</p>
+
+        <h1 className={styles.mainTitle}>Faça login para continuar</h1>
+        <p className={styles.subtitle}>
+          Acesse sua conta para gerenciar frotas, rotas e indicadores com
+          inteligência artificial e fluxo contínuo.
+        </p>
+
+        <form onSubmit={onSubmit} className={styles.form}>
+          {error && <div className={styles.alertError}>{error}</div>}
+          {info && <div className={styles.alertInfo}>{info}</div>}
+
+          <div className={styles.inputGroup}>
+            <span className={styles.icon}>@</span>
+            <input
+              type="email"
+              placeholder="Email ou Usuário"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={loading}
+              required
+              aria-label="Email ou usuário"
+            />
+          </div>
+
+          <div className={styles.inputGroup}>
+            <span className={styles.icon}>🔒</span>
+            <input
+              type="password"
+              placeholder="Senha"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
+              required
+              aria-label="Senha"
+            />
+          </div>
+
+          <div className={styles.buttonGroup}>
+            <button type="submit" className={styles.btnPrimary} disabled={loading}>
+              {loading ? 'Entrando...' : 'Entrar'}
+            </button>
+            <Link href="/signup" className={styles.btnSecondary}>
+              Cadastre-se Grátis
+            </Link>
+          </div>
+        </form>
+
+        <button type="button" className={styles.linkButton} onClick={onResetPassword} disabled={loading}>
+          Esqueci minha senha
+        </button>
+
+        <div className={styles.powered}>Powered by TRAE IDE • Next 14</div>
+      </section>
+    </div>
   );
 }
