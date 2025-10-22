@@ -24,6 +24,7 @@ export default function GridLite({
   columns,
   height = 420,
   pageSizeOptions = [10, 25, 50],
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   density = 'compact',
   exportFileName = 'export',
 }: Props) {

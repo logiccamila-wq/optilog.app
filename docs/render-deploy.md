@@ -24,6 +24,7 @@ Defina no serviço `optilog-frontend`:
 - `NEON_AUTH_ISSUER` — emissor do JWT
 - `NEON_AUTH_AUDIENCE` — audience do JWT
 - `ADMIN_EMAILS` — lista separada por vírgulas para liberar acesso administrativo
+- `OPENAI_API_KEY` — opcional; para a rota `/api/ai` no Next.js
 
 Observação: variáveis `NEXT_PUBLIC_*` são expostas no cliente.
 
@@ -54,8 +55,18 @@ O backend já implementa CORS dinâmico lendo `CORS_ORIGIN`. Se não definido, o
   - Build: `npm ci`
   - Start: `node app.js`
 
+## Troubleshooting
+
+- `Application Loading` por muito tempo:
+  - Verifique o log de start; o script agora detecta `standalone/server.js` tanto em `.next-aggressive` quanto em `.next`.
+  - Se o health `/api/health` não responder, confirme `DATABASE_URL` e `NODE_VERSION` nas variáveis do serviço.
+  - Se necessário, ajuste `NODE_VERSION` para uma versão suportada (ex.: `20.x`) nas Settings do Render.
+- Porta incorreta: o start usa `process.env.PORT` automaticamente.
+- Variáveis faltando: páginas API que usam Neon exigem `DATABASE_URL`. Sem esse valor, endpoints de DB falham.
+
 ## Dicas
 
+- Mantenha somente um `render.yaml` na raiz do repositório (`c:\\Users\\Pichau\\devoptilog-app\\render.yaml`) com `rootDir: optilog-app`; remova duplicados dentro de subpastas.
 - Sincronize valores sensíveis via Dashboard do Render (marcadas como `sync: false` no `render.yaml`).
 - Para múltiplos ambientes (staging/prod), duplique os serviços com branches distintos.
 - Se o frontend consome o backend, mantenha `CORS_ORIGIN` e `NEXT_PUBLIC_BACKEND_URL` consistentes.
