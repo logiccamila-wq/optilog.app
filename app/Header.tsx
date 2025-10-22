@@ -6,6 +6,7 @@ import React from 'react';
 import { useI18n } from '@/app/providers/I18nProvider';
 import { useTheme } from '@/app/providers/ThemeProvider';
 import { appConfig } from '@/config/app.config';
+import { useAuth } from '@/app/providers/AuthProvider';
 
 export default function Header() {
   const { t, lang, setLang } = useI18n();
@@ -15,6 +16,17 @@ export default function Header() {
   if (pathname.startsWith('/display') || kioskParam) return null;
   const { mode, setMode, accent, setAccent, font, setFont, align, setAlign, effectiveMode, reset, text, setText, applyPreset } = useTheme();
   const showControls = appConfig.ui.header.showControls;
+  const { user, setRoles } = useAuth();
+  const currentRole = (user?.roles?.[0]) || 'admin';
+  // Atualização dinâmica do horário exibido
+  const [updatedAt, setUpdatedAt] = React.useState<Date>(new Date());
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+    const id = setInterval(() => setUpdatedAt(new Date()), 10000);
+    return () => clearInterval(id);
+  }, []);
+  const updatedLabel = mounted ? updatedAt.toLocaleTimeString() : '—';
   return (
     <header
       style={{
@@ -40,8 +52,8 @@ export default function Header() {
           href="/"
           style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}
         >
-          <Image src="/logo.svg" alt="PulseOps" width={24} height={24} />
-          <strong style={{ color: '#9ecfff', letterSpacing: '0.08em' }}>PULSEOPS</strong>
+          <Image src="/logo.svg" alt="Devoptilog" width={24} height={24} />
+          <strong style={{ color: '#9ecfff', letterSpacing: '0.08em' }}>DEVOPTILOG</strong>
         </Link>
         
         <nav style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
@@ -51,6 +63,11 @@ export default function Header() {
           <Link href="/quem-somos" style={{ color: '#ddd' }}>
             Quem Somos
           </Link>
+          {(currentRole === 'admin' || currentRole === 'director') && (
+            <Link href="/supergestor" style={{ color: '#ddd' }}>
+              {t('nav.supergestor')}
+            </Link>
+          )}
           {showControls && (
             <>
               <span style={{ color: '#666' }}>|</span>
@@ -120,20 +137,49 @@ export default function Header() {
           )}
         </nav>
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
+          {/* Seletor de Papéis */}
+          <label style={{ color: '#aaa', fontSize: 13 }}>
+            Papel:
+            <select
+              value={currentRole}
+              onChange={(e) => setRoles([e.target.value as any])}
+              style={{ marginLeft: 6, background: 'transparent', color: '#9ecfff', border: '1px solid #1e3a8a', borderRadius: 6, padding: '4px 8px' }}
+            >
+              <option value="admin">Admin</option>
+              <option value="director">Diretoria</option>
+              <option value="driver">Motorista</option>
+              <option value="mechanic">Mecânico</option>
+            </select>
+          </label>
+
+          {/* Seletor de idioma existente */}
           <label style={{ color: '#aaa', fontSize: 13 }}>
             {t('nav.language')}:
             <select
               value={lang}
               onChange={(e) => setLang(e.target.value as any)}
-              style={{ marginLeft: 6, background: 'transparent', color: '#ddd', border: '1px solid #333', borderRadius: 6, padding: '2px 6px' }}
+              style={{ marginLeft: 6, background: 'transparent', color: '#9ecfff', border: '1px solid #1e3a8a', borderRadius: 6, padding: '4px 8px' }}
             >
               <option value="pt">PT</option>
               <option value="en">EN</option>
               <option value="es">ES</option>
             </select>
           </label>
-          <Link href="/login" style={{ color: '#ddd' }}>{t('nav.login')}</Link>
-          <Link href="/signup" style={{ color: '#ddd' }}>{t('nav.signup')}</Link>
+          {/* Indicador de tempo de atualização */}
+          <span
+            title="Horário da última atualização"
+            style={{
+              marginLeft: 8,
+              color: '#9ecfff',
+              fontSize: 12,
+              border: '1px solid #1e3a8a',
+              borderRadius: 6,
+              padding: '4px 8px',
+              background: 'rgba(30,58,138,0.15)'
+            }}
+          >
+            Atualizado: {updatedLabel}
+          </span>
         </div>
       </div>
     </header>
