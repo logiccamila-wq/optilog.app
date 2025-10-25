@@ -16,17 +16,17 @@ const mockVehicles = [
     speed: 45,
     location: { lat: -23.5505, lng: -46.6333 },
     route: 'MLG1023',
-    lastUpdate: new Date().toLocaleTimeString()
+    lastUpdate: new Date().toLocaleTimeString(),
   },
   {
-    id: 'VEH002', 
+    id: 'VEH002',
     driver: 'Maria Santos',
     plate: 'DEF-5678',
     status: 'idle' as const,
     speed: 0,
     location: { lat: -23.5615, lng: -46.6565 },
     route: 'OTE1758',
-    lastUpdate: new Date().toLocaleTimeString()
+    lastUpdate: new Date().toLocaleTimeString(),
   },
   {
     id: 'VEH003',
@@ -36,8 +36,8 @@ const mockVehicles = [
     speed: 38,
     location: { lat: -23.5329, lng: -46.6395 },
     route: 'JBX2021',
-    lastUpdate: new Date().toLocaleTimeString()
-  }
+    lastUpdate: new Date().toLocaleTimeString(),
+  },
 ];
 
 export default function ControlTowerMap() {
@@ -47,21 +47,23 @@ export default function ControlTowerMap() {
   const [showRoutes, setShowRoutes] = useState(true);
   const [showTraffic, setShowTraffic] = useState(false);
   const [mapCenter, setMapCenter] = useState<Location>({ lat: -23.5505, lng: -46.6333 });
-  
+
   const { isConnected, vehicles: wsVehicles } = useControlTowerWebSocket();
 
   // Simular atualizações em tempo real
   useEffect(() => {
     const interval = setInterval(() => {
-      setVehicles(prev => prev.map(vehicle => ({
-        ...vehicle,
-        speed: vehicle.status === 'active' ? Math.floor(Math.random() * 60) + 20 : 0,
-        location: {
-          lat: vehicle.location.lat + (Math.random() - 0.5) * 0.001,
-          lng: vehicle.location.lng + (Math.random() - 0.5) * 0.001
-        },
-        lastUpdate: new Date().toLocaleTimeString()
-      })));
+      setVehicles((prev) =>
+        prev.map((vehicle) => ({
+          ...vehicle,
+          speed: vehicle.status === 'active' ? Math.floor(Math.random() * 60) + 20 : 0,
+          location: {
+            lat: vehicle.location.lat + (Math.random() - 0.5) * 0.001,
+            lng: vehicle.location.lng + (Math.random() - 0.5) * 0.001,
+          },
+          lastUpdate: new Date().toLocaleTimeString(),
+        }))
+      );
     }, 5000);
 
     return () => clearInterval(interval);
@@ -69,43 +71,53 @@ export default function ControlTowerMap() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-500';
-      case 'idle': return 'bg-yellow-500';
-      case 'offline': return 'bg-red-500';
-      default: return 'bg-gray-500';
+      case 'active':
+        return 'bg-green-500';
+      case 'idle':
+        return 'bg-yellow-500';
+      case 'offline':
+        return 'bg-red-500';
+      default:
+        return 'bg-gray-500';
     }
   };
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'active': return 'Ativo';
-      case 'idle': return 'Parado';
-      case 'offline': return 'Offline';
-      default: return 'Desconhecido';
+      case 'active':
+        return 'Ativo';
+      case 'idle':
+        return 'Parado';
+      case 'offline':
+        return 'Offline';
+      default:
+        return 'Desconhecido';
     }
   };
 
   // Converter veículos para formato do mapa
-  const vehicleMarkers: VehicleMarker[] = vehicles.map(vehicle => ({
+  const vehicleMarkers: VehicleMarker[] = vehicles.map((vehicle) => ({
     id: vehicle.id,
     position: vehicle.location,
     title: `${vehicle.plate} - ${vehicle.driver}`,
     status: vehicle.status,
     speed: vehicle.speed,
-    heading: 0 // Pode ser calculado baseado no movimento
+    heading: 0, // Pode ser calculado baseado no movimento
   }));
 
   // Rotas simuladas
-  const routes = showRoutes ? [
-    {
-      origin: vehicles[0].location,
-      destination: { lat: -23.5329, lng: -46.6395 },
-      waypoints: [{ lat: -23.5615, lng: -46.6565 }]
-    }
-  ] : [];
+  const routes = showRoutes
+    ? [
+        {
+          origin: vehicles[0].location,
+          destination: { lat: -23.5329, lng: -46.6395 },
+          waypoints: [{ lat: -23.5615, lng: -46.6565 }],
+        },
+      ]
+    : [];
 
   const handleVehicleClick = (vehicleId: string) => {
-    const vehicle = vehicles.find(v => v.id === vehicleId);
+    const vehicle = vehicles.find((v) => v.id === vehicleId);
     if (vehicle) {
       setSelectedVehicle(vehicle);
       setMapCenter(vehicle.location);
@@ -123,28 +135,37 @@ export default function ControlTowerMap() {
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link 
+              <Link
                 href="/control-tower"
                 className="flex items-center text-gray-600 hover:text-gray-900"
               >
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
                 </svg>
                 Voltar
               </Link>
               <h1 className="text-2xl font-bold text-gray-900">Mapa de Monitoramento</h1>
             </div>
-            
+
             <div className="flex items-center space-x-4">
-              <div className={`flex items-center px-3 py-1 rounded-full text-sm ${
-                isConnected ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-              }`}>
-                <div className={`w-2 h-2 rounded-full mr-2 ${
-                  isConnected ? 'bg-green-500' : 'bg-red-500'
-                }`}></div>
+              <div
+                className={`flex items-center px-3 py-1 rounded-full text-sm ${
+                  isConnected ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                }`}
+              >
+                <div
+                  className={`w-2 h-2 rounded-full mr-2 ${
+                    isConnected ? 'bg-green-500' : 'bg-red-500'
+                  }`}
+                ></div>
                 {isConnected ? 'Conectado' : 'Desconectado'}
               </div>
-              
+
               <div className="text-sm text-gray-600">
                 Última atualização: {new Date().toLocaleTimeString()}
               </div>
@@ -160,7 +181,7 @@ export default function ControlTowerMap() {
             <h2 className="text-lg font-semibold text-gray-900">Veículos Ativos</h2>
             <p className="text-sm text-gray-600">{vehicles.length} veículos monitorados</p>
           </div>
-          
+
           <div className="divide-y divide-gray-200">
             {vehicles.map((vehicle) => (
               <div
@@ -172,12 +193,14 @@ export default function ControlTowerMap() {
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center">
-                    <div className={`w-3 h-3 rounded-full mr-2 ${getStatusColor(vehicle.status)}`}></div>
+                    <div
+                      className={`w-3 h-3 rounded-full mr-2 ${getStatusColor(vehicle.status)}`}
+                    ></div>
                     <span className="font-medium text-gray-900">{vehicle.plate}</span>
                   </div>
                   <span className="text-xs text-gray-500">{vehicle.lastUpdate}</span>
                 </div>
-                
+
                 <div className="text-sm text-gray-600 mb-1">
                   <strong>Motorista:</strong> {vehicle.driver}
                 </div>
@@ -203,8 +226,8 @@ export default function ControlTowerMap() {
               <button
                 onClick={() => setMapView('roadmap')}
                 className={`px-3 py-1 text-sm rounded ${
-                  mapView === 'roadmap' 
-                    ? 'bg-blue-500 text-white' 
+                  mapView === 'roadmap'
+                    ? 'bg-blue-500 text-white'
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
               >
@@ -213,15 +236,15 @@ export default function ControlTowerMap() {
               <button
                 onClick={() => setMapView('satellite')}
                 className={`px-3 py-1 text-sm rounded ${
-                  mapView === 'satellite' 
-                    ? 'bg-blue-500 text-white' 
+                  mapView === 'satellite'
+                    ? 'bg-blue-500 text-white'
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
               >
                 Satélite
               </button>
             </div>
-            
+
             <div className="space-y-1">
               <label className="flex items-center text-sm">
                 <input
@@ -259,10 +282,8 @@ export default function ControlTowerMap() {
 
           {/* Painel de informações do veículo selecionado */}
           <div className="absolute bottom-4 right-4 w-80 bg-white rounded-lg shadow-lg p-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">
-              Veículo Selecionado
-            </h3>
-            
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">Veículo Selecionado</h3>
+
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">Placa:</span>
@@ -279,8 +300,12 @@ export default function ControlTowerMap() {
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">Status:</span>
                 <div className="flex items-center">
-                  <div className={`w-2 h-2 rounded-full mr-1 ${getStatusColor(selectedVehicle.status)}`}></div>
-                  <span className="text-sm font-medium">{getStatusLabel(selectedVehicle.status)}</span>
+                  <div
+                    className={`w-2 h-2 rounded-full mr-1 ${getStatusColor(selectedVehicle.status)}`}
+                  ></div>
+                  <span className="text-sm font-medium">
+                    {getStatusLabel(selectedVehicle.status)}
+                  </span>
                 </div>
               </div>
               <div className="flex justify-between">
@@ -290,7 +315,8 @@ export default function ControlTowerMap() {
               <div className="flex justify-between">
                 <span className="text-sm text-gray-600">Coordenadas:</span>
                 <span className="text-sm font-medium">
-                  {selectedVehicle.location.lat.toFixed(4)}, {selectedVehicle.location.lng.toFixed(4)}
+                  {selectedVehicle.location.lat.toFixed(4)},{' '}
+                  {selectedVehicle.location.lng.toFixed(4)}
                 </span>
               </div>
             </div>
@@ -301,11 +327,15 @@ export default function ControlTowerMap() {
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div className="bg-green-50 p-2 rounded">
                   <div className="text-green-800 font-medium">Ativos</div>
-                  <div className="text-green-600">{vehicles.filter(v => v.status === 'active').length}</div>
+                  <div className="text-green-600">
+                    {vehicles.filter((v) => v.status === 'active').length}
+                  </div>
                 </div>
                 <div className="bg-yellow-50 p-2 rounded">
                   <div className="text-yellow-800 font-medium">Parados</div>
-                  <div className="text-yellow-600">{vehicles.filter(v => v.status === 'idle').length}</div>
+                  <div className="text-yellow-600">
+                    {vehicles.filter((v) => v.status === 'idle').length}
+                  </div>
                 </div>
               </div>
             </div>
@@ -314,5 +344,4 @@ export default function ControlTowerMap() {
       </div>
     </div>
   );
-
 }

@@ -13,26 +13,55 @@ export default function ImpostosPage() {
 
       <section style={{ marginTop: spacing.large }}>
         <h2 style={{ fontSize: typography.h2 }}>Regimes Tributários</h2>
-        <p style={{ color: colors.muted }}>Configuração de regime (Simples, Lucro Presumido, Lucro Real) e alíquotas.</p>
-        <div style={{ border: `1px solid ${colors.border}`, borderRadius: 8, padding: spacing.medium, backgroundColor: colors.surface }}>
+        <p style={{ color: colors.muted }}>
+          Configuração de regime (Simples, Lucro Presumido, Lucro Real) e alíquotas.
+        </p>
+        <div
+          style={{
+            border: `1px solid ${colors.border}`,
+            borderRadius: 8,
+            padding: spacing.medium,
+            backgroundColor: colors.surface,
+          }}
+        >
           {/* TODO: Formulário de regime + alíquotas por imposto */}
-          <div style={{ color: colors.muted }}>Em breve: cadastro de regime e regras de apuração.</div>
+          <div style={{ color: colors.muted }}>
+            Em breve: cadastro de regime e regras de apuração.
+          </div>
         </div>
       </section>
 
       <section style={{ marginTop: spacing.large }}>
         <h2 style={{ fontSize: typography.h2 }}>Apurações & Guias</h2>
-        <p style={{ color: colors.muted }}>Apure tributos e gere guias (ISS, ICMS, PIS/COFINS, IRPJ/CSLL).</p>
-        <div style={{ border: `1px solid ${colors.border}`, borderRadius: 8, padding: spacing.medium, backgroundColor: colors.surface }}>
+        <p style={{ color: colors.muted }}>
+          Apure tributos e gere guias (ISS, ICMS, PIS/COFINS, IRPJ/CSLL).
+        </p>
+        <div
+          style={{
+            border: `1px solid ${colors.border}`,
+            borderRadius: 8,
+            padding: spacing.medium,
+            backgroundColor: colors.surface,
+          }}
+        >
           {/* TODO: Tabela de apurações + status de guias e exportação */}
-          <div style={{ color: colors.muted }}>Em breve: extratos de apuração e emissão de guias.</div>
+          <div style={{ color: colors.muted }}>
+            Em breve: extratos de apuração e emissão de guias.
+          </div>
         </div>
       </section>
 
       <section style={{ marginTop: spacing.large }}>
         <h2 style={{ fontSize: typography.h2 }}>Calendário Fiscal</h2>
         <p style={{ color: colors.muted }}>Controle de vencimentos e lembretes automáticos.</p>
-        <div style={{ border: `1px solid ${colors.border}`, borderRadius: 8, padding: spacing.medium, backgroundColor: colors.surface }}>
+        <div
+          style={{
+            border: `1px solid ${colors.border}`,
+            borderRadius: 8,
+            padding: spacing.medium,
+            backgroundColor: colors.surface,
+          }}
+        >
           {/* TODO: Calendário com integrações e notificações */}
           <div style={{ color: colors.muted }}>Em breve: calendário integrado com alertas.</div>
         </div>

@@ -45,10 +45,16 @@ export async function POST(req: NextRequest) {
       totalLiabilities,
     ].every(isNumber)
   ) {
-    return NextResponse.json({ ok: false, error: 'Missing or invalid numeric fields' }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, error: 'Missing or invalid numeric fields' },
+      { status: 400 }
+    );
   }
   if (totalAssets === 0 || totalLiabilities === 0) {
-    return NextResponse.json({ ok: false, error: 'totalAssets and totalLiabilities must be > 0' }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, error: 'totalAssets and totalLiabilities must be > 0' },
+      { status: 400 }
+    );
   }
 
   const X1 = workingCapital / totalAssets;
@@ -64,8 +70,8 @@ export async function POST(req: NextRequest) {
     risk === 'Baixo risco'
       ? 'Empresa com boa saúde financeira segundo Altman Z.'
       : risk === 'Risco moderado'
-      ? 'Zona de atenção; recomenda-se análise mais detalhada.'
-      : 'Risco elevado de insolvência; medidas corretivas recomendadas.';
+        ? 'Zona de atenção; recomenda-se análise mais detalhada.'
+        : 'Risco elevado de insolvência; medidas corretivas recomendadas.';
 
   let dbReady = false;
   try {

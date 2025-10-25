@@ -7,7 +7,7 @@ export function sanitizeHtml(input: string): string {
   // Remove iframes/objects/embed
   html = html.replace(/<\s*(iframe|object|embed)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi, '');
   // Bloqueia javascript: em href/src
-  html = html.replace(/(href|src)\s*=\s*(["'])\s*javascript:[^\2]*\2/gi, '$1="#"');
+  html = html.replace(/(href|src)\s*=\s*(["'])\s*javascript:[\s\S]*?\2/gi, '$1="#"');
   // Remove handlers on*
   html = html
     .replace(/\son[a-z]+\s*=\s*"[^"]*"/gi, '')

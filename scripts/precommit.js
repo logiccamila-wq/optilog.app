@@ -4,8 +4,13 @@ const { execSync } = require('child_process');
 
 function getStagedFiles() {
   try {
-    const output = execSync('git diff --cached --name-only --diff-filter=ACM', { encoding: 'utf8' });
-    return output.split('\n').map((f) => f.trim()).filter(Boolean);
+    const output = execSync('git diff --cached --name-only --diff-filter=ACM', {
+      encoding: 'utf8',
+    });
+    return output
+      .split('\n')
+      .map((f) => f.trim())
+      .filter(Boolean);
   } catch (e) {
     console.error('Falha ao obter arquivos staged:', e.message);
     process.exit(1);
@@ -52,9 +57,13 @@ const staged = getStagedFiles();
 const violations = staged.filter(isBlocked);
 
 if (violations.length > 0) {
-  console.error('\nPre-commit bloqueado: os seguintes arquivos/pastas não devem ser versionados:\n');
+  console.error(
+    '\nPre-commit bloqueado: os seguintes arquivos/pastas não devem ser versionados:\n'
+  );
   for (const v of violations) console.error(' - ' + v);
-  console.error('\nUse `git restore --staged <path>` para removê-los do staging. Se necessário, ajuste seu `.gitignore`.');
+  console.error(
+    '\nUse `git restore --staged <path>` para removê-los do staging. Se necessário, ajuste seu `.gitignore`.'
+  );
   process.exit(1);
 }
 

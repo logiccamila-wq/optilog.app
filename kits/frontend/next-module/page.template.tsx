@@ -9,25 +9,45 @@ export default function NovaFeaturePage() {
   const [saving, setSaving] = useState(false);
 
   const load = async () => {
-    try { const data = await apiFetch('/items'); setItems(data || []); } catch {}
+    try {
+      const data = await apiFetch('/items');
+      setItems(data || []);
+    } catch {}
   };
   const add = async () => {
     if (!newItem.name.trim()) return;
     setSaving(true);
-    try { const created = await apiFetch('/items', { method: 'POST', body: JSON.stringify({ name: newItem.name }) });
-      setItems((prev) => [created, ...prev]); setNewItem({ name: '' }); } finally { setSaving(false); }
+    try {
+      const created = await apiFetch('/items', {
+        method: 'POST',
+        body: JSON.stringify({ name: newItem.name }),
+      });
+      setItems((prev) => [created, ...prev]);
+      setNewItem({ name: '' });
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
     <div style={{ display: 'grid', gap: 12 }}>
       <h2>Nova Feature</h2>
       <div style={{ display: 'flex', gap: 8 }}>
-        <TextField size='small' label='Nome' value={newItem.name} onChange={(e) => setNewItem({ name: e.target.value })} />
-        <Button variant='contained' onClick={add} disabled={saving}>Adicionar</Button>
-        <Button variant='outlined' onClick={load}>Atualizar</Button>
+        <TextField
+          size="small"
+          label="Nome"
+          value={newItem.name}
+          onChange={(e) => setNewItem({ name: e.target.value })}
+        />
+        <Button variant="contained" onClick={add} disabled={saving}>
+          Adicionar
+        </Button>
+        <Button variant="outlined" onClick={load}>
+          Atualizar
+        </Button>
       </div>
       <div style={{ overflowX: 'auto' }}>
-        <Table size='small'>
+        <Table size="small">
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>

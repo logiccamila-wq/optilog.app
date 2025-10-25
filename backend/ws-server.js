@@ -16,7 +16,7 @@ const io = new Server(server, { cors: { origin: '*' } });
 // Estado simples de entregas
 let shipments = [
   { id: 'S-3001', lat: -23.5505, lng: -46.6333, status: 'in_transit' },
-  { id: 'S-3002', lat: -23.5990, lng: -46.6550, status: 'scheduled' },
+  { id: 'S-3002', lat: -23.599, lng: -46.655, status: 'scheduled' },
 ];
 
 io.on('connection', (socket) => {

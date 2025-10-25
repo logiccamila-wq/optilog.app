@@ -1,22 +1,35 @@
 // WebSocket service for real-time communication
 export interface WebSocketMessage {
-  type: 'location_update' | 'status_change' | 'journey_event' | 'alert' | 'notification';
-  driverId: string;
-  vehicleId: string;
-  timestamp: string;
-  data: any;
+  // allow any message types (register, location_update, alert, etc.)
+  type: string;
+  driverId?: string;
+  vehicleId?: string;
+  timestamp?: string;
+  data?: any;
+  // extra arbitrary fields like clientType, alertType, message, severity
+  [key: string]: any;
 }
 
 export interface LocationUpdate {
-  latitude: number;
-  longitude: number;
-  speed: number;
-  heading: number;
-  accuracy: number;
+  // support both naming conventions used across the codebase
+  latitude?: number;
+  longitude?: number;
+  lat?: number;
+  lng?: number;
+  speed?: number;
+  heading?: number;
+  accuracy?: number;
+  [key: string]: any;
 }
 
 export interface JourneyEvent {
-  event: 'journey_start' | 'journey_end' | 'break_start' | 'break_end' | 'delivery_start' | 'delivery_complete';
+  event:
+    | 'journey_start'
+    | 'journey_end'
+    | 'break_start'
+    | 'break_end'
+    | 'delivery_start'
+    | 'delivery_complete';
   location?: LocationUpdate;
   notes?: string;
 }
@@ -100,22 +113,27 @@ export class WebSocketService {
   private enableSimulationMode() {
     console.log('Enabling WebSocket simulation mode');
     this.simulationMode = true;
-    
+
     // Simulate periodic updates
     this.simulationInterval = setInterval(() => {
       // Simulate location updates for demo
+      const latVal = -23.5505 + (Math.random() - 0.5) * 0.01;
+      const lngVal = -46.6333 + (Math.random() - 0.5) * 0.01;
       const mockMessage: WebSocketMessage = {
         type: 'location_update',
         driverId: 'driver_001',
         vehicleId: 'vehicle_001',
         timestamp: new Date().toISOString(),
         data: {
-          latitude: -23.5505 + (Math.random() - 0.5) * 0.01,
-          longitude: -46.6333 + (Math.random() - 0.5) * 0.01,
+          // include both conventions
+          latitude: latVal,
+          longitude: lngVal,
+          lat: latVal,
+          lng: lngVal,
           speed: Math.random() * 80,
           heading: Math.random() * 360,
-          accuracy: 5
-        }
+          accuracy: 5,
+        },
       };
       this.handleMessage(mockMessage);
     }, 5000);
@@ -131,15 +149,17 @@ export class WebSocketService {
       clientType,
       driverId,
       vehicleId,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 
   private attemptReconnect() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
-      console.log(`Attempting to reconnect... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
-      
+      console.log(
+        `Attempting to reconnect... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`
+      );
+
       setTimeout(() => {
         this.connect().catch(console.error);
       }, this.reconnectDelay * this.reconnectAttempts);
@@ -148,7 +168,7 @@ export class WebSocketService {
 
   private handleMessage(message: WebSocketMessage) {
     const listeners = this.listeners.get(message.type) || [];
-    listeners.forEach(listener => listener(message));
+    listeners.forEach((listener) => listener(message));
   }
 
   send(message: WebSocketMessage) {
@@ -201,7 +221,7 @@ export class WebSocketService {
       driverId,
       vehicleId,
       timestamp: new Date().toISOString(),
-      data: location
+      data: location,
     });
   }
 
@@ -211,7 +231,7 @@ export class WebSocketService {
       driverId,
       vehicleId,
       timestamp: new Date().toISOString(),
-      data: event
+      data: event,
     });
   }
 
@@ -221,11 +241,15 @@ export class WebSocketService {
       driverId,
       vehicleId,
       timestamp: new Date().toISOString(),
-      data: status
+      data: status,
     });
   }
 
-  sendAlert(driverId: string, vehicleId: string, alert: { level: 'info' | 'warning' | 'error', message: string }) {
+  sendAlert(
+    driverId: string,
+    vehicleId: string,
+    alert: { level: 'info' | 'warning' | 'error'; message: string }
+  ) {
     this.send({
       type: 'alert',
       driverId,
@@ -233,7 +257,7 @@ export class WebSocketService {
       timestamp: new Date().toISOString(),
       alertType: alert.level,
       message: alert.message,
-      severity: alert.level
+      severity: alert.level,
     });
   }
 
@@ -248,9 +272,8 @@ let wsService: WebSocketService | null = null;
 export const getWebSocketService = (): WebSocketService => {
   if (!wsService) {
     // In production, this would be wss://your-domain.com/ws
-    const wsUrl = process.env.NODE_ENV === 'production' 
-      ? 'wss://localhost:8080' 
-      : 'ws://localhost:8080';
+    const wsUrl =
+      process.env.NODE_ENV === 'production' ? 'wss://localhost:8080' : 'ws://localhost:8080';
     wsService = new WebSocketService(wsUrl);
   }
   return wsService;

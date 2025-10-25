@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   try {
@@ -10,10 +10,13 @@ export async function POST(req: Request) {
     };
     return NextResponse.json({ ok: true, checklist: saved }, { status: 200 });
   } catch (err: any) {
-    return NextResponse.json({ ok: false, error: err?.message || "Invalid payload" }, { status: 400 });
+    return NextResponse.json(
+      { ok: false, error: err?.message || 'Invalid payload' },
+      { status: 400 }
+    );
   }
 }
 
 export async function GET() {
-  return NextResponse.json({ ok: true, message: "Checklist endpoint ready" }, { status: 200 });
+  return NextResponse.json({ ok: true, message: 'Checklist endpoint ready' }, { status: 200 });
 }

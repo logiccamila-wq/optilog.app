@@ -11,7 +11,6 @@ export default function CFOPage() {
   const [error, setError] = useState<string | null>(null);
   const [answer, setAnswer] = useState<string | null>(null);
 
-
   async function send() {
     setError('CFO Virtual desativado (Firebase removido).');
     setAnswer(null);

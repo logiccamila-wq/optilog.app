@@ -32,14 +32,20 @@ export async function GET(req: NextRequest, { params }: { params: { slug: string
       });
       if (!res.ok) {
         const text = await res.text();
-        return NextResponse.json({ error: 'Falha no Data API', details: text }, { status: res.status });
+        return NextResponse.json(
+          { error: 'Falha no Data API', details: text },
+          { status: res.status }
+        );
       }
       const data = await res.json();
       const row = Array.isArray(data) ? data[0] : data;
       if (!row) return NextResponse.json({ error: 'Post não encontrado' }, { status: 404 });
       return NextResponse.json(row, { status: 200 });
     } catch (err: any) {
-      return NextResponse.json({ error: 'Erro de rede ao Data API', details: err?.message ?? String(err) }, { status: 500 });
+      return NextResponse.json(
+        { error: 'Erro de rede ao Data API', details: err?.message ?? String(err) },
+        { status: 500 }
+      );
     }
   }
 
@@ -54,6 +60,9 @@ export async function GET(req: NextRequest, { params }: { params: { slug: string
     if (!row) return NextResponse.json({ error: 'Post não encontrado' }, { status: 404 });
     return NextResponse.json(row, { status: 200 });
   } catch (err: any) {
-    return NextResponse.json({ error: 'Falha no fallback DB', details: err?.message ?? String(err) }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Falha no fallback DB', details: err?.message ?? String(err) },
+      { status: 500 }
+    );
   }
 }

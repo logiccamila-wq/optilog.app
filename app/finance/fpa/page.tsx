@@ -213,8 +213,9 @@ export default function FpaForecastPage() {
     try {
       const start = new Date();
       start.setDate(1);
-      const months: Date[] = Array.from({ length: Math.max(1, horizonMonths) }, (_, i) =>
-        new Date(start.getFullYear(), start.getMonth() + i, 1)
+      const months: Date[] = Array.from(
+        { length: Math.max(1, horizonMonths) },
+        (_, i) => new Date(start.getFullYear(), start.getMonth() + i, 1)
       );
       const monthKey = (d: Date) =>
         `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;

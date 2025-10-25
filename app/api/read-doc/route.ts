@@ -24,12 +24,12 @@ export async function GET(req: NextRequest) {
     const baseDir = baseDirFromParam(baseParam);
 
     if (list === '1') {
-      const files = fs.readdirSync(baseDir).filter(f => {
+      const files = fs.readdirSync(baseDir).filter((f) => {
         const lower = f.toLowerCase();
         if (baseParam === 'documentos') return lower.endsWith('.pdf');
         return lower.endsWith('.md') || lower.endsWith('.mdx');
       });
-      const items = files.map(f => ({ slug: f, path: f }));
+      const items = files.map((f) => ({ slug: f, path: f }));
       return NextResponse.json(items, { status: 200 });
     }
 
@@ -38,8 +38,10 @@ export async function GET(req: NextRequest) {
     const filePath = path.join(baseDir, safeSlug);
     const normalizedBase = path.resolve(baseDir);
     const normalizedFile = path.resolve(filePath);
-    if (!normalizedFile.startsWith(normalizedBase)) return NextResponse.json({ error: 'slug inválido' }, { status: 400 });
-    if (!fs.existsSync(normalizedFile)) return NextResponse.json({ error: 'Arquivo não encontrado' }, { status: 404 });
+    if (!normalizedFile.startsWith(normalizedBase))
+      return NextResponse.json({ error: 'slug inválido' }, { status: 400 });
+    if (!fs.existsSync(normalizedFile))
+      return NextResponse.json({ error: 'Arquivo não encontrado' }, { status: 404 });
 
     const ext = path.extname(normalizedFile).toLowerCase();
     if (ext === '.pdf') {
@@ -48,7 +50,10 @@ export async function GET(req: NextRequest) {
     }
 
     const content = fs.readFileSync(normalizedFile, 'utf-8');
-    return new NextResponse(content, { status: 200, headers: { 'Content-Type': 'text/markdown; charset=utf-8' } });
+    return new NextResponse(content, {
+      status: 200,
+      headers: { 'Content-Type': 'text/markdown; charset=utf-8' },
+    });
   } catch (err: any) {
     return NextResponse.json({ error: err?.message || 'Erro interno' }, { status: 500 });
   }

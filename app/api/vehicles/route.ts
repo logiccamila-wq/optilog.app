@@ -10,35 +10,56 @@ export async function POST(req: NextRequest) {
     const plateRaw = (body?.plate || '').trim();
     const model = (body?.model || '').trim();
     const year = body?.year != null && body.year !== '' ? parseInt(String(body.year), 10) : null;
-    const odometer = body?.odometer != null && body.odometer !== '' ? parseInt(String(body.odometer), 10) : null;
+    const odometer =
+      body?.odometer != null && body.odometer !== '' ? parseInt(String(body.odometer), 10) : null;
     const chassisRaw = (body?.chassis || '').trim().toUpperCase();
     const renavamDigits = (body?.renavam || '').replace(/\D/g, '');
     const color = (body?.color || '').trim();
     const brand = (body?.brand || '').trim();
     const cost_center = (body?.cost_center || '').trim();
     const goal_desc = (body?.goal || '').trim();
-    const axles_count = body?.axles_count != null && body.axles_count !== '' ? parseInt(String(body.axles_count), 10) : null;
+    const axles_count =
+      body?.axles_count != null && body.axles_count !== ''
+        ? parseInt(String(body.axles_count), 10)
+        : null;
     const tire_type = (body?.tire_type || '').trim();
     const tire_dimensions = (body?.tire_dimensions || '').trim();
-    const purchase_value = body?.purchase_value != null && body.purchase_value !== '' ? parseFloat(String(body.purchase_value)) : null;
+    const purchase_value =
+      body?.purchase_value != null && body.purchase_value !== ''
+        ? parseFloat(String(body.purchase_value))
+        : null;
     const ownershipRaw = (body?.ownership || '').trim().toLowerCase();
-    const ownershipAllowed = ['financiado','proprio','alugado','agregado','autonomo'];
-    const ownership = ownershipRaw ? (ownershipAllowed.includes(ownershipRaw) ? ownershipRaw : null) : null;
+    const ownershipAllowed = ['financiado', 'proprio', 'alugado', 'agregado', 'autonomo'];
+    const ownership = ownershipRaw
+      ? ownershipAllowed.includes(ownershipRaw)
+        ? ownershipRaw
+        : null
+      : null;
     // novos campos de preset de eixos
     const axle_config_name = (body?.axle_config_name || '').trim() || null;
     const axle_weights = Array.isArray(body?.axle_weights) ? body.axle_weights : null;
-    const gross_weight_estimated = body?.gross_weight_estimated != null && body.gross_weight_estimated !== '' ? parseFloat(String(body.gross_weight_estimated)) : null;
+    const gross_weight_estimated =
+      body?.gross_weight_estimated != null && body.gross_weight_estimated !== ''
+        ? parseFloat(String(body.gross_weight_estimated))
+        : null;
     // capacidade em toneladas
-    const capacity_ton = body?.capacity_ton != null && body.capacity_ton !== '' ? parseFloat(String(body.capacity_ton)) : null;
+    const capacity_ton =
+      body?.capacity_ton != null && body.capacity_ton !== ''
+        ? parseFloat(String(body.capacity_ton))
+        : null;
 
-    let plate = plateRaw.toUpperCase();
+    const plate = plateRaw.toUpperCase();
     if (!plate) {
       return NextResponse.json({ error: 'plate é obrigatório' }, { status: 400 });
     }
     // validação de placa (Brasil: padrão antigo AAA0000 ou Mercosul AAA0A00)
-    const isPlateValid = /^[A-Z]{3}[0-9]{4}$/.test(plate) || /^[A-Z]{3}[0-9][A-Z0-9][0-9]{2}$/.test(plate);
+    const isPlateValid =
+      /^[A-Z]{3}[0-9]{4}$/.test(plate) || /^[A-Z]{3}[0-9][A-Z0-9][0-9]{2}$/.test(plate);
     if (!isPlateValid) {
-      return NextResponse.json({ error: 'Placa inválida (use AAA0000 ou AAA0A00)' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Placa inválida (use AAA0000 ou AAA0A00)' },
+        { status: 400 }
+      );
     }
     const nowYear = new Date().getFullYear();
     if (year !== null && (year < 1900 || year > nowYear + 1)) {
@@ -104,7 +125,9 @@ export async function POST(req: NextRequest) {
     await sql('alter table if exists vehicles add column if not exists axles_count int');
     await sql('alter table if exists vehicles add column if not exists axle_config_name text');
     await sql('alter table if exists vehicles add column if not exists axle_weights jsonb');
-    await sql('alter table if exists vehicles add column if not exists gross_weight_estimated numeric');
+    await sql(
+      'alter table if exists vehicles add column if not exists gross_weight_estimated numeric'
+    );
     await sql('alter table if exists vehicles add column if not exists tire_type text');
     await sql('alter table if exists vehicles add column if not exists tire_dimensions text');
     await sql('alter table if exists vehicles add column if not exists purchase_value numeric');
@@ -115,15 +138,21 @@ export async function POST(req: NextRequest) {
     await sql`create unique index if not exists idx_vehicles_chassis_unique on vehicles (chassis) where chassis is not null`;
 
     try {
-      const rows = await sql`insert into vehicles (plate, model, year, odometer, chassis, renavam, color, brand, cost_center, goal_desc, axles_count, axle_config_name, axle_weights, gross_weight_estimated, tire_type, tire_dimensions, purchase_value, ownership, capacity_ton)
+      const rows =
+        await sql`insert into vehicles (plate, model, year, odometer, chassis, renavam, color, brand, cost_center, goal_desc, axles_count, axle_config_name, axle_weights, gross_weight_estimated, tire_type, tire_dimensions, purchase_value, ownership, capacity_ton)
                              values (${plate}, ${model || null}, ${year}, ${odometer}, ${chassis || null}, ${renavamDigits || null}, ${color || null}, ${brand || null}, ${cost_center || null}, ${goal_desc || null}, ${axles_count}, ${axle_config_name}, ${axle_weights}, ${gross_weight_estimated}, ${tire_type || null}, ${tire_dimensions || null}, ${purchase_value}, ${ownership}, ${capacity_ton})
                              returning id, plate, model, year, odometer, chassis, renavam, color, brand, cost_center, goal_desc, axles_count, axle_config_name, axle_weights, gross_weight_estimated, tire_type, tire_dimensions, purchase_value, ownership, capacity_ton, created_at, updated_at`;
       const vehicle = Array.isArray(rows) ? rows[0] : rows?.[0];
-      try { await publishEvent({ entity: 'vehicle', action: 'create', data: vehicle }); } catch {}
+      try {
+        await publishEvent({ entity: 'vehicle', action: 'create', data: vehicle });
+      } catch {}
       return NextResponse.json({ ok: true, vehicle }, { status: 201 });
     } catch (e: any) {
       if (e?.code === '23505') {
-        return NextResponse.json({ error: 'Conflito: placa/chassi/renavam já cadastrados' }, { status: 409 });
+        return NextResponse.json(
+          { error: 'Conflito: placa/chassi/renavam já cadastrados' },
+          { status: 409 }
+        );
       }
       throw e;
     }
@@ -171,7 +200,9 @@ export async function GET(req: NextRequest) {
       : sql``;
 
     const totalRows = await sql`SELECT count(*)::int as total FROM vehicles ${where}`;
-    const total = Array.isArray(totalRows) ? (totalRows[0]?.total ?? 0) : (totalRows?.[0]?.total ?? 0);
+    const total = Array.isArray(totalRows)
+      ? (totalRows[0]?.total ?? 0)
+      : (totalRows?.[0]?.total ?? 0);
 
     const rows = q
       ? await sql`SELECT id, plate, model, year, odometer, chassis, renavam, color, brand, cost_center, goal_desc, axles_count, axle_config_name, axle_weights, gross_weight_estimated, tire_type, tire_dimensions, purchase_value, ownership, capacity_ton, created_at, updated_at
@@ -186,7 +217,7 @@ export async function GET(req: NextRequest) {
 
     const resp = new NextResponse(JSON.stringify(rows), {
       status: 200,
-      headers: { 'Content-Type': 'application/json', 'X-Total-Count': String(total) }
+      headers: { 'Content-Type': 'application/json', 'X-Total-Count': String(total) },
     });
     return resp;
   } catch (err: any) {

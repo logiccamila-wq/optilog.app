@@ -28,25 +28,22 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   onVehicleClick,
   onMapClick,
   showTraffic = false,
-  mapType = 'roadmap'
+  mapType = 'roadmap',
 }) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const trafficLayerRef = useRef<google.maps.TrafficLayer | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const {
-    service,
     initialize,
     createMap,
     displayRoute,
     addVehicleMarker,
-    updateVehiclePosition,
-    removeVehicleMarker,
     centerMap,
     fitBounds,
-    clearMap
+    clearMap,
   } = useGoogleMaps();
 
   // Inicializar mapa
@@ -56,7 +53,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         if (!mapRef.current) return;
 
         await initialize();
-        
+
         const mapOptions: google.maps.MapOptions = {
           zoom,
           center,
@@ -65,7 +62,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
           streetViewControl: false,
           fullscreenControl: true,
           mapTypeControl: true,
-          scaleControl: true
+          scaleControl: true,
         };
 
         const map = createMap(mapRef.current, mapOptions);
@@ -77,7 +74,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
             if (event.latLng) {
               onMapClick({
                 lat: event.latLng.lat(),
-                lng: event.latLng.lng()
+                lng: event.latLng.lng(),
               });
             }
           });
@@ -85,7 +82,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
 
         // Inicializar camada de trânsito
         trafficLayerRef.current = new google.maps.TrafficLayer();
-        
+
         setIsLoaded(true);
         setError(null);
       } catch (err) {
@@ -126,7 +123,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
     if (isLoaded) {
       centerMap(center, zoom);
     }
-  }, [center, zoom, isLoaded]);
+  }, [center, zoom, isLoaded, centerMap]);
 
   // Gerenciar veículos no mapa
   useEffect(() => {
@@ -136,9 +133,9 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
     clearMap();
 
     // Adicionar novos marcadores
-    vehicles.forEach(vehicle => {
+    vehicles.forEach((vehicle) => {
       const marker = addVehicleMarker(vehicle);
-      
+
       if (marker && onVehicleClick) {
         marker.addListener('click', () => {
           onVehicleClick(vehicle.id);
@@ -148,10 +145,10 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
 
     // Ajustar visualização para mostrar todos os veículos
     if (vehicles.length > 0) {
-      const locations = vehicles.map(v => v.position);
+      const locations = vehicles.map((v) => v.position);
       fitBounds(locations);
     }
-  }, [vehicles, isLoaded, onVehicleClick]);
+  }, [vehicles, isLoaded, onVehicleClick, clearMap, addVehicleMarker, fitBounds]);
 
   // Exibir rotas
   useEffect(() => {
@@ -164,22 +161,32 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         console.error('Erro ao exibir rota:', err);
       }
     });
-  }, [routes, isLoaded]);
+  }, [routes, isLoaded, displayRoute]);
 
   if (error) {
     return (
-      <div 
+      <div
         className="flex items-center justify-center bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg"
         style={{ height }}
       >
         <div className="text-center p-4">
           <div className="text-red-500 mb-2">
-            <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="w-12 h-12 mx-auto"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
           </div>
           <p className="text-gray-600 text-sm">{error}</p>
-          <button 
+          <button
             onClick={() => window.location.reload()}
             className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
           >
@@ -192,10 +199,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
 
   if (!isLoaded) {
     return (
-      <div 
-        className="flex items-center justify-center bg-gray-50 rounded-lg"
-        style={{ height }}
-      >
+      <div className="flex items-center justify-center bg-gray-50 rounded-lg" style={{ height }}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
           <p className="text-gray-600 text-sm">Carregando mapa...</p>
@@ -206,30 +210,32 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
 
   return (
     <div className="relative">
-      <div 
-        ref={mapRef} 
+      <div
+        ref={mapRef}
         className="w-full rounded-lg overflow-hidden border border-gray-200"
         style={{ height }}
       />
-      
+
       {/* Controles do mapa */}
       <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg p-2 space-y-2">
         <div className="text-xs text-gray-600 font-medium">Controles</div>
-        
+
         {/* Indicador de veículos */}
         {vehicles.length > 0 && (
           <div className="text-xs text-gray-500">
-            {vehicles.length} veículo{vehicles.length !== 1 ? 's' : ''} ativo{vehicles.length !== 1 ? 's' : ''}
+            {vehicles.length} veículo{vehicles.length !== 1 ? 's' : ''} ativo
+            {vehicles.length !== 1 ? 's' : ''}
           </div>
         )}
-        
+
         {/* Indicador de rotas */}
         {routes.length > 0 && (
           <div className="text-xs text-gray-500">
-            {routes.length} rota{routes.length !== 1 ? 's' : ''} exibida{routes.length !== 1 ? 's' : ''}
+            {routes.length} rota{routes.length !== 1 ? 's' : ''} exibida
+            {routes.length !== 1 ? 's' : ''}
           </div>
         )}
-        
+
         {/* Status de trânsito */}
         {showTraffic && (
           <div className="flex items-center text-xs text-green-600">
@@ -238,7 +244,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
           </div>
         )}
       </div>
-      
+
       {/* Legenda de status dos veículos */}
       {vehicles.length > 0 && (
         <div className="absolute bottom-4 left-4 bg-white rounded-lg shadow-lg p-3">

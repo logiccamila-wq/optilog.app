@@ -76,20 +76,23 @@ async function migrate() {
 
   // Ordem pensada para respeitar dependências
   const plan = [
-    { table: 'users', columns: ['id','email','password_hash','created_at'] },
-    { table: 'customers', columns: ['id','name','email','phone','created_at'] },
-    { table: 'products', columns: ['id','name','sku','price','created_at'] },
-    { table: 'orders', columns: ['id','customer_id','product_id','quantity','created_at'] },
-    { table: 'vehicles', columns: ['id','plate','modelo','km','avg_consumption','status'] },
-    { table: 'tires', columns: ['id','vehicle_id','position','life'] },
-    { table: 'maintenances', columns: ['id','vehicle_id','status','schedule_at'] },
-    { table: 'shipments', columns: ['id','status','vehicle_id','created_at','cost','lat','lng','user_id'] },
-    { table: 'invoices', columns: ['id','amount','status','issued_at'] },
-    { table: 'receivables', columns: ['id','amount','status','due_at'] },
-    { table: 'payables', columns: ['id','amount','status','due_at'] },
-    { table: 'alerts', columns: ['id','type','message','created_at'] },
-    { table: 'checklist', columns: ['id','item','done','updated_at'] },
-    { table: 'estoque', columns: ['id','item','nivel','pontoReposicao'] },
+    { table: 'users', columns: ['id', 'email', 'password_hash', 'created_at'] },
+    { table: 'customers', columns: ['id', 'name', 'email', 'phone', 'created_at'] },
+    { table: 'products', columns: ['id', 'name', 'sku', 'price', 'created_at'] },
+    { table: 'orders', columns: ['id', 'customer_id', 'product_id', 'quantity', 'created_at'] },
+    { table: 'vehicles', columns: ['id', 'plate', 'modelo', 'km', 'avg_consumption', 'status'] },
+    { table: 'tires', columns: ['id', 'vehicle_id', 'position', 'life'] },
+    { table: 'maintenances', columns: ['id', 'vehicle_id', 'status', 'schedule_at'] },
+    {
+      table: 'shipments',
+      columns: ['id', 'status', 'vehicle_id', 'created_at', 'cost', 'lat', 'lng', 'user_id'],
+    },
+    { table: 'invoices', columns: ['id', 'amount', 'status', 'issued_at'] },
+    { table: 'receivables', columns: ['id', 'amount', 'status', 'due_at'] },
+    { table: 'payables', columns: ['id', 'amount', 'status', 'due_at'] },
+    { table: 'alerts', columns: ['id', 'type', 'message', 'created_at'] },
+    { table: 'checklist', columns: ['id', 'item', 'done', 'updated_at'] },
+    { table: 'estoque', columns: ['id', 'item', 'nivel', 'pontoReposicao'] },
   ];
 
   const client = await pg.connect();

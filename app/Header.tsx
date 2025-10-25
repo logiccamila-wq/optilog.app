@@ -13,12 +13,25 @@ export default function Header() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const kioskParam = searchParams.get('kiosk') === '1' || searchParams.get('display') === 'kiosk';
-  if (pathname.startsWith('/display') || kioskParam) return null;
-  const { mode, setMode, accent, setAccent, font, setFont, align, setAlign, effectiveMode, reset, text, setText, applyPreset } = useTheme();
+  // Hooks must be called unconditionally at top-level
+  const {
+    mode,
+    setMode,
+    accent,
+    setAccent,
+    font,
+    setFont,
+    align,
+    setAlign,
+    effectiveMode,
+    reset,
+    text,
+    setText,
+    applyPreset,
+  } = useTheme();
   const showControls = appConfig.ui.header.showControls;
   const { user, setRoles } = useAuth();
-  const currentRole = (user?.roles?.[0]) || 'admin';
-  // Atualização dinâmica do horário exibido
+  // Atualização dinâmica do horário exibido (hooks devem estar antes de qualquer return)
   const [updatedAt, setUpdatedAt] = React.useState<Date>(new Date());
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => {
@@ -26,6 +39,8 @@ export default function Header() {
     const id = setInterval(() => setUpdatedAt(new Date()), 10000);
     return () => clearInterval(id);
   }, []);
+  if (pathname.startsWith('/display') || kioskParam) return null;
+  const currentRole = user?.roles?.[0] || 'admin';
   const updatedLabel = mounted ? updatedAt.toLocaleTimeString() : '—';
   return (
     <header
@@ -55,7 +70,7 @@ export default function Header() {
           <Image src="/logo.svg" alt="Devoptilog" width={24} height={24} />
           <strong style={{ color: '#9ecfff', letterSpacing: '0.08em' }}>DEVOPTILOG</strong>
         </Link>
-        
+
         <nav style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           <Link href="/dashboard" style={{ color: '#ddd' }}>
             {t('nav.dashboard')}
@@ -76,7 +91,14 @@ export default function Header() {
                 <select
                   value={mode}
                   onChange={(e) => setMode(e.target.value as any)}
-                  style={{ marginLeft: 6, background: 'transparent', color: '#ddd', border: '1px solid #333', borderRadius: 6, padding: '2px 6px' }}
+                  style={{
+                    marginLeft: 6,
+                    background: 'transparent',
+                    color: '#ddd',
+                    border: '1px solid #333',
+                    borderRadius: 6,
+                    padding: '2px 6px',
+                  }}
                 >
                   <option value="system">Sistema</option>
                   <option value="light">Claro</option>
@@ -87,8 +109,18 @@ export default function Header() {
                 Preset:
                 <select
                   defaultValue=""
-                  onChange={(e) => { const v = e.target.value; if (v) applyPreset(v as any); }}
-                  style={{ marginLeft: 6, background: 'transparent', color: '#ddd', border: '1px solid #333', borderRadius: 6, padding: '2px 6px' }}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    if (v) applyPreset(v as any);
+                  }}
+                  style={{
+                    marginLeft: 6,
+                    background: 'transparent',
+                    color: '#ddd',
+                    border: '1px solid #333',
+                    borderRadius: 6,
+                    padding: '2px 6px',
+                  }}
                 >
                   <option value="">—</option>
                   <option value="neon">Neon</option>
@@ -98,18 +130,35 @@ export default function Header() {
               </label>
               <label style={{ color: '#aaa', fontSize: 13 }}>
                 Destaque:
-                <input type="color" value={accent} onChange={(e) => setAccent(e.target.value)} style={{ marginLeft: 6, verticalAlign: 'middle' }} />
+                <input
+                  type="color"
+                  value={accent}
+                  onChange={(e) => setAccent(e.target.value)}
+                  style={{ marginLeft: 6, verticalAlign: 'middle' }}
+                />
               </label>
               <label style={{ color: '#aaa', fontSize: 13 }}>
                 Texto:
-                <input type="color" value={text} onChange={(e) => setText(e.target.value)} style={{ marginLeft: 6, verticalAlign: 'middle' }} />
+                <input
+                  type="color"
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  style={{ marginLeft: 6, verticalAlign: 'middle' }}
+                />
               </label>
               <label style={{ color: '#aaa', fontSize: 13 }}>
                 Alinhamento:
                 <select
                   value={align}
                   onChange={(e) => setAlign(e.target.value as any)}
-                  style={{ marginLeft: 6, background: 'transparent', color: '#ddd', border: '1px solid #333', borderRadius: 6, padding: '2px 6px' }}
+                  style={{
+                    marginLeft: 6,
+                    background: 'transparent',
+                    color: '#ddd',
+                    border: '1px solid #333',
+                    borderRadius: 6,
+                    padding: '2px 6px',
+                  }}
                 >
                   <option value="left">Esquerda</option>
                   <option value="center">Centro</option>
@@ -121,16 +170,35 @@ export default function Header() {
                 <select
                   value={font}
                   onChange={(e) => setFont(e.target.value)}
-                  style={{ marginLeft: 6, background: 'transparent', color: '#ddd', border: '1px solid #333', borderRadius: 6, padding: '2px 6px' }}
+                  style={{
+                    marginLeft: 6,
+                    background: 'transparent',
+                    color: '#ddd',
+                    border: '1px solid #333',
+                    borderRadius: 6,
+                    padding: '2px 6px',
+                  }}
                 >
-                  <option value='"Segoe UI Variable", "Segoe UI", system-ui, sans-serif'>Segoe UI Variable</option>
-                  <option value='Inter, system-ui, sans-serif'>Inter</option>
-                  <option value='Roboto, system-ui, sans-serif'>Roboto</option>
-                  <option value='Nunito, system-ui, sans-serif'>Nunito</option>
+                  <option value='"Segoe UI Variable", "Segoe UI", system-ui, sans-serif'>
+                    Segoe UI Variable
+                  </option>
+                  <option value="Inter, system-ui, sans-serif">Inter</option>
+                  <option value="Roboto, system-ui, sans-serif">Roboto</option>
+                  <option value="Nunito, system-ui, sans-serif">Nunito</option>
                   <option value='"Open Sans", system-ui, sans-serif'>Open Sans</option>
                 </select>
               </label>
-              <button onClick={reset} style={{ marginLeft: 6, background: 'transparent', color: '#9ecfff', border: '1px solid #1e3a8a', borderRadius: 6, padding: '4px 8px' }}>
+              <button
+                onClick={reset}
+                style={{
+                  marginLeft: 6,
+                  background: 'transparent',
+                  color: '#9ecfff',
+                  border: '1px solid #1e3a8a',
+                  borderRadius: 6,
+                  padding: '4px 8px',
+                }}
+              >
                 Reset
               </button>
             </>
@@ -143,7 +211,14 @@ export default function Header() {
             <select
               value={currentRole}
               onChange={(e) => setRoles([e.target.value as any])}
-              style={{ marginLeft: 6, background: 'transparent', color: '#9ecfff', border: '1px solid #1e3a8a', borderRadius: 6, padding: '4px 8px' }}
+              style={{
+                marginLeft: 6,
+                background: 'transparent',
+                color: '#9ecfff',
+                border: '1px solid #1e3a8a',
+                borderRadius: 6,
+                padding: '4px 8px',
+              }}
             >
               <option value="admin">Admin</option>
               <option value="director">Diretoria</option>
@@ -158,7 +233,14 @@ export default function Header() {
             <select
               value={lang}
               onChange={(e) => setLang(e.target.value as any)}
-              style={{ marginLeft: 6, background: 'transparent', color: '#9ecfff', border: '1px solid #1e3a8a', borderRadius: 6, padding: '4px 8px' }}
+              style={{
+                marginLeft: 6,
+                background: 'transparent',
+                color: '#9ecfff',
+                border: '1px solid #1e3a8a',
+                borderRadius: 6,
+                padding: '4px 8px',
+              }}
             >
               <option value="pt">PT</option>
               <option value="en">EN</option>
@@ -175,7 +257,7 @@ export default function Header() {
               border: '1px solid #1e3a8a',
               borderRadius: 6,
               padding: '4px 8px',
-              background: 'rgba(30,58,138,0.15)'
+              background: 'rgba(30,58,138,0.15)',
             }}
           >
             Atualizado: {updatedLabel}

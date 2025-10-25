@@ -16,9 +16,11 @@ export default function SimpleDonutChart({
   const radius = (size - stroke) / 2;
   const center = size / 2;
 
-  const brandHex = typeof window !== 'undefined'
-    ? getComputedStyle(document.documentElement).getPropertyValue('--color-brand').trim() || '#1976d2'
-    : '#1976d2';
+  const brandHex =
+    typeof window !== 'undefined'
+      ? getComputedStyle(document.documentElement).getPropertyValue('--color-brand').trim() ||
+        '#1976d2'
+      : '#1976d2';
   const text = 'var(--color-text)';
   const secondary = 'var(--color-secondary)';
 
@@ -30,7 +32,8 @@ export default function SimpleDonutChart({
     const b = bigint & 255;
     return { r, g, b };
   };
-  const rgbToHex = (r: number, g: number, b: number) => '#' + [r, g, b].map((x) => x.toString(16).padStart(2, '0')).join('');
+  const rgbToHex = (r: number, g: number, b: number) =>
+    '#' + [r, g, b].map((x) => x.toString(16).padStart(2, '0')).join('');
   const lighten = (hex: string, amt: number) => {
     const { r, g, b } = hexToRgb(hex);
     const lr = Math.min(255, Math.round(r + (255 - r) * amt));
@@ -46,12 +49,10 @@ export default function SimpleDonutChart({
     return rgbToHex(lr, lg, lb);
   };
 
-  const palette = useMemo(() => [
-    brandHex,
-    lighten(brandHex, 0.25),
-    lighten(brandHex, 0.45),
-    darken(brandHex, 0.15),
-  ], [brandHex]);
+  const palette = useMemo(
+    () => [brandHex, lighten(brandHex, 0.25), lighten(brandHex, 0.45), darken(brandHex, 0.15)],
+    [brandHex]
+  );
 
   let cumulative = 0;
   const arcs = values.map((v, i) => {
@@ -71,7 +72,14 @@ export default function SimpleDonutChart({
   return (
     <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        <circle cx={center} cy={center} r={radius} stroke={secondary} strokeWidth={stroke} fill="none" />
+        <circle
+          cx={center}
+          cy={center}
+          r={radius}
+          stroke={secondary}
+          strokeWidth={stroke}
+          fill="none"
+        />
         {arcs.map((a, i) => (
           <path key={i} d={a.d} stroke={a.color} strokeWidth={stroke} fill="none" />
         ))}

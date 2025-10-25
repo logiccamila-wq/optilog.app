@@ -5,7 +5,9 @@ export default defineConfig({
   timeout: 30_000,
   expect: { timeout: 10_000 },
   fullyParallel: true,
-  reporter: process.env.CI ? [['html', { outputFolder: 'playwright-report', open: 'never' }], ['list']] : [['html', { open: 'never' }], ['list']],
+  reporter: process.env.CI
+    ? [['html', { outputFolder: 'playwright-report', open: 'never' }], ['list']]
+    : [['html', { open: 'never' }], ['list']],
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
     trace: 'retain-on-failure',

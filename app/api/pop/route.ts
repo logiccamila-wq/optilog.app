@@ -72,25 +72,36 @@ export async function GET(req: NextRequest) {
     const sql = getSql();
 
     if (entity === 'process') {
-      const where = q ? sql`WHERE name ILIKE ${'%' + q + '%'} OR owner ILIKE ${'%' + q + '%'}` : sql``;
+      const where = q
+        ? sql`WHERE name ILIKE ${'%' + q + '%'} OR owner ILIKE ${'%' + q + '%'}`
+        : sql``;
       const totalRows = await sql`SELECT count(*)::int as total FROM pop_processes ${where}`;
-      const total = Array.isArray(totalRows) ? (totalRows[0]?.total ?? 0) : (totalRows?.[0]?.total ?? 0);
-      const rows = await sql`SELECT id, name, description, owner, status, created_at, updated_at FROM pop_processes ${where} ORDER BY created_at DESC LIMIT ${pageSize} OFFSET ${offset}`;
-      return new NextResponse(JSON.stringify(rows), { status: 200, headers: { 'Content-Type': 'application/json', 'X-Total-Count': String(total) } });
+      const total = Array.isArray(totalRows)
+        ? (totalRows[0]?.total ?? 0)
+        : (totalRows?.[0]?.total ?? 0);
+      const rows =
+        await sql`SELECT id, name, description, owner, status, created_at, updated_at FROM pop_processes ${where} ORDER BY created_at DESC LIMIT ${pageSize} OFFSET ${offset}`;
+      return new NextResponse(JSON.stringify(rows), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json', 'X-Total-Count': String(total) },
+      });
     }
 
     if (entity === 'kpi') {
-      const rows = await sql`SELECT id, process_id, name, target, unit, created_at, updated_at FROM pop_kpis ORDER BY created_at DESC LIMIT ${pageSize} OFFSET ${offset}`;
+      const rows =
+        await sql`SELECT id, process_id, name, target, unit, created_at, updated_at FROM pop_kpis ORDER BY created_at DESC LIMIT ${pageSize} OFFSET ${offset}`;
       return NextResponse.json(rows);
     }
 
     if (entity === 'occurrence') {
-      const rows = await sql`SELECT id, process_id, title, severity, description, happened_at, created_at, updated_at FROM pop_occurrences ORDER BY happened_at DESC NULLS LAST, created_at DESC LIMIT ${pageSize} OFFSET ${offset}`;
+      const rows =
+        await sql`SELECT id, process_id, title, severity, description, happened_at, created_at, updated_at FROM pop_occurrences ORDER BY happened_at DESC NULLS LAST, created_at DESC LIMIT ${pageSize} OFFSET ${offset}`;
       return NextResponse.json(rows);
     }
 
     if (entity === 'evaluation') {
-      const rows = await sql`SELECT id, process_id, evaluator, score, notes, evaluated_at, created_at, updated_at FROM pop_evaluations ORDER BY evaluated_at DESC NULLS LAST, created_at DESC LIMIT ${pageSize} OFFSET ${offset}`;
+      const rows =
+        await sql`SELECT id, process_id, evaluator, score, notes, evaluated_at, created_at, updated_at FROM pop_evaluations ORDER BY evaluated_at DESC NULLS LAST, created_at DESC LIMIT ${pageSize} OFFSET ${offset}`;
       return NextResponse.json(rows);
     }
 
@@ -113,7 +124,8 @@ export async function POST(req: NextRequest) {
       const description = (body?.description || '').trim();
       const owner = (body?.owner || '').trim();
       const status = (body?.status || 'ativo').trim();
-      const rows = await sql`INSERT INTO pop_processes (name, description, owner, status) VALUES (${name}, ${description || null}, ${owner || null}, ${status}) RETURNING id`;
+      const rows =
+        await sql`INSERT INTO pop_processes (name, description, owner, status) VALUES (${name}, ${description || null}, ${owner || null}, ${status}) RETURNING id`;
       const id = Array.isArray(rows) ? rows[0]?.id : rows?.[0]?.id;
       await audit('process', id, 'create', body);
       return NextResponse.json({ ok: true, id });
@@ -124,8 +136,10 @@ export async function POST(req: NextRequest) {
       const name = (body?.name || '').trim();
       const target = body?.target != null ? parseFloat(String(body.target)) : null;
       const unit = (body?.unit || '').trim();
-      if (!process_id || !name) return NextResponse.json({ error: 'process_id e name são obrigatórios' }, { status: 400 });
-      const rows = await sql`INSERT INTO pop_kpis (process_id, name, target, unit) VALUES (${process_id}, ${name}, ${target}, ${unit || null}) RETURNING id`;
+      if (!process_id || !name)
+        return NextResponse.json({ error: 'process_id e name são obrigatórios' }, { status: 400 });
+      const rows =
+        await sql`INSERT INTO pop_kpis (process_id, name, target, unit) VALUES (${process_id}, ${name}, ${target}, ${unit || null}) RETURNING id`;
       const id = Array.isArray(rows) ? rows[0]?.id : rows?.[0]?.id;
       await audit('kpi', id, 'create', body);
       return NextResponse.json({ ok: true, id });
@@ -137,8 +151,10 @@ export async function POST(req: NextRequest) {
       const severity = (body?.severity || '').trim();
       const description = (body?.description || '').trim();
       const happened_at = (body?.happened_at || '').trim();
-      if (!process_id || !title) return NextResponse.json({ error: 'process_id e title são obrigatórios' }, { status: 400 });
-      const rows = await sql`INSERT INTO pop_occurrences (process_id, title, severity, description, happened_at) VALUES (${process_id}, ${title}, ${severity || null}, ${description || null}, ${happened_at || null}) RETURNING id`;
+      if (!process_id || !title)
+        return NextResponse.json({ error: 'process_id e title são obrigatórios' }, { status: 400 });
+      const rows =
+        await sql`INSERT INTO pop_occurrences (process_id, title, severity, description, happened_at) VALUES (${process_id}, ${title}, ${severity || null}, ${description || null}, ${happened_at || null}) RETURNING id`;
       const id = Array.isArray(rows) ? rows[0]?.id : rows?.[0]?.id;
       await audit('occurrence', id, 'create', body);
       return NextResponse.json({ ok: true, id });
@@ -150,8 +166,13 @@ export async function POST(req: NextRequest) {
       const score = body?.score != null ? parseFloat(String(body.score)) : null;
       const notes = (body?.notes || '').trim();
       const evaluated_at = (body?.evaluated_at || '').trim();
-      if (!process_id || !evaluator || score == null) return NextResponse.json({ error: 'process_id, evaluator e score são obrigatórios' }, { status: 400 });
-      const rows = await sql`INSERT INTO pop_evaluations (process_id, evaluator, score, notes, evaluated_at) VALUES (${process_id}, ${evaluator}, ${score}, ${notes || null}, ${evaluated_at || null}) RETURNING id`;
+      if (!process_id || !evaluator || score == null)
+        return NextResponse.json(
+          { error: 'process_id, evaluator e score são obrigatórios' },
+          { status: 400 }
+        );
+      const rows =
+        await sql`INSERT INTO pop_evaluations (process_id, evaluator, score, notes, evaluated_at) VALUES (${process_id}, ${evaluator}, ${score}, ${notes || null}, ${evaluated_at || null}) RETURNING id`;
       const id = Array.isArray(rows) ? rows[0]?.id : rows?.[0]?.id;
       await audit('evaluation', id, 'create', body);
       return NextResponse.json({ ok: true, id });
@@ -177,8 +198,10 @@ export async function PUT(req: NextRequest) {
       const description = body?.description ?? null;
       const owner = body?.owner ?? null;
       const status = body?.status ?? null;
-      const rows = await sql`UPDATE pop_processes SET name = COALESCE(${name}, name), description = COALESCE(${description}, description), owner = COALESCE(${owner}, owner), status = COALESCE(${status}, status), updated_at = now() WHERE id = ${id} RETURNING id`;
-      if (!rows || rows.length === 0) return NextResponse.json({ error: 'Registro não encontrado' }, { status: 404 });
+      const rows =
+        await sql`UPDATE pop_processes SET name = COALESCE(${name}, name), description = COALESCE(${description}, description), owner = COALESCE(${owner}, owner), status = COALESCE(${status}, status), updated_at = now() WHERE id = ${id} RETURNING id`;
+      if (!rows || rows.length === 0)
+        return NextResponse.json({ error: 'Registro não encontrado' }, { status: 404 });
       await audit('process', id, 'update', body);
       return NextResponse.json({ ok: true, id });
     }
@@ -188,8 +211,10 @@ export async function PUT(req: NextRequest) {
       const name = body?.name ?? null;
       const target = body?.target != null ? parseFloat(String(body.target)) : null;
       const unit = body?.unit ?? null;
-      const rows = await sql`UPDATE pop_kpis SET process_id = COALESCE(${process_id}, process_id), name = COALESCE(${name}, name), target = COALESCE(${target}, target), unit = COALESCE(${unit}, unit), updated_at = now() WHERE id = ${id} RETURNING id`;
-      if (!rows || rows.length === 0) return NextResponse.json({ error: 'Registro não encontrado' }, { status: 404 });
+      const rows =
+        await sql`UPDATE pop_kpis SET process_id = COALESCE(${process_id}, process_id), name = COALESCE(${name}, name), target = COALESCE(${target}, target), unit = COALESCE(${unit}, unit), updated_at = now() WHERE id = ${id} RETURNING id`;
+      if (!rows || rows.length === 0)
+        return NextResponse.json({ error: 'Registro não encontrado' }, { status: 404 });
       await audit('kpi', id, 'update', body);
       return NextResponse.json({ ok: true, id });
     }
@@ -200,8 +225,10 @@ export async function PUT(req: NextRequest) {
       const severity = body?.severity ?? null;
       const description = body?.description ?? null;
       const happened_at = body?.happened_at ?? null;
-      const rows = await sql`UPDATE pop_occurrences SET process_id = COALESCE(${process_id}, process_id), title = COALESCE(${title}, title), severity = COALESCE(${severity}, severity), description = COALESCE(${description}, description), happened_at = COALESCE(${happened_at}, happened_at), updated_at = now() WHERE id = ${id} RETURNING id`;
-      if (!rows || rows.length === 0) return NextResponse.json({ error: 'Registro não encontrado' }, { status: 404 });
+      const rows =
+        await sql`UPDATE pop_occurrences SET process_id = COALESCE(${process_id}, process_id), title = COALESCE(${title}, title), severity = COALESCE(${severity}, severity), description = COALESCE(${description}, description), happened_at = COALESCE(${happened_at}, happened_at), updated_at = now() WHERE id = ${id} RETURNING id`;
+      if (!rows || rows.length === 0)
+        return NextResponse.json({ error: 'Registro não encontrado' }, { status: 404 });
       await audit('occurrence', id, 'update', body);
       return NextResponse.json({ ok: true, id });
     }
@@ -212,8 +239,10 @@ export async function PUT(req: NextRequest) {
       const score = body?.score != null ? parseFloat(String(body.score)) : null;
       const notes = body?.notes ?? null;
       const evaluated_at = body?.evaluated_at ?? null;
-      const rows = await sql`UPDATE pop_evaluations SET process_id = COALESCE(${process_id}, process_id), evaluator = COALESCE(${evaluator}, evaluator), score = COALESCE(${score}, score), notes = COALESCE(${notes}, notes), evaluated_at = COALESCE(${evaluated_at}, evaluated_at), updated_at = now() WHERE id = ${id} RETURNING id`;
-      if (!rows || rows.length === 0) return NextResponse.json({ error: 'Registro não encontrado' }, { status: 404 });
+      const rows =
+        await sql`UPDATE pop_evaluations SET process_id = COALESCE(${process_id}, process_id), evaluator = COALESCE(${evaluator}, evaluator), score = COALESCE(${score}, score), notes = COALESCE(${notes}, notes), evaluated_at = COALESCE(${evaluated_at}, evaluated_at), updated_at = now() WHERE id = ${id} RETURNING id`;
+      if (!rows || rows.length === 0)
+        return NextResponse.json({ error: 'Registro não encontrado' }, { status: 404 });
       await audit('evaluation', id, 'update', body);
       return NextResponse.json({ ok: true, id });
     }
@@ -236,25 +265,29 @@ export async function DELETE(req: NextRequest) {
 
     if (entity === 'process') {
       const rows = await sql`DELETE FROM pop_processes WHERE id = ${idNum} RETURNING id`;
-      if (!rows || rows.length === 0) return NextResponse.json({ error: 'Registro não encontrado' }, { status: 404 });
+      if (!rows || rows.length === 0)
+        return NextResponse.json({ error: 'Registro não encontrado' }, { status: 404 });
       await audit('process', idNum, 'delete', { id: idNum });
       return NextResponse.json({ ok: true, id: idNum });
     }
     if (entity === 'kpi') {
       const rows = await sql`DELETE FROM pop_kpis WHERE id = ${idNum} RETURNING id`;
-      if (!rows || rows.length === 0) return NextResponse.json({ error: 'Registro não encontrado' }, { status: 404 });
+      if (!rows || rows.length === 0)
+        return NextResponse.json({ error: 'Registro não encontrado' }, { status: 404 });
       await audit('kpi', idNum, 'delete', { id: idNum });
       return NextResponse.json({ ok: true, id: idNum });
     }
     if (entity === 'occurrence') {
       const rows = await sql`DELETE FROM pop_occurrences WHERE id = ${idNum} RETURNING id`;
-      if (!rows || rows.length === 0) return NextResponse.json({ error: 'Registro não encontrado' }, { status: 404 });
+      if (!rows || rows.length === 0)
+        return NextResponse.json({ error: 'Registro não encontrado' }, { status: 404 });
       await audit('occurrence', idNum, 'delete', { id: idNum });
       return NextResponse.json({ ok: true, id: idNum });
     }
     if (entity === 'evaluation') {
       const rows = await sql`DELETE FROM pop_evaluations WHERE id = ${idNum} RETURNING id`;
-      if (!rows || rows.length === 0) return NextResponse.json({ error: 'Registro não encontrado' }, { status: 404 });
+      if (!rows || rows.length === 0)
+        return NextResponse.json({ error: 'Registro não encontrado' }, { status: 404 });
       await audit('evaluation', idNum, 'delete', { id: idNum });
       return NextResponse.json({ ok: true, id: idNum });
     }

@@ -54,7 +54,7 @@ export default function ModulePage({ params }: { params: { module: string } }) {
     financeiro: 'finance',
     analise: 'analytics',
   };
-  const moduleKey = mod ? moduleKeyMap[mod.key] ?? mod.key : 'overview';
+  const moduleKey = mod ? (moduleKeyMap[mod.key] ?? mod.key) : 'overview';
   const [metrics, setMetrics] = useState<Metric[]>([]);
   const [latestShipments, setLatestShipments] = useState<
     Array<{ id: string; status?: string; created_at?: number; userId?: string }>
@@ -109,8 +109,12 @@ export default function ModulePage({ params }: { params: { module: string } }) {
       status?: string;
     }>
   >([]);
-  const [shipmentsData, setShipmentsData] = useState<Array<{ id: string; lat?: number; lng?: number; status?: string }>>([]);
-const [riskByShipment, setRiskByShipment] = useState<Record<string, { risk_probability: number; risk_label: 0 | 1 }>>({});
+  const [shipmentsData, setShipmentsData] = useState<
+    Array<{ id: string; lat?: number; lng?: number; status?: string }>
+  >([]);
+  const [riskByShipment, setRiskByShipment] = useState<
+    Record<string, { risk_probability: number; risk_label: 0 | 1 }>
+  >({});
   const [showStops, setShowStops] = useState(false);
   const [showRoutes, setShowRoutes] = useState(true);
   const [showAlerts, setShowAlerts] = useState(false);
@@ -322,7 +326,7 @@ const [riskByShipment, setRiskByShipment] = useState<Record<string, { risk_proba
   }, [activityLog]);
 
   useEffect(() => {
-    let active = true;
+    const active = true;
     (async () => {
       setReady(false);
       setError(null);
@@ -346,10 +350,16 @@ const [riskByShipment, setRiskByShipment] = useState<Record<string, { risk_proba
           const tires: any[] = await apiFetch('/tires');
           data.push({ label: 'Pneus', value: tires.length, ok: true });
 
-          let totalCost = 0, countCost = 0;
-          const orderedByCost = [...shipments].sort((a: any, b: any) => (b.cost || 0) - (a.cost || 0));
+          let totalCost = 0,
+            countCost = 0;
+          const orderedByCost = [...shipments].sort(
+            (a: any, b: any) => (b.cost || 0) - (a.cost || 0)
+          );
           for (const s of shipments) {
-            if (typeof s.cost === 'number') { totalCost += s.cost; countCost++; }
+            if (typeof s.cost === 'number') {
+              totalCost += s.cost;
+              countCost++;
+            }
           }
           if (countCost > 0) {
             const avg = totalCost / countCost;
@@ -978,9 +988,25 @@ const [riskByShipment, setRiskByShipment] = useState<Record<string, { risk_proba
                   >
                     <div>
                       <strong>{s.id}</strong>
-                      <div style={{ color: '#888' }}>{t('common.status')}: {s.status || 'N/A'}</div>
-                      <div style={{ marginTop: 4, color: riskByShipment[s.id] ? (riskByShipment[s.id].risk_probability >= 0.66 ? '#e53935' : riskByShipment[s.id].risk_probability >= 0.33 ? '#ffb300' : '#43a047') : '#888' }}>
-                        Risco: {riskByShipment[s.id] ? `${Math.round(riskByShipment[s.id].risk_probability * 100)}%` : 'Indisponível'}
+                      <div style={{ color: '#888' }}>
+                        {t('common.status')}: {s.status || 'N/A'}
+                      </div>
+                      <div
+                        style={{
+                          marginTop: 4,
+                          color: riskByShipment[s.id]
+                            ? riskByShipment[s.id].risk_probability >= 0.66
+                              ? '#e53935'
+                              : riskByShipment[s.id].risk_probability >= 0.33
+                                ? '#ffb300'
+                                : '#43a047'
+                            : '#888',
+                        }}
+                      >
+                        Risco:{' '}
+                        {riskByShipment[s.id]
+                          ? `${Math.round(riskByShipment[s.id].risk_probability * 100)}%`
+                          : 'Indisponível'}
                       </div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
@@ -1119,7 +1145,8 @@ const [riskByShipment, setRiskByShipment] = useState<Record<string, { risk_proba
                 >
                   <h4 style={{ marginTop: 0 }}>{t('common.confirm_delete')}</h4>
                   <p style={{ color: '#ddd' }}>
-                    {t('common.delete')} {confirmDelete.type === 'customer' ? t('crm.customers') : t('crm.products')}{' '}
+                    {t('common.delete')}{' '}
+                    {confirmDelete.type === 'customer' ? t('crm.customers') : t('crm.products')}{' '}
                     {confirmDelete.name ? `"${confirmDelete.name}"` : ''}?
                   </p>
                   <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
@@ -1134,8 +1161,7 @@ const [riskByShipment, setRiskByShipment] = useState<Record<string, { risk_proba
                       }}
                     >
                       {t('common.cancel')}
-                    </button
-                    >
+                    </button>
                     <button
                       onClick={handleConfirmDelete}
                       style={{
@@ -2108,7 +2134,8 @@ const [riskByShipment, setRiskByShipment] = useState<Record<string, { risk_proba
               </div>
             )}
             <div style={{ marginTop: 12, color: '#888' }}>
-              <strong>{t('tires.maintenance')}:</strong> {t('tires.corrective')} · {t('tires.preventive')} · {t('tires.predictive')} — {t('tires.iot')}
+              <strong>{t('tires.maintenance')}:</strong> {t('tires.corrective')} ·{' '}
+              {t('tires.preventive')} · {t('tires.predictive')} — {t('tires.iot')}
             </div>
           </div>
         )}
@@ -2156,17 +2183,39 @@ const [riskByShipment, setRiskByShipment] = useState<Record<string, { risk_proba
             <h3>Rotas e Rastreamento</h3>
             <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 8 }}>
               <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                <input type="checkbox" checked={showRoutes} onChange={(e) => setShowRoutes(e.target.checked)} /> Rotas
+                <input
+                  type="checkbox"
+                  checked={showRoutes}
+                  onChange={(e) => setShowRoutes(e.target.checked)}
+                />{' '}
+                Rotas
               </label>
               <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                <input type="checkbox" checked={showStops} onChange={(e) => setShowStops(e.target.checked)} /> Paradas
+                <input
+                  type="checkbox"
+                  checked={showStops}
+                  onChange={(e) => setShowStops(e.target.checked)}
+                />{' '}
+                Paradas
               </label>
               <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                <input type="checkbox" checked={showAlerts} onChange={(e) => setShowAlerts(e.target.checked)} /> Alertas
+                <input
+                  type="checkbox"
+                  checked={showAlerts}
+                  onChange={(e) => setShowAlerts(e.target.checked)}
+                />{' '}
+                Alertas
               </label>
             </div>
-            <div style={{ height: 420, border: '1px solid #333', borderRadius: 8, overflow: 'hidden' }}>
-              <LiveMap shipments={shipmentsData} showRoutes={showRoutes} showStops={showStops} showAlerts={showAlerts} />
+            <div
+              style={{ height: 420, border: '1px solid #333', borderRadius: 8, overflow: 'hidden' }}
+            >
+              <LiveMap
+                shipments={shipmentsData}
+                showRoutes={showRoutes}
+                showStops={showStops}
+                showAlerts={showAlerts}
+              />
             </div>
             <div style={{ marginTop: 12, color: '#888' }}>
               <strong>Dica:</strong> integre Openrouteservice ou Vroom para rotas otimizadas.

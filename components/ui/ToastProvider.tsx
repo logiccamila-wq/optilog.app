@@ -1,6 +1,13 @@
 'use client';
 import { createContext, useContext, useMemo, useState } from 'react';
-import { ThemeProvider as MUIThemeProvider, createTheme, CssBaseline, Snackbar, Alert, Button } from '@mui/material';
+import {
+  ThemeProvider as MUIThemeProvider,
+  createTheme,
+  CssBaseline,
+  Snackbar,
+  Alert,
+  Button,
+} from '@mui/material';
 import { useTheme as useAppTheme } from '@/app/providers/ThemeProvider';
 
 type ToastState = {

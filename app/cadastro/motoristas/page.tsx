@@ -1,6 +1,20 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Box, TextField, Button, Typography, Alert, Paper, Snackbar, Table, TableHead, TableRow, TableCell, TableBody, CircularProgress } from '@mui/material';
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Alert,
+  Paper,
+  Snackbar,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  CircularProgress,
+} from '@mui/material';
 import Card from '@/components/ui/card';
 
 export default function CadastroMotoristasPage() {
@@ -24,11 +38,14 @@ export default function CadastroMotoristasPage() {
   const load = async () => {
     setLoadingList(true);
     try {
-      const res = await fetch(`/api/drivers?page=${page}&pageSize=${pageSize}${search ? `&q=${encodeURIComponent(search)}` : ''}`, { cache: 'no-store' });
+      const res = await fetch(
+        `/api/drivers?page=${page}&pageSize=${pageSize}${search ? `&q=${encodeURIComponent(search)}` : ''}`,
+        { cache: 'no-store' }
+      );
       if (!res.ok) throw new Error('Falha ao carregar motoristas.');
       const data = await res.json();
       const countHeader = res.headers.get('X-Total-Count');
-      const count = countHeader ? parseInt(countHeader, 10) : (Array.isArray(data) ? data.length : 0);
+      const count = countHeader ? parseInt(countHeader, 10) : Array.isArray(data) ? data.length : 0;
       setTotalCount(Number.isFinite(count) ? count : 0);
       setList(Array.isArray(data) ? data : []);
     } catch (e) {
@@ -85,7 +102,9 @@ export default function CadastroMotoristasPage() {
       cancelEdit();
       await load();
     } catch (err: any) {
-      setError(err?.message || (editingId ? 'Falha ao atualizar motorista.' : 'Falha ao salvar motorista.'));
+      setError(
+        err?.message || (editingId ? 'Falha ao atualizar motorista.' : 'Falha ao salvar motorista.')
+      );
     } finally {
       setSaving(false);
     }
@@ -131,8 +150,12 @@ export default function CadastroMotoristasPage() {
 
   // KPIs simples baseados na página atual
   const totalDrivers = list.length;
-  const cnhValidCount = list.filter((v) => String(v.cnh || '').replace(/\D/g, '').length === 11).length;
-  const phoneFilledCount = list.filter((v) => String(v.phone || '').replace(/\D/g, '').length >= 10).length;
+  const cnhValidCount = list.filter(
+    (v) => String(v.cnh || '').replace(/\D/g, '').length === 11
+  ).length;
+  const phoneFilledCount = list.filter(
+    (v) => String(v.phone || '').replace(/\D/g, '').length >= 10
+  ).length;
   const createdTodayCount = list.filter((v) => {
     const dt = v.created_at ? new Date(v.created_at) : null;
     if (!dt) return false;
@@ -148,7 +171,13 @@ export default function CadastroMotoristasPage() {
       </Paper>
 
       {/* KPIs */}
-      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 2 }}>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: 2,
+        }}
+      >
         <Card title="Motoristas (total)" className="">
           <div style={{ fontSize: 24, fontWeight: 700 }}>{totalCount}</div>
         </Card>
@@ -164,12 +193,7 @@ export default function CadastroMotoristasPage() {
       </Box>
 
       <Box component="form" onSubmit={onSubmit} sx={{ display: 'grid', gap: 2, maxWidth: 520 }}>
-        <TextField
-          label="Nome"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
+        <TextField label="Nome" value={name} onChange={(e) => setName(e.target.value)} required />
         <TextField
           label="CNH"
           value={cnh}
@@ -185,11 +209,21 @@ export default function CadastroMotoristasPage() {
           onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 11))}
           inputProps={{ inputMode: 'tel', maxLength: 16 }}
           error={!!phone && !isPhoneValid}
-          helperText={!!phone && !isPhoneValid ? 'Telefone inválido (mínimo 10 dígitos)' : 'Opcional — formata automaticamente'}
+          helperText={
+            !!phone && !isPhoneValid
+              ? 'Telefone inválido (mínimo 10 dígitos)'
+              : 'Opcional — formata automaticamente'
+          }
         />
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button type="submit" variant="contained" disabled={!canSubmit}>
-            {saving ? (editingId ? 'Atualizando...' : 'Salvando...') : editingId ? 'Atualizar Motorista' : 'Salvar Motorista'}
+            {saving
+              ? editingId
+                ? 'Atualizando...'
+                : 'Salvando...'
+              : editingId
+                ? 'Atualizar Motorista'
+                : 'Salvar Motorista'}
           </Button>
           {editingId && (
             <Button onClick={cancelEdit} variant="text" disabled={saving}>
@@ -220,9 +254,23 @@ export default function CadastroMotoristasPage() {
             inputProps={{ min: 1, max: 100 }}
             sx={{ width: 100 }}
           />
-          <Typography variant="body2" sx={{ mx: 1 }}>Página {page}</Typography>
-          <Button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={loadingList || page <= 1} variant="outlined">Anterior</Button>
-          <Button onClick={() => setPage((p) => p + 1)} disabled={loadingList || (page * pageSize >= totalCount)} variant="outlined">Próxima</Button>
+          <Typography variant="body2" sx={{ mx: 1 }}>
+            Página {page}
+          </Typography>
+          <Button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={loadingList || page <= 1}
+            variant="outlined"
+          >
+            Anterior
+          </Button>
+          <Button
+            onClick={() => setPage((p) => p + 1)}
+            disabled={loadingList || page * pageSize >= totalCount}
+            variant="outlined"
+          >
+            Próxima
+          </Button>
           <Button onClick={load} disabled={loadingList} variant="outlined">
             {loadingList ? 'Atualizando...' : 'Atualizar'}
           </Button>
@@ -250,12 +298,27 @@ export default function CadastroMotoristasPage() {
                   <TableCell>{v.name}</TableCell>
                   <TableCell>{v.cnh}</TableCell>
                   <TableCell>{v.phone ? formatPhone(String(v.phone)) : '—'}</TableCell>
-                  <TableCell>{v.created_at ? new Date(v.created_at).toLocaleDateString('pt-BR') : '—'}</TableCell>
-                  <TableCell>{v.updated_at ? new Date(v.updated_at).toLocaleDateString('pt-BR') : '—'}</TableCell>
+                  <TableCell>
+                    {v.created_at ? new Date(v.created_at).toLocaleDateString('pt-BR') : '—'}
+                  </TableCell>
+                  <TableCell>
+                    {v.updated_at ? new Date(v.updated_at).toLocaleDateString('pt-BR') : '—'}
+                  </TableCell>
                   <TableCell>
                     <Box sx={{ display: 'flex', gap: 1 }}>
-                      <Button size="small" onClick={() => startEdit(v)} disabled={saving || deletingId === v.id}>Editar</Button>
-                      <Button size="small" color="error" onClick={() => onDelete(v.id)} disabled={deletingId === v.id}>
+                      <Button
+                        size="small"
+                        onClick={() => startEdit(v)}
+                        disabled={saving || deletingId === v.id}
+                      >
+                        Editar
+                      </Button>
+                      <Button
+                        size="small"
+                        color="error"
+                        onClick={() => onDelete(v.id)}
+                        disabled={deletingId === v.id}
+                      >
                         {deletingId === v.id ? 'Excluindo...' : 'Excluir'}
                       </Button>
                     </Box>

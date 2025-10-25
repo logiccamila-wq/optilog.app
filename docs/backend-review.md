@@ -4,11 +4,13 @@ Gerado em: 2025-10-19 20:12:46
 Base: $TargetPath = C:\Users\Pichau\devoptilog-app\optilog-app\backend
 
 ## Visão Geral
+
 - Profundidade analisada: $MaxDepth = 3
 - Ignorados: node_modules, .next, .cache, .firebase, .vercel, dist, build, coverage, tmp, .temp, .git, .pnpm-store, out
 - Saída: ./optilog-app/docs/backend-review.md
 
 ## Árvore de Pastas (até 3 níveis)
+
 ```
 ├── data
 ├── functions
@@ -18,7 +20,9 @@ Base: $TargetPath = C:\Users\Pichau\devoptilog-app\optilog-app\backend
 ```
 
 ## Dependências e Scripts (backend/package.json)
+
 **Dependencies**
+
 - bcryptjs: ^2.4.3
 - cors: ^2.8.5
 - dotenv: ^16.4.5
@@ -30,16 +34,20 @@ Base: $TargetPath = C:\Users\Pichau\devoptilog-app\optilog-app\backend
 - sqlite3: ^5.1.6
 
 **DevDependencies**
+
 - (nenhuma)
 
 **Scripts**
+
 - start: node app.js
 
 ## Entrypoints
+
 - C:\Users\Pichau\devoptilog-app\optilog-app\backend\server.js
 - C:\Users\Pichau\devoptilog-app\optilog-app\backend\app.js
 
-## Variáveis de Ambiente (.env*)
+## Variáveis de Ambiente (.env\*)
+
 - Arquivo: C:\Users\Pichau\devoptilog-app\optilog-app\.env
   - Keys: FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY, FIREBASE_PROJECT_ID, NEXT_PUBLIC_BACKEND_URL, NEXT_PUBLIC_DASHBOARD_URL, NEXT_PUBLIC_DEFAULT_LOCALE, NEXT_PUBLIC_IOT_WS_URL, NEXT_PUBLIC_MAPBOX_TOKEN, NEXT_PUBLIC_ORS_PROXY_URL, PORT, RESPONSIVE_CLUSTERS_URL, SUNFLOW_SERVICE_URL
 - Arquivo: C:\Users\Pichau\devoptilog-app\optilog-app\.env.example
@@ -54,6 +62,7 @@ Base: $TargetPath = C:\Users\Pichau\devoptilog-app\optilog-app\backend
   - Keys: DATABASE_URL, DB_PATH, JWT_SECRET, OPENAI_API_KEY, PORT
 
 ## Top 25 Arquivos Maiores
+
 - 104 KB — C:\Users\Pichau\devoptilog-app\optilog-app\backend\package-lock.json
 - 68 KB — C:\Users\Pichau\devoptilog-app\optilog-app\backend\optilog.db
 - 10 KB — C:\Users\Pichau\devoptilog-app\optilog-app\backend\db.js
@@ -81,6 +90,7 @@ Base: $TargetPath = C:\Users\Pichau\devoptilog-app\optilog-app\backend
 - 414 B — C:\Users\Pichau\devoptilog-app\optilog-app\backend\test-neon.mjs
 
 ## Padrões Ignorados
+
 - node_modules
 - .next
 - .cache
@@ -96,6 +106,7 @@ Base: $TargetPath = C:\Users\Pichau\devoptilog-app\optilog-app\backend
 - out
 
 ## Como Rodar (se aplicável)
+
 - Verificar Node e npm: `node -v` / `npm -v`
 - A partir do backend: `npm install`
 - Executar: `npm run start` (conforme scripts do package.json)

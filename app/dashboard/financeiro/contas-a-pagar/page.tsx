@@ -9,7 +9,14 @@ export default function ContasAPagarPage() {
       <p style={{ color: colors.muted, fontSize: typography.subtitle }}>
         Cadastre lançamentos, gerencie vencimentos, aprovações e pagamentos.
       </p>
-      <div style={{ border: `1px solid ${colors.border}`, borderRadius: 8, backgroundColor: colors.surface, padding: spacing.medium }}>
+      <div
+        style={{
+          border: `1px solid ${colors.border}`,
+          borderRadius: 8,
+          backgroundColor: colors.surface,
+          padding: spacing.medium,
+        }}
+      >
         <p style={{ margin: 0 }}>Tabela e CRUD virão aqui (integração com backend).</p>
       </div>
     </div>

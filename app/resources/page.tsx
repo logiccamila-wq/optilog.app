@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from 'next/link';
 
 export default function ResourcesPage() {
   const items = [
@@ -8,12 +8,14 @@ export default function ResourcesPage() {
     { label: 'Kits Backend', href: '/kits/backend' },
     { label: 'API Data (docs/data-api.md)', href: '/docs/data-api.md' },
     { label: 'DevTools (modo desenvolvedor)', href: '/dev' },
-  ]
+  ];
 
   return (
     <section>
       <h1 style={{ marginTop: 0 }}>Recursos & Kits</h1>
-      <p style={{ color: '#9aa3b0' }}>Documentação, kits e atalhos para acelerar desenvolvimento.</p>
+      <p style={{ color: '#9aa3b0' }}>
+        Documentação, kits e atalhos para acelerar desenvolvimento.
+      </p>
       <ul style={{ paddingLeft: 18 }}>
         {items.map((i) => (
           <li key={i.label}>
@@ -27,5 +29,5 @@ export default function ResourcesPage() {
         Dica: use o script de scaffold em <code>scripts/scaffold.js</code> para criar módulos.
       </div>
     </section>
-  )
+  );
 }

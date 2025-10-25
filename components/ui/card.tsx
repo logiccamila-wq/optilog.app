@@ -9,7 +9,10 @@ type CardProps = React.HTMLAttributes<HTMLDivElement> & {
 export default function Card({ className, children, title, description, ...props }: CardProps) {
   return (
     <div
-      className={cn('rounded-[var(--radius)] border border-[var(--color-border)] bg-[var(--color-secondary)] p-4 text-[var(--color-text)]', className)}
+      className={cn(
+        'rounded-[var(--radius)] border border-[var(--color-border)] bg-[var(--color-secondary)] p-4 text-[var(--color-text)]',
+        className
+      )}
       {...props}
     >
       {(title || description) && (

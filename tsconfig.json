@@ -2,16 +2,10 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"]
     },
     "target": "ES2017",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -40,13 +34,10 @@
     "utils/**/*.tsx",
     "lib/**/*.ts",
     "lib/**/*.tsx",
+    "lib/**/*.d.ts",
     "dist/types/**/*.ts",
-    ".next-aggressive/types/**/*.ts"
+    ".next-aggressive/types/**/*.ts",
+    "global.d.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "functions/**",
-    "supabase/**",
-    "index.ts"
-  ]
+  "exclude": ["node_modules", "functions/**", "supabase/**", "index.ts"]
 }

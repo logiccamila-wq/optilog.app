@@ -10,5 +10,5 @@ export default function ScmPage() {
         <li>Exportações e distribuição</li>
       </ul>
     </section>
-  )
+  );
 }

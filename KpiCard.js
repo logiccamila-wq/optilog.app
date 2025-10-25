@@ -1,5 +1,8 @@
 const KpiCard = ({ title, value, change, changeType = 'increase' }) => {
-  const changeColor = changeType === 'increase' ? 'text-[var(--color-success,#16a34a)]' : 'text-[var(--color-danger,#ef4444)]';
+  const changeColor =
+    changeType === 'increase'
+      ? 'text-[var(--color-success,#16a34a)]'
+      : 'text-[var(--color-danger,#ef4444)]';
   const arrow = changeType === 'increase' ? '↑' : '↓';
 
   return (

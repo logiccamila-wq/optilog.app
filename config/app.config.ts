@@ -48,8 +48,7 @@ export const appConfig = {
     },
     supabase: {
       enabled:
-        !!process.env.NEXT_PUBLIC_SUPABASE_URL &&
-        !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        !!process.env.NEXT_PUBLIC_SUPABASE_URL && !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
       url: process.env.NEXT_PUBLIC_SUPABASE_URL,
       anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     },
@@ -61,7 +60,9 @@ export const appConfig = {
       webhookBase: process.env.NEXT_PUBLIC_N8N_WEBHOOK_BASE || '/webhook',
     },
     zohoMail: {
-      enabled: !!process.env.NEXT_PUBLIC_ZOHO_MAIL_API_BASE_URL && !!process.env.NEXT_PUBLIC_ZOHO_MAIL_TOKEN,
+      enabled:
+        !!process.env.NEXT_PUBLIC_ZOHO_MAIL_API_BASE_URL &&
+        !!process.env.NEXT_PUBLIC_ZOHO_MAIL_TOKEN,
       apiBaseUrl: process.env.NEXT_PUBLIC_ZOHO_MAIL_API_BASE_URL,
       token: process.env.NEXT_PUBLIC_ZOHO_MAIL_TOKEN,
       accountId: process.env.NEXT_PUBLIC_ZOHO_MAIL_ACCOUNT_ID,
@@ -99,6 +100,13 @@ export const appConfig = {
     supabase?: { enabled: boolean; url?: string; anonKey?: string };
     n8n?: { enabled: boolean; baseUrl?: string; healthPath?: string; webhookBase?: string };
     zohoMail?: { enabled: boolean; apiBaseUrl?: string; token?: string; accountId?: string };
-    sefaz?: { enabled: boolean; env?: string; cteBaseUrl?: string; certificatePath?: string; certificateId?: string; companyCNPJ?: string };
+    sefaz?: {
+      enabled: boolean;
+      env?: string;
+      cteBaseUrl?: string;
+      certificatePath?: string;
+      certificateId?: string;
+      companyCNPJ?: string;
+    };
   };
 };

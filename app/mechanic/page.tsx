@@ -1,198 +1,148 @@
-'use client';
+ 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
-import AccessControl from '@/components/AccessControl';
-import { useTheme } from '@/app/providers/ThemeProvider';
-import Link from 'next/link';
+ import React, { useState } from 'react';
+ import Link from 'next/link';
+ import AccessControl from '@/components/AccessControl';
+ import { SmartDashboard } from '@/components/SmartDashboard';
+ import { lightColors, darkColors } from '@/types/theme';
+ import type { Colors } from '@/types/theme';
+ import { useTheme } from '@/app/providers/ThemeProvider';
 
-export default function MechanicAppPage() {
-  const { effectiveMode, setMode, accent } = useTheme();
-  const [tab, setTab] = useState<'os' | 'pneus' | 'posto' | 'qualidade'>('os');
+ export default function MechanicAppPage(): JSX.Element {
+   const { effectiveMode, setMode } = useTheme();
+   const [selectedVehicle, setSelectedVehicle] = useState<string>('');
+   const [tab, setTab] = useState<'os' | 'manutencoes' | 'preditiva'>('os');
 
-  const colors = useMemo(() => ({
-    bg: effectiveMode === 'dark' ? '#0d111b' : '#ffffff',
-    text: effectiveMode === 'dark' ? '#ffffff' : '#0f172a',
-    surface: effectiveMode === 'dark' ? '#0f172a' : '#f8fafc',
-    border: effectiveMode === 'dark' ? '#1f2937' : '#e5e7eb',
-    muted: effectiveMode === 'dark' ? '#94a3b8' : '#64748b',
-    accent,
-  }), [effectiveMode, accent]);
+   const colors: Colors = effectiveMode === 'dark' ? darkColors : lightColors;
 
-  return (
-    <AccessControl roles={["mechanic", "admin"]}>
-      <main className="container" style={{ display: 'grid', gap: 16, color: colors.text }}>
-      <header style={{ position: 'sticky', top: 0, background: colors.bg, paddingTop: 8 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h1 style={{ margin: 0, fontSize: 24 }}>Painel do Mecânico • Gestão Integrada</h1>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button
-              onClick={() => setMode(effectiveMode === 'dark' ? 'light' : 'dark')}
-              style={{
-                padding: '6px 10px',
-                borderRadius: 8,
-                border: `1px solid ${colors.border}`,
-                background: colors.surface,
-                color: colors.text,
-              }}
-            >
-              {effectiveMode === 'dark' ? 'Modo Claro' : 'Modo Escuro'}
-            </button>
-          </div>
-        </div>
-        {/* Links rápidos para Frota */}
-        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-          <Link href="/frota/manutencoes" style={{ border: `1px solid ${colors.border}`, borderRadius: 8, padding: '6px 10px', textDecoration: 'none', color: colors.text }}>Manutenções</Link>
-          <Link href="/frota/abastecimentos" style={{ border: `1px solid ${colors.border}`, borderRadius: 8, padding: '6px 10px', textDecoration: 'none', color: colors.text }}>Abastecimentos</Link>
-        </div>
-        <nav style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-          {[
-            { key: 'os', label: 'Ordens de Serviço (OS)' },
-            { key: 'pneus', label: 'Gestão de Pneus' },
-            { key: 'posto', label: 'Posto Interno' },
-            { key: 'qualidade', label: 'Qualidade & KPIs' },
-          ].map((i) => (
-            <button
-              key={i.key}
-              onClick={() => setTab(i.key as any)}
-              style={{
-                padding: '8px 12px',
-                borderRadius: 10,
-                border: `1px solid ${colors.border}`,
-                background: tab === i.key ? colors.accent : colors.surface,
-                color: tab === i.key ? '#ffffff' : colors.text,
-                fontWeight: tab === i.key ? 600 : 500,
-              }}
-            >
-              {i.label}
-            </button>
-          ))}
-        </nav>
-      </header>
+   const tabs = [
+     { key: 'os' as const, label: 'Ordens de Serviço' },
+     { key: 'manutencoes' as const, label: 'Manutenções' },
+     { key: 'preditiva' as const, label: 'Manutenção Preditiva' },
+   ];
 
-      {tab === 'os' && (
-        <section style={{ border: `1px solid ${colors.border}`, borderRadius: 12, padding: 16, background: colors.surface }}>
-          <h2 style={{ marginTop: 0 }}>Abertura e Consulta de OS</h2>
-          <p style={{ color: colors.muted }}>Procure o veículo e inicie uma OS com fotos e laudos. Sem uso de verde/amarelo; foco em branco/azul.</p>
+   return (
+     <AccessControl roles={['mechanic', 'admin']}>
+       <main className="mechanic-dashboard animate-fadeIn" style={{ background: colors.background, color: colors.text }}>
+         <div className="dashboard-content">
+           <header className="header-section">
+             <div>
+               <h1>Painel do Mecânico</h1>
+               <p className="subtitle">Gestão integrada de manutenção e OS</p>
+             </div>
 
-          <div style={{ display: 'grid', gap: 12, gridTemplateColumns: '1fr auto' }}>
-            <input
-              placeholder="Buscar por placa, modelo ou matrícula"
-              style={{
-                padding: '10px 12px',
-                borderRadius: 10,
-                border: `1px solid ${colors.border}`,
-                background: colors.bg,
-                color: colors.text,
-              }}
-            />
-            <button
-              style={{
-                padding: '10px 16px',
-                borderRadius: 10,
-                border: 'none',
-                background: colors.accent,
-                color: '#ffffff',
-                fontWeight: 600,
-              }}
-            >
-              Abrir OS
-            </button>
-          </div>
+             <div className="header-actions">
+               <label htmlFor="vehicle" className="sr-only">Selecionar veículo</label>
+               <select
+                 id="vehicle"
+                 className="vehicle-select"
+                 value={selectedVehicle}
+                 onChange={(e) => setSelectedVehicle(e.target.value)}
+               >
+                 <option value="">Selecionar Veículo</option>
+                 <option value="vehicle_001">Veículo 001</option>
+                 <option value="vehicle_002">Veículo 002</option>
+                 <option value="vehicle_003">Veículo 003</option>
+               </select>
 
-          <div style={{ marginTop: 16, overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr>
-                  {['OS', 'Veículo', 'Serviço', 'Status', 'Abertura'].map((h) => (
-                    <th key={h} style={{ textAlign: 'left', padding: 10, borderBottom: `1px solid ${colors.border}`, color: colors.muted }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  { id: 'OS-1204', v: 'ABC-1234', serv: 'Troca de Pastilhas', st: 'Pendente', ab: '18/10/2025' },
-                  { id: 'OS-1205', v: 'DEF-5678', serv: 'Alinhamento', st: 'Em Execução', ab: '18/10/2025' },
-                  { id: 'OS-1206', v: 'GHI-9012', serv: 'Troca de Óleo', st: 'Finalizada', ab: '17/10/2025' },
-                ].map((row) => (
-                  <tr key={row.id}>
-                    <td style={{ padding: 10, borderBottom: `1px solid ${colors.border}` }}>{row.id}</td>
-                    <td style={{ padding: 10, borderBottom: `1px solid ${colors.border}` }}>{row.v}</td>
-                    <td style={{ padding: 10, borderBottom: `1px solid ${colors.border}` }}>{row.serv}</td>
-                    <td style={{ padding: 10, borderBottom: `1px solid ${colors.border}` }}>{row.st}</td>
-                    <td style={{ padding: 10, borderBottom: `1px solid ${colors.border}` }}>{row.ab}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      )}
+               <button
+                 type="button"
+                 aria-pressed={effectiveMode === 'dark'}
+                 className="theme-toggle"
+                 onClick={() => setMode(effectiveMode === 'dark' ? 'light' : 'dark')}
+               >
+                 {effectiveMode === 'dark' ? 'Modo Claro' : 'Modo Escuro'}
+               </button>
+             </div>
+           </header>
 
-      {tab === 'pneus' && (
-        <section style={{ border: `1px solid ${colors.border}`, borderRadius: 12, padding: 16, background: colors.surface }}>
-          <h2 style={{ marginTop: 0 }}>Gestão de Pneus</h2>
-          <p style={{ color: colors.muted }}>Registro de vida útil, pressão/temperatura e histórico de manutenção.</p>
-          <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(3, 1fr)' }}>
-            {['Calibragem', 'Rodízio', 'Substituição'].map((a) => (
-              <div key={a} style={{ border: `1px solid ${colors.border}`, borderRadius: 10, padding: 12, background: colors.bg }}>
-                <strong>{a}</strong>
-                <p style={{ color: colors.muted, margin: '8px 0 0' }}>Registre eventos por veículo e posição.</p>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+           <nav className="tabs-section" aria-label="Seções do mecânico">
+             {tabs.map((t) => (
+               <button
+                 key={t.key}
+                 type="button"
+                 onClick={() => setTab(t.key)}
+                 className={`tab ${tab === t.key ? 'active' : ''}`}
+                 aria-current={tab === t.key ? 'true' : undefined}
+               >
+                 {t.label}
+               </button>
+             ))}
+           </nav>
 
-      {tab === 'posto' && (
-        <section style={{ border: `1px solid ${colors.border}`, borderRadius: 12, padding: 16, background: colors.surface }}>
-          <h2 style={{ marginTop: 0 }}>Gestão do Posto Interno (Abastecimento)</h2>
-          <div style={{ display: 'grid', gap: 12, gridTemplateColumns: '2fr 1fr' }}>
-            <div style={{ border: `1px solid ${colors.border}`, borderRadius: 10, padding: 12, background: colors.bg }}>
-              <div style={{ display: 'grid', gap: 8, gridTemplateColumns: 'repeat(2, 1fr)' }}>
-                <input placeholder="Placa" style={{ padding: '10px 12px', borderRadius: 8, border: `1px solid ${colors.border}`, background: colors.surface, color: colors.text }} />
-                <input placeholder="Litros" style={{ padding: '10px 12px', borderRadius: 8, border: `1px solid ${colors.border}`, background: colors.surface, color: colors.text }} />
-                <input placeholder="Preço/L" style={{ padding: '10px 12px', borderRadius: 8, border: `1px solid ${colors.border}`, background: colors.surface, color: colors.text }} />
-                <input placeholder="Hodômetro" style={{ padding: '10px 12px', borderRadius: 8, border: `1px solid ${colors.border}`, background: colors.surface, color: colors.text }} />
-              </div>
-              <div style={{ marginTop: 10 }}>
-                <button style={{ padding: '10px 14px', borderRadius: 8, border: 'none', background: colors.accent, color: '#fff', fontWeight: 600 }}>Registrar Abastecimento</button>
-              </div>
-            </div>
-            <div style={{ border: `1px solid ${colors.border}`, borderRadius: 10, padding: 12, background: colors.bg }}>
-              <strong>Estoque & Preços</strong>
-              <ul style={{ marginTop: 10, color: colors.muted }}>
-                <li>Diesel S10: 3.200 L • R$ 6,19/L</li>
-                <li>Arla32: 410 L • R$ 4,29/L</li>
-                <li>Lubrificantes: 120 L • R$ 19,90/L</li>
-              </ul>
-            </div>
-          </div>
-        </section>
-      )}
+           <section>
+             {selectedVehicle ? (
+               <SmartDashboard role="mechanic" vehicleId={selectedVehicle} activeTab={tab} />
+             ) : (
+               <div className="select-vehicle-message">Selecione um veículo para visualizar o dashboard</div>
+             )}
+           </section>
 
-      {tab === 'qualidade' && (
-        <section style={{ border: `1px solid ${colors.border}`, borderRadius: 12, padding: 16, background: colors.surface }}>
-          <h2 style={{ marginTop: 0 }}>Performance, POPs e Normas de Qualidade</h2>
-          <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(3, 1fr)' }}>
-            {[
-              { label: 'Tempo médio de serviço', value: '1h 25m' },
-              { label: 'OS finalizadas (sem retrabalho)', value: '92%' },
-              { label: 'Cumprimento de POPs', value: '98%' },
-            ].map((m) => (
-              <div key={m.label} style={{ border: `1px solid ${colors.border}`, borderRadius: 10, padding: 12, background: colors.bg }}>
-                <strong>{m.value}</strong>
-                <p style={{ color: colors.muted, margin: '6px 0 0' }}>{m.label}</p>
-              </div>
-            ))}
-          </div>
-          <div style={{ marginTop: 12 }}>
-            <strong>Biblioteca Técnica e POPs</strong>
-            <p style={{ color: colors.muted, marginTop: 6 }}>Documentos de referência e instruções de manutenção padronizadas.</p>
-          </div>
-        </section>
-      )}
-    </main>
-    </AccessControl>
-  );
-}
+           <div className="quick-links" aria-hidden={false}>
+             <Link href="/frota/manutencoes" className="link-button">Manutenções</Link>
+             <Link href="/frota/abastecimentos" className="link-button">Abastecimentos</Link>
+             <Link href="/frota/pneus" className="link-button">Gestão de Pneus</Link>
+           </div>
+         </div>
+
+        <style jsx>{`
+          @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+
+          @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+          }
+
+          .mechanic-dashboard { 
+            padding: 20px; 
+            max-width: 1200px; 
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease-out;
+          }
+          
+          .dashboard-content { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px; 
+            transition: all 0.3s ease;
+          }
+           .header-section { display:flex; justify-content:space-between; align-items:center; }
+           .subtitle { margin:6px 0 0 0; color: ${colors.textMuted}; font-size: 0.95rem; }
+
+           .header-actions { display:flex; gap:12px; align-items:center; }
+           .vehicle-select {
+             padding:8px 12px; border-radius:10px; border:1px solid ${colors.border};
+             background:${colors.surface}; color:${colors.text}; min-width:220px;
+           }
+           .theme-toggle {
+             padding:8px 12px; border-radius:10px; border:1px solid ${colors.border};
+             background: linear-gradient(90deg, ${colors.accent} 0%, ${colors.surface} 100%);
+             color:#fff; cursor:pointer; box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+           }
+           .tabs-section { display:flex; gap:8px; }
+           .tab { padding:8px 14px; border-radius:10px; border:1px solid ${colors.border};
+             background:${colors.surface}; color:${colors.text}; cursor:pointer; }
+           .tab.active { background:${colors.accent}; color:#fff; border-color:${colors.accent}; box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+
+           .select-vehicle-message {
+             text-align:center; padding:28px; background:${colors.surface}; border-radius:12px;
+             border:1px solid ${colors.border}; color:${colors.textMuted};
+           }
+
+           .quick-links { display:flex; gap:8px; margin-top:6px; }
+           .link-button {
+             display:inline-block; text-decoration:none; padding:8px 12px; border-radius:10px;
+             border:1px solid ${colors.border}; background:${colors.surface}; color:${colors.text};
+           }
+
+           .sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+             overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+         `}</style>
+       </main>
+     </AccessControl>
+   );
+ }

@@ -3,6 +3,7 @@
 Nossa cultura organiza o desenvolvimento com uma base única, previsível e escalável.
 
 ## Princípios
+
 - Stack única: `Next.js 14 + TypeScript` (frontend/API) e `Neon Postgres` (DB).
 - Deploy preferencial: `Vercel` (preview e produção) com envs seguras.
 - Modularidade orientada a domínio (Financeiro, Contabilidade, Fiscal, Risco, BI, Jurídico).
@@ -13,6 +14,7 @@ Nossa cultura organiza o desenvolvimento com uma base única, previsível e esca
 - Segurança: JWT com JWKS, princípio de mínimo privilégio, RLS onde aplicável.
 
 ## Fluxo de Trabalho
+
 - Planejamento em módulos com épicos/tarefas e checklists de entrega.
 - Dev local com `npm run dev` e `.env.local` contendo `DATABASE_URL`.
 - Dados: schema principal em `backend/postgres/schema.sql` e extensões em `schema_additions.sql`.
@@ -21,6 +23,7 @@ Nossa cultura organiza o desenvolvimento com uma base única, previsível e esca
 - Release: branches por feature, preview em Vercel, produção após validação funcional.
 
 ## Estrutura de Pastas (essencial)
+
 - `app/` páginas e rotas (`/dashboard/financeiro`, `/api/*`).
 - `lib/` conexão DB (`lib/db.ts`), modelos (`lib/models/*`), JWT (`lib/jwt.ts`).
 - `backend/postgres/` schema SQL e migrações auxiliares.
@@ -29,6 +32,7 @@ Nossa cultura organiza o desenvolvimento com uma base única, previsível e esca
 - `kits/` padrões e guias para frontend/backend.
 
 ## Qualidade e Padrões
+
 - UI usa `ThemeProvider` com tokens; componentes simples e acessíveis.
 - Internacionalização com `I18nProvider`; chaves por módulo.
 - API segue REST simples com verbos consistentes, usando `getSql()` para Neon.
@@ -36,12 +40,14 @@ Nossa cultura organiza o desenvolvimento com uma base única, previsível e esca
 - Performance: consultas indexadas, paginação na API, lazy data no frontend.
 
 ## Segurança e Compliance
+
 - Autenticação via Bearer JWT, verificação em `lib/jwt.ts`.
 - Configurações `.env.local.example` como referência; segredos só em runtime.
 - Logs mínimos em produção, sem dados sensíveis.
 - RLS aplicada em tabelas expostas a usuários finais; auditoria em lançamentos contábeis.
 
 ## Colaboração
+
 - Decisões arquiteturais registradas em `docs/*`.
 - Tarefas complexas acompanhadas por lista de TODOs e estados.
 - Comunicação objetiva, foco em entregáveis e validação por preview.

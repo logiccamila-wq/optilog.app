@@ -1,5 +1,5 @@
-import Link from 'next/link'
-import { Boxes, Package, Truck, ShoppingCart, Users } from 'lucide-react'
+import Link from 'next/link';
+import { Boxes, Package, Truck, ShoppingCart, Users } from 'lucide-react';
 
 export default function ModulesHome() {
   const groups = [
@@ -12,7 +12,7 @@ export default function ModulesHome() {
         'Recebimento e separação',
         'Endereçamento e expedição',
         'Inventário e armazenagem',
-        'Transferências e controle de entrega'
+        'Transferências e controle de entrega',
       ],
     },
     {
@@ -24,7 +24,7 @@ export default function ModulesHome() {
         'Rastreamento de mercadorias',
         'Controle de cargas e documentação',
         'Relatório de faturamento',
-        'Simulações de frete e rotas'
+        'Simulações de frete e rotas',
       ],
     },
     {
@@ -36,7 +36,7 @@ export default function ModulesHome() {
         'Processamento de pedidos',
         'Gestão multi-canal',
         'Segurança e visão centralizada',
-        'Informações em tempo real'
+        'Informações em tempo real',
       ],
     },
     {
@@ -55,7 +55,7 @@ export default function ModulesHome() {
         'Registro e atendimento',
         'Captura e análise de dados',
         'Simplificação de tarefas',
-        'Projeções e campanhas'
+        'Projeções e campanhas',
       ],
     },
     {
@@ -65,7 +65,7 @@ export default function ModulesHome() {
       color: '#d2c1ff',
       items: ['Financeiro e contabilidade', 'Produção', 'RH', 'Relatórios e gestão de ativos'],
     },
-  ]
+  ];
 
   return (
     <div>
@@ -73,9 +73,15 @@ export default function ModulesHome() {
       <p style={{ color: '#9aa3b0' }}>
         Organização com coluna à esquerda e agrupamentos por domínio. Escolha um módulo para abrir.
       </p>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+          gap: 16,
+        }}
+      >
         {groups.map((g) => {
-          const Icon = g.icon
+          const Icon = g.icon;
           return (
             <Link key={g.key} href={`/modules/${g.key}`} style={{ textDecoration: 'none' }}>
               <div
@@ -83,7 +89,8 @@ export default function ModulesHome() {
                   border: '1px solid #222',
                   borderRadius: 10,
                   padding: 16,
-                  background: 'linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.03))',
+                  background:
+                    'linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.03))',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
@@ -97,9 +104,9 @@ export default function ModulesHome() {
                 </ul>
               </div>
             </Link>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }

@@ -63,7 +63,17 @@ const DEFAULT_LIGHT = {
   secondary: '#f5f7fb',
 };
 
-const PRESETS: Record<PresetName, { accent: string; text: string; bg: string; secondary: string; font?: string; mode: 'light' | 'dark'; }> = {
+const PRESETS: Record<
+  PresetName,
+  {
+    accent: string;
+    text: string;
+    bg: string;
+    secondary: string;
+    font?: string;
+    mode: 'light' | 'dark';
+  }
+> = {
   neon: {
     accent: '#39FF14',
     text: '#E6F3FF',
@@ -90,15 +100,15 @@ const PRESETS: Record<PresetName, { accent: string; text: string; bg: string; se
   },
   solarized: {
     accent: '#268BD2', // solarized blue
-    text: '#073642',   // base02
-    bg: '#FDF6E3',     // base3 light bg
+    text: '#073642', // base02
+    bg: '#FDF6E3', // base3 light bg
     secondary: '#EEE8D5', // base2
     font: 'Inter, system-ui, sans-serif',
     mode: 'light',
   },
   mono: {
     accent: '#6B7280', // gray-500
-    text: '#111827',   // gray-900
+    text: '#111827', // gray-900
     bg: '#FFFFFF',
     secondary: '#F3F4F6', // gray-100
     font: '"Segoe UI Variable", system-ui, sans-serif',
@@ -108,7 +118,9 @@ const PRESETS: Record<PresetName, { accent: string; text: string; bg: string; se
 
 function getSystemMode(): 'light' | 'dark' {
   try {
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
   } catch {
     return 'dark';
   }
@@ -145,7 +157,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       if (f) setFontState(f);
       if (s) setSecondaryState(s);
       if (al === 'left' || al === 'center' || al === 'right') setAlignState(al);
-    } catch {}
+    } catch (error) {
+      console.debug('Erro ao carregar preferências de tema:', error);
+    }
   }, []);
 
   // Apply URL parameter overrides (non-persistent for /display)
@@ -171,9 +185,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       if (textParam) setTextState(normalizeColor(textParam));
       if (bgParam) setBgState(normalizeColor(bgParam));
       if (fontParam) setFontState(fontParam);
-      if (alignParam === 'left' || alignParam === 'center' || alignParam === 'right') setAlignState(alignParam);
-      if (modeParam === 'light' || modeParam === 'dark' || modeParam === 'system') setModeState(modeParam);
-    } catch {}
+      if (alignParam === 'left' || alignParam === 'center' || alignParam === 'right')
+        setAlignState(alignParam);
+      if (modeParam === 'light' || modeParam === 'dark' || modeParam === 'system')
+        setModeState(modeParam);
+    } catch (error) {
+      console.debug('Erro ao aplicar parâmetros de URL:', error);
+    }
   }, [searchParams, pathname]);
 
   // Persist preferences (skip when on /display)
@@ -187,7 +205,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem('theme_font', font);
       localStorage.setItem('theme_secondary', secondary);
       localStorage.setItem('theme_align', align);
-    } catch {}
+    } catch (error) {
+      console.debug('Erro ao persistir preferências de tema:', error);
+    }
   }, [mode, accent, text, bg, font, secondary, align, pathname]);
 
   const effectiveMode = useMemo<'light' | 'dark'>(() => {
@@ -196,26 +216,35 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [mode]);
 
   // Tokens derivados do estado atual de tema
-  const colorsTokens = useMemo(() => ({
-    background: bg,
-    text,
-    muted: effectiveMode === 'dark' ? '#9aa4b2' : '#6b7280',
-    surface: secondary,
-    border: effectiveMode === 'dark' ? '#243242' : '#e5e7eb',
-  }), [bg, text, secondary, effectiveMode]);
+  const colorsTokens = useMemo(
+    () => ({
+      background: bg,
+      text,
+      muted: effectiveMode === 'dark' ? '#9aa4b2' : '#6b7280',
+      surface: secondary,
+      border: effectiveMode === 'dark' ? '#243242' : '#e5e7eb',
+    }),
+    [bg, text, secondary, effectiveMode]
+  );
 
-  const spacingTokens = useMemo(() => ({
-    small: '8px',
-    medium: '16px',
-    large: '24px',
-  }), []);
+  const spacingTokens = useMemo(
+    () => ({
+      small: '8px',
+      medium: '16px',
+      large: '24px',
+    }),
+    []
+  );
 
-  const typographyTokens = useMemo(() => ({
-    h1: '1.75rem',
-    h2: '1.25rem',
-    subtitle: '0.95rem',
-    body: '1rem',
-  }), []);
+  const typographyTokens = useMemo(
+    () => ({
+      h1: '1.75rem',
+      h2: '1.25rem',
+      subtitle: '0.95rem',
+      body: '1rem',
+    }),
+    []
+  );
 
   // Apply CSS variables and dark class
   useEffect(() => {
@@ -256,7 +285,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const setMode = (m: ThemeMode) => {
     setModeState(m);
-    const base = m === 'dark' ? DEFAULT_DARK : m === 'light' ? DEFAULT_LIGHT : (getSystemMode() === 'dark' ? DEFAULT_DARK : DEFAULT_LIGHT);
+    const base =
+      m === 'dark'
+        ? DEFAULT_DARK
+        : m === 'light'
+          ? DEFAULT_LIGHT
+          : getSystemMode() === 'dark'
+            ? DEFAULT_DARK
+            : DEFAULT_LIGHT;
     setTextState(base.text);
     setBgState(base.bg);
     setSecondaryState(base.secondary);
@@ -365,7 +401,9 @@ function parseColor(c: string): [number, number, number] | null {
 }
 
 function relLuminance(r: number, g: number, b: number): number {
-  const srgb = [r, g, b].map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
+  const srgb = [r, g, b].map((v) =>
+    v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)
+  );
   return 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2];
 }
 
@@ -373,12 +411,33 @@ function hslToRgb(h: number, s: number, l: number): [number, number, number] {
   const c = (1 - Math.abs(2 * l - 1)) * s;
   const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
   const m = l - c / 2;
-  let r1 = 0, g1 = 0, b1 = 0;
-  if (0 <= h && h < 60) { r1 = c; g1 = x; b1 = 0; }
-  else if (60 <= h && h < 120) { r1 = x; g1 = c; b1 = 0; }
-  else if (120 <= h && h < 180) { r1 = 0; g1 = c; b1 = x; }
-  else if (180 <= h && h < 240) { r1 = 0; g1 = x; b1 = c; }
-  else if (240 <= h && h < 300) { r1 = x; g1 = 0; b1 = c; }
-  else { r1 = c; g1 = 0; b1 = x; }
+  let r1 = 0,
+    g1 = 0,
+    b1 = 0;
+  if (0 <= h && h < 60) {
+    r1 = c;
+    g1 = x;
+    b1 = 0;
+  } else if (60 <= h && h < 120) {
+    r1 = x;
+    g1 = c;
+    b1 = 0;
+  } else if (120 <= h && h < 180) {
+    r1 = 0;
+    g1 = c;
+    b1 = x;
+  } else if (180 <= h && h < 240) {
+    r1 = 0;
+    g1 = x;
+    b1 = c;
+  } else if (240 <= h && h < 300) {
+    r1 = x;
+    g1 = 0;
+    b1 = c;
+  } else {
+    r1 = c;
+    g1 = 0;
+    b1 = x;
+  }
   return [Math.round((r1 + m) * 255), Math.round((g1 + m) * 255), Math.round((b1 + m) * 255)];
 }

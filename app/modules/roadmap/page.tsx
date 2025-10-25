@@ -42,5 +42,5 @@ export default function RoadmapPage() {
         Detalhes completos em <code>docs/roadmaps.md</code>.
       </p>
     </section>
-  )
+  );
 }

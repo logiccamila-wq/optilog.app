@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
                              returning id, name, cnh, phone, created_at, updated_at`;
       const driver = Array.isArray(rows) ? rows[0] : rows?.[0];
       // publica evento de criação (não bloqueia fluxo em caso de erro)
-      publishEvent('driver', 'create', driver).catch(() => {});
+      publishEvent({ entity: 'driver', action: 'create', data: driver }).catch(() => {});
       return NextResponse.json({ ok: true, driver }, { status: 201 });
     } catch (e: any) {
       if (e?.code === '23505') {
@@ -75,7 +75,9 @@ export async function GET(req: NextRequest) {
 
     const where = q ? sql`WHERE name ILIKE ${'%' + q + '%'} OR cnh ILIKE ${'%' + q + '%'}` : sql``;
     const totalRows = await sql`SELECT count(*)::int as total FROM drivers ${where}`;
-    const total = Array.isArray(totalRows) ? (totalRows[0]?.total ?? 0) : (totalRows?.[0]?.total ?? 0);
+    const total = Array.isArray(totalRows)
+      ? (totalRows[0]?.total ?? 0)
+      : (totalRows?.[0]?.total ?? 0);
 
     const rows = q
       ? await sql`SELECT id, name, cnh, phone, created_at, updated_at
@@ -90,7 +92,7 @@ export async function GET(req: NextRequest) {
 
     const resp = new NextResponse(JSON.stringify(rows), {
       status: 200,
-      headers: { 'Content-Type': 'application/json', 'X-Total-Count': String(total) }
+      headers: { 'Content-Type': 'application/json', 'X-Total-Count': String(total) },
     });
     return resp;
   } catch (err: any) {

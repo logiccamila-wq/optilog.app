@@ -11,7 +11,6 @@ export default function EconomistaPage() {
   const [error, setError] = useState<string | null>(null);
   const [answer, setAnswer] = useState<string | null>(null);
 
-
   async function send() {
     setError('Economista Virtual desativado (Firebase removido).');
     setAnswer(null);

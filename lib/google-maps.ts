@@ -48,19 +48,19 @@ export class GoogleMapsService {
     try {
       // Carregar Google Maps API
       await this.loadGoogleMapsAPI();
-      
+
       this.directionsService = new google.maps.DirectionsService();
       this.directionsRenderer = new google.maps.DirectionsRenderer({
         suppressMarkers: false,
         polylineOptions: {
           strokeColor: '#2563eb',
           strokeWeight: 4,
-          strokeOpacity: 0.8
-        }
+          strokeOpacity: 0.8,
+        },
       });
       this.geocoder = new google.maps.Geocoder();
       this.distanceMatrixService = new google.maps.DistanceMatrixService();
-      
+
       this.isLoaded = true;
     } catch (error) {
       console.error('Erro ao inicializar Google Maps:', error);
@@ -80,10 +80,10 @@ export class GoogleMapsService {
       script.src = `https://maps.googleapis.com/maps/api/js?key=${this.apiKey}&libraries=geometry,places`;
       script.async = true;
       script.defer = true;
-      
+
       script.onload = () => resolve();
       script.onerror = () => reject(new Error('Falha ao carregar Google Maps API'));
-      
+
       document.head.appendChild(script);
     });
   }
@@ -101,11 +101,11 @@ export class GoogleMapsService {
       zoomControl: true,
       streetViewControl: false,
       fullscreenControl: true,
-      ...options
+      ...options,
     };
 
     this.map = new google.maps.Map(container, defaultOptions);
-    
+
     if (this.directionsRenderer) {
       this.directionsRenderer.setMap(this.map);
     }
@@ -125,7 +125,7 @@ export class GoogleMapsService {
         (position) => {
           resolve({
             lat: position.coords.latitude,
-            lng: position.coords.longitude
+            lng: position.coords.longitude,
           });
         },
         (error) => {
@@ -134,7 +134,7 @@ export class GoogleMapsService {
         {
           enableHighAccuracy: true,
           timeout: 10000,
-          maximumAge: 60000
+          maximumAge: 60000,
         }
       );
     });
@@ -150,9 +150,9 @@ export class GoogleMapsService {
       throw new Error('Directions Service não inicializado');
     }
 
-    const waypointsFormatted = waypoints?.map(wp => ({
+    const waypointsFormatted = waypoints?.map((wp) => ({
       location: wp,
-      stopover: true
+      stopover: true,
     }));
 
     return new Promise((resolve, reject) => {
@@ -164,18 +164,18 @@ export class GoogleMapsService {
           travelMode: google.maps.TravelMode.DRIVING,
           optimizeWaypoints: true,
           avoidHighways: false,
-          avoidTolls: false
+          avoidTolls: false,
         },
         (result, status) => {
           if (status === google.maps.DirectionsStatus.OK && result) {
             const route = result.routes[0];
             const leg = route.legs[0];
-            
+
             resolve({
               distance: leg.distance?.text || '',
               duration: leg.duration?.text || '',
               steps: leg.steps,
-              polyline: route.overview_polyline
+              polyline: route.overview_polyline,
             });
           } else {
             reject(new Error(`Erro ao calcular rota: ${status}`));
@@ -195,9 +195,9 @@ export class GoogleMapsService {
       throw new Error('Directions Service não inicializado');
     }
 
-    const waypointsFormatted = waypoints?.map(wp => ({
+    const waypointsFormatted = waypoints?.map((wp) => ({
       location: wp,
-      stopover: true
+      stopover: true,
     }));
 
     return new Promise((resolve, reject) => {
@@ -207,7 +207,7 @@ export class GoogleMapsService {
           destination,
           waypoints: waypointsFormatted,
           travelMode: google.maps.TravelMode.DRIVING,
-          optimizeWaypoints: true
+          optimizeWaypoints: true,
         },
         (result, status) => {
           if (status === google.maps.DirectionsStatus.OK && result) {
@@ -233,7 +233,7 @@ export class GoogleMapsService {
           const location = results[0].geometry.location;
           resolve({
             lat: location.lat(),
-            lng: location.lng()
+            lng: location.lng(),
           });
         } else {
           reject(new Error(`Erro na geocodificação: ${status}`));
@@ -274,7 +274,7 @@ export class GoogleMapsService {
           origins,
           destinations,
           travelMode: google.maps.TravelMode.DRIVING,
-          unitSystem: google.maps.UnitSystem.METRIC
+          unitSystem: google.maps.UnitSystem.METRIC,
         },
         (response, status) => {
           if (status === google.maps.DistanceMatrixStatus.OK && response) {
@@ -298,8 +298,8 @@ export class GoogleMapsService {
       icon: {
         url: this.getVehicleIcon(vehicle.status),
         scaledSize: new google.maps.Size(32, 32),
-        anchor: new google.maps.Point(16, 16)
-      }
+        anchor: new google.maps.Point(16, 16),
+      },
     });
 
     // Info window com detalhes do veículo
@@ -311,7 +311,7 @@ export class GoogleMapsService {
           ${vehicle.speed ? `<p style="margin: 4px 0;"><strong>Velocidade:</strong> ${vehicle.speed} km/h</p>` : ''}
           <p style="margin: 4px 0;"><strong>Posição:</strong> ${vehicle.position.lat.toFixed(6)}, ${vehicle.position.lng.toFixed(6)}</p>
         </div>
-      `
+      `,
     });
 
     marker.addListener('click', () => {
@@ -354,7 +354,7 @@ export class GoogleMapsService {
     if (!this.map || locations.length === 0) return;
 
     const bounds = new google.maps.LatLngBounds();
-    locations.forEach(location => {
+    locations.forEach((location) => {
       bounds.extend(location);
     });
 
@@ -364,21 +364,27 @@ export class GoogleMapsService {
   // Obter ícone do veículo baseado no status
   private getVehicleIcon(status: string): string {
     const icons = {
-      active: 'data:image/svg+xml;base64,' + btoa(`
+      active:
+        'data:image/svg+xml;base64,' +
+        btoa(`
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#10b981">
           <path d="M8.5 12.5L11 15l5-5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
       `),
-      idle: 'data:image/svg+xml;base64,' + btoa(`
+      idle:
+        'data:image/svg+xml;base64,' +
+        btoa(`
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#f59e0b">
           <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
         </svg>
       `),
-      offline: 'data:image/svg+xml;base64,' + btoa(`
+      offline:
+        'data:image/svg+xml;base64,' +
+        btoa(`
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#ef4444">
           <path d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
-      `)
+      `),
     };
 
     return icons[status as keyof typeof icons] || icons.offline;
@@ -389,7 +395,7 @@ export class GoogleMapsService {
     const labels = {
       active: 'Ativo',
       idle: 'Parado',
-      offline: 'Offline'
+      offline: 'Offline',
     };
 
     return labels[status as keyof typeof labels] || 'Desconhecido';
@@ -398,7 +404,7 @@ export class GoogleMapsService {
   // Limpar mapa
   clearMap(): void {
     // Limpar marcadores
-    this.markers.forEach(marker => marker.setMap(null));
+    this.markers.forEach((marker) => marker.setMap(null));
     this.markers.clear();
 
     // Limpar direções
@@ -432,25 +438,31 @@ export const getGoogleMapsService = (apiKey?: string): GoogleMapsService => {
 // Hook para usar Google Maps no React
 export const useGoogleMaps = (apiKey?: string) => {
   const service = getGoogleMapsService(apiKey);
-  
+
   return {
     service,
     initialize: () => service.initialize(),
-    createMap: (container: HTMLElement, options?: google.maps.MapOptions) => 
+    createMap: (container: HTMLElement, options?: google.maps.MapOptions) =>
       service.createMap(container, options),
     getCurrentLocation: () => service.getCurrentLocation(),
-    calculateRoute: (origin: Location | string, destination: Location | string, waypoints?: Location[] | string[]) =>
-      service.calculateRoute(origin, destination, waypoints),
-    displayRoute: (origin: Location | string, destination: Location | string, waypoints?: Location[] | string[]) =>
-      service.displayRoute(origin, destination, waypoints),
+    calculateRoute: (
+      origin: Location | string,
+      destination: Location | string,
+      waypoints?: Location[] | string[]
+    ) => service.calculateRoute(origin, destination, waypoints),
+    displayRoute: (
+      origin: Location | string,
+      destination: Location | string,
+      waypoints?: Location[] | string[]
+    ) => service.displayRoute(origin, destination, waypoints),
     geocodeAddress: (address: string) => service.geocodeAddress(address),
     reverseGeocode: (location: Location) => service.reverseGeocode(location),
     addVehicleMarker: (vehicle: VehicleMarker) => service.addVehicleMarker(vehicle),
-    updateVehiclePosition: (vehicleId: string, position: Location) => 
+    updateVehiclePosition: (vehicleId: string, position: Location) =>
       service.updateVehiclePosition(vehicleId, position),
     removeVehicleMarker: (vehicleId: string) => service.removeVehicleMarker(vehicleId),
     centerMap: (location: Location, zoom?: number) => service.centerMap(location, zoom),
     fitBounds: (locations: Location[]) => service.fitBounds(locations),
-    clearMap: () => service.clearMap()
+    clearMap: () => service.clearMap(),
   };
 };

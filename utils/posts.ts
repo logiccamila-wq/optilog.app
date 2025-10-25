@@ -1,6 +1,5 @@
 // Firebase removido: não usar Firestore fallback
 
-
 const API_URL = process.env.NEXT_PUBLIC_POSTS_API_URL;
 
 export type Post = {

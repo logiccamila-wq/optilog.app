@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { useEffect, useState } from 'react';
 
 type DocItem = { id?: string; title?: string; file?: string; slug?: string };
@@ -19,13 +19,13 @@ export default function DocumentacaoPage() {
   useEffect(() => {
     // Lista docs internos (.md/.mdx)
     fetch('/api/search-docs')
-      .then(r => r.json())
-      .then(d => setDocs((d.items || []).map((x: any) => ({ title: x.title, file: x.file }))))
+      .then((r) => r.json())
+      .then((d) => setDocs((d.items || []).map((x: any) => ({ title: x.title, file: x.file }))))
       .catch(() => {});
     // Lista documentos externos (.pdf) na pasta C:\Users\Pichau\devoptilog-app\documentos
     fetch('/api/read-doc?list=1&base=documentos')
-      .then(r => r.json())
-      .then(items => setDocsExternos(items || []))
+      .then((r) => r.json())
+      .then((items) => setDocsExternos(items || []))
       .catch(() => {});
   }, []);
 
@@ -86,7 +86,10 @@ export default function DocumentacaoPage() {
         <ul>
           {docsExternos.map((d) => (
             <li key={String(d.slug || d.file)} style={{ marginBottom: 8 }}>
-              <button onClick={() => openDocExterno(String(d.slug || d.file))} style={{ cursor: 'pointer' }}>
+              <button
+                onClick={() => openDocExterno(String(d.slug || d.file))}
+                style={{ cursor: 'pointer' }}
+              >
                 {String(d.slug || d.file)}
               </button>
             </li>
@@ -102,7 +105,9 @@ export default function DocumentacaoPage() {
                   <button onClick={() => openDocInterno(s.file)}>Abrir</button>
                 </div>
                 {s.snippets.map((snip, i) => (
-                  <p key={i} style={{ fontSize: 12, color: '#555' }}>{snip}...</p>
+                  <p key={i} style={{ fontSize: 12, color: '#555' }}>
+                    {snip}...
+                  </p>
                 ))}
               </div>
             ))}
@@ -113,9 +118,20 @@ export default function DocumentacaoPage() {
         <h2>Leitura</h2>
         {selected ? (
           isPdf && viewerUrl ? (
-            <iframe src={viewerUrl} style={{ width: '100%', height: '80vh', border: '1px solid #ddd' }} title={selected} />
+            <iframe
+              src={viewerUrl}
+              style={{ width: '100%', height: '80vh', border: '1px solid #ddd' }}
+              title={selected}
+            />
           ) : (
-            <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit', background: '#fafafa', padding: 16 }}>
+            <pre
+              style={{
+                whiteSpace: 'pre-wrap',
+                fontFamily: 'inherit',
+                background: '#fafafa',
+                padding: 16,
+              }}
+            >
               {content}
             </pre>
           )

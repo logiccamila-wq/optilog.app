@@ -6,7 +6,9 @@ dotenv.config();
 const defaultPath = path.join(__dirname, 'optilog.db');
 const envPath = process.env.DB_PATH;
 const dbPath = envPath
-  ? (path.isAbsolute(envPath) ? envPath : path.join(__dirname, envPath))
+  ? path.isAbsolute(envPath)
+    ? envPath
+    : path.join(__dirname, envPath)
   : defaultPath;
 
 const db = new sqlite3.Database(dbPath, (err) => {

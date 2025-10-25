@@ -54,8 +54,10 @@ const dictionaries: Record<Lang, Record<string, string>> = {
     'dashboard.title': 'Dashboard EJG',
     'dashboard.external.redirecting': 'Redirecionando para o Dashboard externo configurado...',
     'dashboard.external.click': 'Caso não redirecione automaticamente, clique:',
-    'dashboard.explore': 'Explore os módulos locais abaixo. Para acessar dados reais, faça login ou cadastro.',
-    'dashboard.external.help': 'Para habilitar o redirecionamento automático, defina NEXT_PUBLIC_DASHBOARD_URL com a URL do seu dashboard externo (Render, Vercel, etc.).',
+    'dashboard.explore':
+      'Explore os módulos locais abaixo. Para acessar dados reais, faça login ou cadastro.',
+    'dashboard.external.help':
+      'Para habilitar o redirecionamento automático, defina NEXT_PUBLIC_DASHBOARD_URL com a URL do seu dashboard externo (Render, Vercel, etc.).',
 
     // Dashboard módulo dinâmico
     'common.kpis': 'KPIs',
@@ -181,7 +183,8 @@ const dictionaries: Record<Lang, Record<string, string>> = {
     'dashboard.external.redirecting': 'Redirecting to the configured external Dashboard...',
     'dashboard.external.click': 'If it does not redirect automatically, click:',
     'dashboard.explore': 'Explore the local modules below. To access real data, log in or sign up.',
-    'dashboard.external.help': 'To enable automatic redirection, set NEXT_PUBLIC_DASHBOARD_URL with your external dashboard URL (Render, Vercel, etc.).',
+    'dashboard.external.help':
+      'To enable automatic redirection, set NEXT_PUBLIC_DASHBOARD_URL with your external dashboard URL (Render, Vercel, etc.).',
 
     // Dynamic module dashboard
     'common.kpis': 'KPIs',
@@ -306,8 +309,10 @@ const dictionaries: Record<Lang, Record<string, string>> = {
     'dashboard.title': 'Panel EJG',
     'dashboard.external.redirecting': 'Redirigiendo al Panel externo configurado...',
     'dashboard.external.click': 'Si no redirige automáticamente, haga clic:',
-    'dashboard.explore': 'Explora los módulos locales abajo. Para acceder a datos reales, inicia sesión o regístrate.',
-    'dashboard.external.help': 'Para habilitar la redirección automática, define NEXT_PUBLIC_DASHBOARD_URL con la URL de tu panel externo (Render, Vercel, etc.).',
+    'dashboard.explore':
+      'Explora los módulos locales abajo. Para acceder a datos reales, inicia sesión o regístrate.',
+    'dashboard.external.help':
+      'Para habilitar la redirección automática, define NEXT_PUBLIC_DASHBOARD_URL con la URL de tu panel externo (Render, Vercel, etc.).',
 
     // Tablero de módulo dinámico
     'common.kpis': 'KPIs',
@@ -413,13 +418,17 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
         else if (nav.startsWith('es')) setLangState('es');
         else setLangState('en');
       }
-    } catch {}
+    } catch (error) {
+      console.debug('Erro ao inferir idioma do navegador:', error);
+    }
   }, []);
 
   useEffect(() => {
     try {
       localStorage.setItem('lang', lang);
-    } catch {}
+    } catch (error) {
+      console.debug('Erro ao persistir preferência de idioma:', error);
+    }
     if (typeof document !== 'undefined') {
       document.documentElement.lang = lang === 'pt' ? 'pt-BR' : lang === 'en' ? 'en' : 'es';
     }
@@ -433,9 +442,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     };
   }, [lang]);
 
-  return (
-    <I18nContext.Provider value={{ lang, setLang, t }}>{children}</I18nContext.Provider>
-  );
+  return <I18nContext.Provider value={{ lang, setLang, t }}>{children}</I18nContext.Provider>;
 }
 
 export const useI18n = () => useContext(I18nContext);

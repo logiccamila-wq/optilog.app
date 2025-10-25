@@ -12,7 +12,7 @@ export const ALL_ROLES: Role[] = ['admin', 'director', 'operator', 'finance', 'd
 export function hasAnyRole(user: User | null | undefined, allowed: Role[]): boolean {
   if (!user || !Array.isArray(user.roles)) return false;
   if (allowed.length === 0) return true;
-  return user.roles.some(r => allowed.includes(r));
+  return user.roles.some((r) => allowed.includes(r));
 }
 
 export function isAdmin(user: User | null | undefined): boolean {

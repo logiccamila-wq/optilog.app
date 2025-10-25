@@ -10,5 +10,5 @@ export default function OmsPage() {
         <li>Informações em tempo real</li>
       </ul>
     </section>
-  )
+  );
 }

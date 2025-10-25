@@ -29,11 +29,13 @@ flowchart TD
 ```
 
 Legenda
+
 - Protocolo: gerado automaticamente ao criar a ordem.
 - Devolver: Encarregado solicita ajustes ao Mecânico com observações.
 - Cancelar: permitido ao Diretor ou Financeiro com motivo obrigatório (auditado).
 - Chatbot: envia alertas diários, solicita aprovação rápida e consolida resumos.
 
 Observações
+
 - Cada transição é auditada (usuário, papel, horário, motivo).
 - Regras de permissão por módulo variam conforme papel (ver documentação).

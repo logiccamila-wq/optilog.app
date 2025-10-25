@@ -1,32 +1,32 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { extractBearer, verifyToken } from '@/lib/jwt'
-import { getSql } from '@/lib/db'
+import { NextRequest, NextResponse } from 'next/server';
+import { extractBearer, verifyToken } from '@/lib/jwt';
+import { getSql } from '@/lib/db';
 
 export async function POST(req: NextRequest) {
-  const bearer = await extractBearer(req)
-  if (!bearer) return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 })
-  const verified = await verifyToken(bearer)
-  if (!verified) return NextResponse.json({ ok: false, error: 'Invalid token' }, { status: 401 })
+  const bearer = await extractBearer(req);
+  if (!bearer) return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
+  const verified = await verifyToken(bearer);
+  if (!verified) return NextResponse.json({ ok: false, error: 'Invalid token' }, { status: 401 });
   const allowedEmails = (process.env.ADMIN_EMAILS || '')
     .split(',')
     .map((s) => s.trim())
-    .filter(Boolean)
-  const p = verified.payload || {}
-  const isAdminClaim = !!p.admin || (!!p.role && p.role === 'admin')
-  const isAllowedEmail = !!p.email && allowedEmails.includes(p.email)
+    .filter(Boolean);
+  const p = verified.payload || {};
+  const isAdminClaim = !!p.admin || (!!p.role && p.role === 'admin');
+  const isAllowedEmail = !!p.email && allowedEmails.includes(p.email);
   if (!(isAdminClaim || isAllowedEmail)) {
-    return NextResponse.json({ ok: false, error: 'Forbidden' }, { status: 403 })
+    return NextResponse.json({ ok: false, error: 'Forbidden' }, { status: 403 });
   }
 
   if (!process.env.DATABASE_URL) {
-    return NextResponse.json({ ok: false, error: 'DATABASE_URL not set' }, { status: 500 })
+    return NextResponse.json({ ok: false, error: 'DATABASE_URL not set' }, { status: 500 });
   }
 
-  const body = await req.json()
-  const { uid, displayName, role, phoneNumber, disabled } = body || {}
-  if (!uid) return NextResponse.json({ ok: false, error: 'uid é obrigatório' }, { status: 400 })
+  const body = await req.json();
+  const { uid, displayName, role, phoneNumber, disabled } = body || {};
+  if (!uid) return NextResponse.json({ ok: false, error: 'uid é obrigatório' }, { status: 400 });
 
-  const sql = getSql()
+  const sql = getSql();
   await sql`create table if not exists users (
     uid text primary key,
     email text unique,
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     disabled boolean default false,
     created_at timestamptz default now(),
     updated_at timestamptz default now()
-  )`
+  )`;
 
   const result = await sql`insert into users (uid, display_name, role, phone_number, disabled)
               values (${uid}, ${displayName ?? null}, ${role ?? null}, ${phoneNumber ?? null}, ${!!disabled})
@@ -46,10 +46,10 @@ export async function POST(req: NextRequest) {
                 phone_number = excluded.phone_number,
                 disabled = excluded.disabled,
                 updated_at = now()
-              returning uid, display_name, role, phone_number, disabled`
+              returning uid, display_name, role, phone_number, disabled`;
 
-  const user = result?.[0] || null
-  return NextResponse.json({ ok: true, user })
+  const user = result?.[0] || null;
+  return NextResponse.json({ ok: true, user });
 }
 
 export async function OPTIONS() {
@@ -60,5 +60,5 @@ export async function OPTIONS() {
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     },
-  })
+  });
 }

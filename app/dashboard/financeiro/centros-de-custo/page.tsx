@@ -9,7 +9,14 @@ export default function CentrosDeCustoPage() {
       <p style={{ color: colors.muted, fontSize: typography.subtitle }}>
         Estruture centros, aloque despesas e consolide por unidade, frota e projeto.
       </p>
-      <div style={{ border: `1px solid ${colors.border}`, borderRadius: 8, backgroundColor: colors.surface, padding: spacing.medium }}>
+      <div
+        style={{
+          border: `1px solid ${colors.border}`,
+          borderRadius: 8,
+          backgroundColor: colors.surface,
+          padding: spacing.medium,
+        }}
+      >
         <p style={{ margin: 0 }}>Árvore de centros e regras de rateio serão aqui.</p>
       </div>
     </div>

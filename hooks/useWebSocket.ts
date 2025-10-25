@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { getWebSocketService, WebSocketMessage, LocationUpdate, JourneyEvent, StatusChange } from '@/lib/websocket';
+import {
+  getWebSocketService,
+  WebSocketMessage,
+  LocationUpdate,
+  JourneyEvent,
+  StatusChange,
+} from '@/lib/websocket';
 
 export const useWebSocket = () => {
   const [isConnected, setIsConnected] = useState(false);
@@ -7,10 +13,13 @@ export const useWebSocket = () => {
   const wsService = useRef(getWebSocketService());
 
   useEffect(() => {
+    // Capture the current value in a variable that won't change
+    const currentWsService = wsService.current;
+    
     const connect = async () => {
       try {
-        await wsService.current.connect();
-        setIsConnected(wsService.current.isConnected());
+        await currentWsService.connect();
+        setIsConnected(currentWsService.isConnected());
       } catch (error) {
         console.error('Failed to connect to WebSocket:', error);
         setIsConnected(false);
@@ -21,7 +30,7 @@ export const useWebSocket = () => {
 
     // Check connection status periodically
     const statusInterval = setInterval(() => {
-      setIsConnected(wsService.current.isConnected());
+      setIsConnected(currentWsService.isConnected());
     }, 1000);
 
     // Subscribe to all message types
@@ -29,15 +38,15 @@ export const useWebSocket = () => {
       setLastMessage(message);
     };
 
-    wsService.current.subscribe('location_update', handleMessage);
-    wsService.current.subscribe('status_change', handleMessage);
-    wsService.current.subscribe('journey_event', handleMessage);
-    wsService.current.subscribe('alert', handleMessage);
-    wsService.current.subscribe('notification', handleMessage);
+    currentWsService.subscribe('location_update', handleMessage);
+    currentWsService.subscribe('status_change', handleMessage);
+    currentWsService.subscribe('journey_event', handleMessage);
+    currentWsService.subscribe('alert', handleMessage);
+    currentWsService.subscribe('notification', handleMessage);
 
     return () => {
       clearInterval(statusInterval);
-      wsService.current.disconnect();
+      currentWsService.disconnect();
       setIsConnected(false);
     };
   }, []);
@@ -54,7 +63,11 @@ export const useWebSocket = () => {
     wsService.current.sendStatusChange(driverId, vehicleId, status);
   };
 
-  const sendAlert = (driverId: string, vehicleId: string, alert: { level: 'info' | 'warning' | 'error', message: string }) => {
+  const sendAlert = (
+    driverId: string,
+    vehicleId: string,
+    alert: { level: 'info' | 'warning' | 'error'; message: string }
+  ) => {
     wsService.current.sendAlert(driverId, vehicleId, alert);
   };
 
@@ -64,13 +77,20 @@ export const useWebSocket = () => {
     sendLocationUpdate,
     sendJourneyEvent,
     sendStatusChange,
-    sendAlert
+    sendAlert,
   };
 };
 
 // Hook específico para motoristas
 export const useDriverWebSocket = (driverId: string, vehicleId: string) => {
-  const { isConnected, lastMessage, sendLocationUpdate, sendJourneyEvent, sendStatusChange, sendAlert } = useWebSocket();
+  const {
+    isConnected,
+    lastMessage,
+    sendLocationUpdate,
+    sendJourneyEvent,
+    sendStatusChange,
+    sendAlert,
+  } = useWebSocket();
   const [currentLocation, setCurrentLocation] = useState<LocationUpdate | null>(null);
   const wsService = useRef(getWebSocketService());
 
@@ -91,9 +111,11 @@ export const useDriverWebSocket = (driverId: string, vehicleId: string) => {
         const location: LocationUpdate = {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
           speed: position.coords.speed || 0,
           heading: position.coords.heading || 0,
-          accuracy: position.coords.accuracy
+          accuracy: position.coords.accuracy,
         };
 
         setCurrentLocation(location);
@@ -103,13 +125,13 @@ export const useDriverWebSocket = (driverId: string, vehicleId: string) => {
         console.error('Geolocation error:', error);
         sendAlert(driverId, vehicleId, {
           level: 'error',
-          message: 'Erro ao obter localização GPS'
+          message: 'Erro ao obter localização GPS',
         });
       },
       {
         enableHighAccuracy: true,
         timeout: 10000,
-        maximumAge: 5000
+        maximumAge: 5000,
       }
     );
 
@@ -122,11 +144,11 @@ export const useDriverWebSocket = (driverId: string, vehicleId: string) => {
     sendJourneyEvent(driverId, vehicleId, {
       event: 'journey_start',
       location: currentLocation || undefined,
-      notes
+      notes,
     });
     sendStatusChange(driverId, vehicleId, {
       status: 'in_transit',
-      location: currentLocation || undefined
+      location: currentLocation || undefined,
     });
   };
 
@@ -134,11 +156,11 @@ export const useDriverWebSocket = (driverId: string, vehicleId: string) => {
     sendJourneyEvent(driverId, vehicleId, {
       event: 'journey_end',
       location: currentLocation || undefined,
-      notes
+      notes,
     });
     sendStatusChange(driverId, vehicleId, {
       status: 'available',
-      location: currentLocation || undefined
+      location: currentLocation || undefined,
     });
   };
 
@@ -146,11 +168,11 @@ export const useDriverWebSocket = (driverId: string, vehicleId: string) => {
     sendJourneyEvent(driverId, vehicleId, {
       event: 'break_start',
       location: currentLocation || undefined,
-      notes
+      notes,
     });
     sendStatusChange(driverId, vehicleId, {
       status: 'on_break',
-      location: currentLocation || undefined
+      location: currentLocation || undefined,
     });
   };
 
@@ -158,11 +180,11 @@ export const useDriverWebSocket = (driverId: string, vehicleId: string) => {
     sendJourneyEvent(driverId, vehicleId, {
       event: 'break_end',
       location: currentLocation || undefined,
-      notes
+      notes,
     });
     sendStatusChange(driverId, vehicleId, {
       status: 'in_transit',
-      location: currentLocation || undefined
+      location: currentLocation || undefined,
     });
   };
 
@@ -170,11 +192,11 @@ export const useDriverWebSocket = (driverId: string, vehicleId: string) => {
     sendJourneyEvent(driverId, vehicleId, {
       event: 'delivery_start',
       location: currentLocation || undefined,
-      notes
+      notes,
     });
     sendStatusChange(driverId, vehicleId, {
       status: 'delivering',
-      location: currentLocation || undefined
+      location: currentLocation || undefined,
     });
   };
 
@@ -182,11 +204,11 @@ export const useDriverWebSocket = (driverId: string, vehicleId: string) => {
     sendJourneyEvent(driverId, vehicleId, {
       event: 'delivery_complete',
       location: currentLocation || undefined,
-      notes
+      notes,
     });
     sendStatusChange(driverId, vehicleId, {
       status: 'in_transit',
-      location: currentLocation || undefined
+      location: currentLocation || undefined,
     });
   };
 
@@ -200,7 +222,7 @@ export const useDriverWebSocket = (driverId: string, vehicleId: string) => {
     endBreak,
     startDelivery,
     completeDelivery,
-    sendAlert
+    sendAlert,
   };
 };
 
@@ -227,21 +249,21 @@ export const useControlTowerWebSocket = () => {
 
     switch (lastMessage.type) {
       case 'location_update':
-        setVehicles(prev => {
+        setVehicles((prev) => {
           const updated = new Map(prev);
           const vehicleData = updated.get(lastMessage.vehicleId) || {};
           updated.set(lastMessage.vehicleId, {
             ...vehicleData,
             location: lastMessage.data,
             lastUpdate: lastMessage.timestamp,
-            driverId: lastMessage.driverId
+            driverId: lastMessage.driverId,
           });
           return updated;
         });
         break;
 
       case 'status_change':
-        setVehicles(prev => {
+        setVehicles((prev) => {
           const updated = new Map(prev);
           const vehicleData = updated.get(lastMessage.vehicleId) || {};
           updated.set(lastMessage.vehicleId, {
@@ -249,14 +271,14 @@ export const useControlTowerWebSocket = () => {
             status: lastMessage.data.status,
             location: lastMessage.data.location,
             lastUpdate: lastMessage.timestamp,
-            driverId: lastMessage.driverId
+            driverId: lastMessage.driverId,
           });
           return updated;
         });
         break;
 
       case 'journey_event':
-        setVehicles(prev => {
+        setVehicles((prev) => {
           const updated = new Map(prev);
           const vehicleData = updated.get(lastMessage.vehicleId) || {};
           updated.set(lastMessage.vehicleId, {
@@ -264,14 +286,14 @@ export const useControlTowerWebSocket = () => {
             lastEvent: lastMessage.data.event,
             location: lastMessage.data.location,
             lastUpdate: lastMessage.timestamp,
-            driverId: lastMessage.driverId
+            driverId: lastMessage.driverId,
           });
           return updated;
         });
         break;
 
       case 'alert':
-        setAlerts(prev => [...prev.slice(-49), lastMessage]); // Keep last 50 alerts
+        setAlerts((prev) => [...prev.slice(-49), lastMessage]); // Keep last 50 alerts
         break;
     }
   }, [lastMessage]);
@@ -280,6 +302,6 @@ export const useControlTowerWebSocket = () => {
     isConnected,
     vehicles: Array.from(vehicles.values()),
     alerts,
-    lastMessage
+    lastMessage,
   };
 };

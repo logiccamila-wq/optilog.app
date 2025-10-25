@@ -33,7 +33,11 @@
     "states": [
       { "id": "created", "label": "Aberta", "category": "input" },
       { "id": "technical_validated", "label": "Validada tecnicamente", "category": "validation" },
-      { "id": "operational_authorized", "label": "Autorizada operacionalmente", "category": "authorization" },
+      {
+        "id": "operational_authorized",
+        "label": "Autorizada operacionalmente",
+        "category": "authorization"
+      },
       { "id": "purchase_authorized", "label": "Compra autorizada", "category": "authorization" },
       { "id": "payment_executed", "label": "Pagamento efetuado", "category": "finance" },
       { "id": "finalized", "label": "Finalizada", "category": "final" },
@@ -123,9 +127,21 @@
       }
     ],
     "kpis": [
-      { "id": "shop_completed_per_day", "query": "orders.count(state='finalized').group_by(day)", "sector": "workshop" },
-      { "id": "authorization_rate", "query": "orders.count(state='operational_authorized')/orders.count()", "sector": "operational" },
-      { "id": "payments_approved", "query": "orders.count(state='payment_executed')", "sector": "finance" },
+      {
+        "id": "shop_completed_per_day",
+        "query": "orders.count(state='finalized').group_by(day)",
+        "sector": "workshop"
+      },
+      {
+        "id": "authorization_rate",
+        "query": "orders.count(state='operational_authorized')/orders.count()",
+        "sector": "operational"
+      },
+      {
+        "id": "payments_approved",
+        "query": "orders.count(state='payment_executed')",
+        "sector": "finance"
+      },
       { "id": "monthly_costs", "query": "orders.sum(cost).group_by(month)", "sector": "board" }
     ],
     "notifications": {

@@ -26,7 +26,9 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    const isAllowed = ALLOWED_HOSTS.some((host) => target.hostname === host || target.hostname.endsWith('.' + host));
+    const isAllowed = ALLOWED_HOSTS.some(
+      (host) => target.hostname === host || target.hostname.endsWith('.' + host)
+    );
     if (!isAllowed) {
       return new Response(JSON.stringify({ error: 'host_not_allowed', host: target.hostname }), {
         status: 403,
@@ -53,9 +55,12 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (err: any) {
-    return new Response(JSON.stringify({ error: 'unexpected_error', detail: String(err?.message || err) }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ error: 'unexpected_error', detail: String(err?.message || err) }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
   }
 }

@@ -1,6 +1,22 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Box, TextField, Button, Typography, Alert, Paper, Snackbar, Table, TableHead, TableRow, TableCell, TableBody, CircularProgress, MenuItem, Chip } from '@mui/material';
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Alert,
+  Paper,
+  Snackbar,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  CircularProgress,
+  MenuItem,
+  Chip,
+} from '@mui/material';
 import Card from '@/components/ui/card';
 
 export default function CadastroVeiculosPage() {
@@ -42,7 +58,8 @@ export default function CadastroVeiculosPage() {
     if (m.includes('romeu') || m.includes('julieta')) return 'Romeu e Julieta trucado';
     if (m.includes('vanderleia')) return 'Cavalo toco + carreta vanderleia';
     if (m.includes('carreta ls') || m.includes('ls') || m.includes('bitrem')) {
-      if (m.includes('trucado') || m.includes('cavalo trucado')) return 'Cavalo trucado + carreta LS';
+      if (m.includes('trucado') || m.includes('cavalo trucado'))
+        return 'Cavalo trucado + carreta LS';
       return 'Cavalo toco + carreta LS';
     }
     if (m.includes('trucado') || b.includes('trucado')) return 'Trucado';
@@ -77,11 +94,14 @@ export default function CadastroVeiculosPage() {
   const load = async () => {
     setLoadingList(true);
     try {
-      const res = await fetch(`/api/vehicles?page=${page}&pageSize=${pageSize}${search ? `&q=${encodeURIComponent(search)}` : ''}`, { cache: 'no-store' });
+      const res = await fetch(
+        `/api/vehicles?page=${page}&pageSize=${pageSize}${search ? `&q=${encodeURIComponent(search)}` : ''}`,
+        { cache: 'no-store' }
+      );
       if (!res.ok) throw new Error('Falha ao carregar veículos.');
       const data = await res.json();
       const countHeader = res.headers.get('X-Total-Count');
-      const count = countHeader ? parseInt(countHeader, 10) : (Array.isArray(data) ? data.length : 0);
+      const count = countHeader ? parseInt(countHeader, 10) : Array.isArray(data) ? data.length : 0;
       setTotalCount(Number.isFinite(count) ? count : 0);
       setList(Array.isArray(data) ? data : []);
     } catch (e) {
@@ -186,7 +206,9 @@ export default function CadastroVeiculosPage() {
       cancelEdit();
       await load();
     } catch (err: any) {
-      setError(err?.message || (editingId ? 'Falha ao atualizar veículo.' : 'Falha ao salvar veículo.'));
+      setError(
+        err?.message || (editingId ? 'Falha ao atualizar veículo.' : 'Falha ao salvar veículo.')
+      );
     } finally {
       setSaving(false);
     }
@@ -219,16 +241,28 @@ export default function CadastroVeiculosPage() {
   const plateRegexMercosur = /^[A-Z]{3}[0-9][A-Z][0-9]{2}$/; // AAA0A00
   const isPlateValid = plateRegexOld.test(plate) || plateRegexMercosur.test(plate);
   const isYearValid = year === '' || (year >= 1900 && year <= currentYearMax);
-  const isOdometerValid = odometer === '' || (odometer >= 0);
+  const isOdometerValid = odometer === '' || odometer >= 0;
 
   const isChassisValid = chassis === '' || /^[A-HJ-NPR-Z0-9]{17}$/.test(chassis);
   const renavamDigits = renavam.replace(/\D/g, '');
   const isRenavamValid = renavam === '' || renavamDigits.length === 11;
   const isAxlesValid = axlesCount === '' || axlesCount >= 0;
   const isPurchaseValueValid = purchaseValue === '' || purchaseValue >= 0;
-  const isOwnershipValid = ownership === '' || ['financiado','proprio','alugado','agregado','autonomo'].includes(ownership);
+  const isOwnershipValid =
+    ownership === '' ||
+    ['financiado', 'proprio', 'alugado', 'agregado', 'autonomo'].includes(ownership);
 
-  const canSubmit = !saving && isPlateValid && isYearValid && isOdometerValid && !!plate && isChassisValid && isRenavamValid && isAxlesValid && isPurchaseValueValid && isOwnershipValid;
+  const canSubmit =
+    !saving &&
+    isPlateValid &&
+    isYearValid &&
+    isOdometerValid &&
+    !!plate &&
+    isChassisValid &&
+    isRenavamValid &&
+    isAxlesValid &&
+    isPurchaseValueValid &&
+    isOwnershipValid;
 
   // KPIs simples baseados na página atual
   const totalVehicles = list.length;
@@ -259,7 +293,13 @@ export default function CadastroVeiculosPage() {
       </Paper>
 
       {/* KPIs */}
-      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 2 }}>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: 2,
+        }}
+      >
         <Card title="Veículos (página)">
           <div style={{ fontSize: 24, fontWeight: 700 }}>{totalVehicles}</div>
         </Card>
@@ -278,12 +318,21 @@ export default function CadastroVeiculosPage() {
       </Box>
 
       <Box component="form" onSubmit={onSubmit} sx={{ display: 'grid', gap: 2, maxWidth: 920 }}>
-        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 2 }}>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: 2,
+          }}
+        >
           <TextField
             label="Placa"
             value={plate}
             onChange={(e) => {
-              const v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 7);
+              const v = e.target.value
+                .toUpperCase()
+                .replace(/[^A-Z0-9]/g, '')
+                .slice(0, 7);
               setPlate(v);
             }}
             inputProps={{ maxLength: 7 }}
@@ -313,7 +362,14 @@ export default function CadastroVeiculosPage() {
           <TextField
             label="Chassi (VIN)"
             value={chassis}
-            onChange={(e) => setChassis(e.target.value.toUpperCase().replace(/[^A-HJ-NPR-Z0-9]/g, '').slice(0, 17))}
+            onChange={(e) =>
+              setChassis(
+                e.target.value
+                  .toUpperCase()
+                  .replace(/[^A-HJ-NPR-Z0-9]/g, '')
+                  .slice(0, 17)
+              )
+            }
             inputProps={{ maxLength: 17 }}
             error={!isChassisValid}
             helperText={!isChassisValid ? 'VIN deve ter 17 caracteres (sem I/O/Q)' : undefined}
@@ -328,7 +384,11 @@ export default function CadastroVeiculosPage() {
           />
           <TextField label="Marca" value={brand} onChange={(e) => setBrand(e.target.value)} />
           <TextField label="Cor" value={color} onChange={(e) => setColor(e.target.value)} />
-          <TextField label="Centro de custo" value={costCenter} onChange={(e) => setCostCenter(e.target.value)} />
+          <TextField
+            label="Centro de custo"
+            value={costCenter}
+            onChange={(e) => setCostCenter(e.target.value)}
+          />
           <TextField label="Meta/Objetivo" value={goal} onChange={(e) => setGoal(e.target.value)} />
 
           {/* Seletor de configuração de eixos (sugestão) */}
@@ -353,23 +413,33 @@ export default function CadastroVeiculosPage() {
           {axleConfigSuggested && (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center' }}>
               {axlePresets
-                .find((x) => x.name === axleConfigSuggested)?.weights.map((w, i) => (
+                .find((x) => x.name === axleConfigSuggested)
+                ?.weights.map((w, i) => (
                   <Chip key={i} label={`${w}t`} size="small" />
                 ))}
-            <Typography variant="caption" sx={{ ml: 1 }}>
-              Peso bruto estimado: {axlePresets.find((x) => x.name === axleConfigSuggested)?.gross}t
-            </Typography>
-          </Box>
+              <Typography variant="caption" sx={{ ml: 1 }}>
+                Peso bruto estimado:{' '}
+                {axlePresets.find((x) => x.name === axleConfigSuggested)?.gross}t
+              </Typography>
+            </Box>
           )}
-          {axleConfigSuggested && (() => {
-            const p = axlePresets.find((x) => x.name === axleConfigSuggested);
-            return p && axlesCount !== '' && Number(axlesCount) !== p.axles ? (
-              <Alert severity="info" sx={{ mt: 1 }}
-                action={<Button size="small" onClick={() => setAxlesCount(p.axles)}>Aplicar preset</Button>}>
-                Eixos ({axlesCount}) diferente do preset selecionado ({p.axles}).
-              </Alert>
-            ) : null;
-          })()}
+          {axleConfigSuggested &&
+            (() => {
+              const p = axlePresets.find((x) => x.name === axleConfigSuggested);
+              return p && axlesCount !== '' && Number(axlesCount) !== p.axles ? (
+                <Alert
+                  severity="info"
+                  sx={{ mt: 1 }}
+                  action={
+                    <Button size="small" onClick={() => setAxlesCount(p.axles)}>
+                      Aplicar preset
+                    </Button>
+                  }
+                >
+                  Eixos ({axlesCount}) diferente do preset selecionado ({p.axles}).
+                </Alert>
+              ) : null;
+            })()}
           {/* Campo Eixos (continua permitindo ajuste manual) */}
           <TextField
             label="Eixos"
@@ -380,8 +450,16 @@ export default function CadastroVeiculosPage() {
             error={!isAxlesValid}
             helperText={!isAxlesValid ? 'Eixos deve ser não negativo' : undefined}
           />
-          <TextField label="Tipo de pneu" value={tireType} onChange={(e) => setTireType(e.target.value)} />
-          <TextField label="Dimensões do pneu" value={tireDimensions} onChange={(e) => setTireDimensions(e.target.value)} />
+          <TextField
+            label="Tipo de pneu"
+            value={tireType}
+            onChange={(e) => setTireType(e.target.value)}
+          />
+          <TextField
+            label="Dimensões do pneu"
+            value={tireDimensions}
+            onChange={(e) => setTireDimensions(e.target.value)}
+          />
           <TextField
             label="Valor de compra"
             type="number"
@@ -407,7 +485,13 @@ export default function CadastroVeiculosPage() {
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button type="submit" variant="contained" disabled={!canSubmit}>
-            {saving ? (editingId ? 'Atualizando...' : 'Salvando...') : editingId ? 'Atualizar Veículo' : 'Salvar Veículo'}
+            {saving
+              ? editingId
+                ? 'Atualizando...'
+                : 'Salvando...'
+              : editingId
+                ? 'Atualizar Veículo'
+                : 'Salvar Veículo'}
           </Button>
           {editingId && (
             <Button onClick={cancelEdit} variant="text" disabled={saving}>
@@ -438,14 +522,34 @@ export default function CadastroVeiculosPage() {
             inputProps={{ min: 1, max: 100 }}
             sx={{ width: 100 }}
           />
-          <Typography variant="body2" sx={{ mx: 1 }}>Página {page}</Typography>
-          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 2 }}>
+          <Typography variant="body2" sx={{ mx: 1 }}>
+            Página {page}
+          </Typography>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+              gap: 2,
+            }}
+          >
             <Card title="Veículos (total)">
               <div style={{ fontSize: 24, fontWeight: 700 }}>{totalCount}</div>
             </Card>
           </Box>
-          <Button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={loadingList || page <= 1} variant="outlined">Anterior</Button>
-          <Button onClick={() => setPage((p) => p + 1)} disabled={loadingList || page * pageSize >= totalCount} variant="outlined">Próxima</Button>
+          <Button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={loadingList || page <= 1}
+            variant="outlined"
+          >
+            Anterior
+          </Button>
+          <Button
+            onClick={() => setPage((p) => p + 1)}
+            disabled={loadingList || page * pageSize >= totalCount}
+            variant="outlined"
+          >
+            Próxima
+          </Button>
           <Button onClick={load} disabled={loadingList} variant="outlined">
             {loadingList ? 'Atualizando...' : 'Atualizar'}
           </Button>
@@ -473,11 +577,24 @@ export default function CadastroVeiculosPage() {
                 <TableCell>{v.ownership || '—'}</TableCell>
                 <TableCell>{v.year ?? '—'}</TableCell>
                 <TableCell>{v.odometer ?? '—'}</TableCell>
-                <TableCell>{v.created_at ? new Date(v.created_at).toLocaleString() : '—'}</TableCell>
+                <TableCell>
+                  {v.created_at ? new Date(v.created_at).toLocaleString() : '—'}
+                </TableCell>
                 <TableCell>
                   <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Button size="small" onClick={() => startEdit(v)} disabled={saving || deletingId === v.id}>Editar</Button>
-                    <Button size="small" color="error" onClick={() => onDelete(v.id)} disabled={deletingId === v.id}>
+                    <Button
+                      size="small"
+                      onClick={() => startEdit(v)}
+                      disabled={saving || deletingId === v.id}
+                    >
+                      Editar
+                    </Button>
+                    <Button
+                      size="small"
+                      color="error"
+                      onClick={() => onDelete(v.id)}
+                      disabled={deletingId === v.id}
+                    >
                       {deletingId === v.id ? 'Excluindo...' : 'Excluir'}
                     </Button>
                   </Box>

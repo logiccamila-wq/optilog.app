@@ -75,7 +75,7 @@ export default function PostsPage() {
       });
     }
     return arr;
-  }, [searchParams]);
+  }, [searchParams, category, now, range]);
   const sorted = useMemo(() => {
     const arr = [...filtered];
     arr.sort((a, b) => {
@@ -92,7 +92,7 @@ export default function PostsPage() {
       return a.title.localeCompare(b.title);
     });
     return arr;
-  }, [searchParams]);
+  }, [filtered, sort]);
   const PAGE_SIZE = 6;
   const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
   const currentPage = Math.min(totalPages, Math.max(1, page));
@@ -106,14 +106,20 @@ export default function PostsPage() {
           <h2 style={{ fontSize: 18 }}>Destaques</h2>
           <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
             {featured.map((p) => (
-              <div key={p.slug} style={{
-                border: '1px solid #333', borderRadius: 6, padding: '0.5rem 0.75rem',
-                background: '#111', width: 'calc(50% - 0.75rem)'
-              }}>
-                <Link href={`/posts/${p.slug}`} style={{ fontWeight: 600 }}>{p.title}</Link>
-                {p.date && (
-                  <div style={{ color: '#888', fontSize: 12 }}>{formatDate(p.date)}</div>
-                )}
+              <div
+                key={p.slug}
+                style={{
+                  border: '1px solid #333',
+                  borderRadius: 6,
+                  padding: '0.5rem 0.75rem',
+                  background: '#111',
+                  width: 'calc(50% - 0.75rem)',
+                }}
+              >
+                <Link href={`/posts/${p.slug}`} style={{ fontWeight: 600 }}>
+                  {p.title}
+                </Link>
+                {p.date && <div style={{ color: '#888', fontSize: 12 }}>{formatDate(p.date)}</div>}
               </div>
             ))}
           </div>

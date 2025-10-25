@@ -1,26 +1,38 @@
-'use client'
-import Card from '@/components/ui/card'
-import { useEffect, useState } from 'react'
+'use client';
+import Card from '@/components/ui/card';
+import { useEffect, useState } from 'react';
 
 export default function DisplayPage() {
-  const [isFs, setFs] = useState(false)
+  const [isFs, setFs] = useState(false);
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key.toLowerCase() === 'f') {
         if (!document.fullscreenElement) {
-          document.documentElement.requestFullscreen().then(() => setFs(true)).catch(() => {})
+          document.documentElement
+            .requestFullscreen()
+            .then(() => setFs(true))
+            .catch(() => {});
         } else {
-          document.exitFullscreen().then(() => setFs(false)).catch(() => {})
+          document
+            .exitFullscreen()
+            .then(() => setFs(false))
+            .catch(() => {});
         }
       }
-    }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [])
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
 
   return (
     <main style={{ padding: 16 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: 16,
+        }}
+      >
         {[
           { title: 'Entregas Hoje', value: '128', desc: 'Total de pedidos em rota' },
           { title: 'Veículos Ativos', value: '42', desc: 'Telemetria e status' },
@@ -35,8 +47,9 @@ export default function DisplayPage() {
         ))}
       </div>
       <div style={{ marginTop: 12, color: '#9aa3b0', fontSize: 13 }}>
-        Pressione "F" para {isFs ? 'sair do' : 'entrar em'} fullscreen. Para TV via HDMI, abra esta página.
+        Pressione "F" para {isFs ? 'sair do' : 'entrar em'} fullscreen. Para TV via HDMI, abra esta
+        página.
       </div>
     </main>
-  )
+  );
 }

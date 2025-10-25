@@ -37,8 +37,22 @@ export default function PneusMovimentacaoPage() {
       try {
         const vs = await apiFetch('/vehicles');
         const ts = await apiFetch('/tires');
-        setVehicles((vs || []).map((v: any) => ({ id: Number(v.id), plate: v.plate || v.plate, modelo: v.modelo || v.model, km: v.km || v.odometer })));
-        setTires((ts || []).map((t: any) => ({ id: Number(t.id), vehicle_id: t.vehicle_id == null ? null : Number(t.vehicle_id), position: t.position || null, life: t.life })));
+        setVehicles(
+          (vs || []).map((v: any) => ({
+            id: Number(v.id),
+            plate: v.plate || v.plate,
+            modelo: v.modelo || v.model,
+            km: v.km || v.odometer,
+          }))
+        );
+        setTires(
+          (ts || []).map((t: any) => ({
+            id: Number(t.id),
+            vehicle_id: t.vehicle_id == null ? null : Number(t.vehicle_id),
+            position: t.position || null,
+            life: t.life,
+          }))
+        );
         if ((vs || []).length > 0) setSelectedVehicleId(Number(vs[0].id));
       } catch (e: any) {
         setError(e?.message || 'Falha ao carregar dados');
@@ -49,7 +63,10 @@ export default function PneusMovimentacaoPage() {
     load();
   }, []);
 
-  const selectedVehicle = useMemo(() => vehicles.find((v) => v.id === selectedVehicleId) || null, [vehicles, selectedVehicleId]);
+  const selectedVehicle = useMemo(
+    () => vehicles.find((v) => v.id === selectedVehicleId) || null,
+    [vehicles, selectedVehicleId]
+  );
 
   const tiresByPosition = useMemo(() => {
     const map: Record<string, Tire | null> = {};
@@ -83,7 +100,13 @@ export default function PneusMovimentacaoPage() {
         method: 'PUT',
         body: JSON.stringify({ vehicle_id: selectedVehicleId, position: posKey }),
       });
-      setTires((prev) => prev.map((t) => (t.id === tireId ? { ...t, vehicle_id: Number(updated.vehicle_id), position: updated.position } : t)));
+      setTires((prev) =>
+        prev.map((t) =>
+          t.id === tireId
+            ? { ...t, vehicle_id: Number(updated.vehicle_id), position: updated.position }
+            : t
+        )
+      );
     } catch (e: any) {
       setError(e?.message || 'Falha ao mover pneu');
     }
@@ -92,9 +115,18 @@ export default function PneusMovimentacaoPage() {
   const allowDrop = (e: React.DragEvent) => e.preventDefault();
 
   const Header = () => (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 0' }}>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '1rem 0',
+      }}
+    >
       <h1 style={{ margin: 0 }}>Gestão de Pneus – Movimentação</h1>
-      <div style={{ fontSize: '0.9rem', color: '#666' }}>{loading ? 'Carregando…' : error ? `Erro: ${error}` : ''}</div>
+      <div style={{ fontSize: '0.9rem', color: '#666' }}>
+        {loading ? 'Carregando…' : error ? `Erro: ${error}` : ''}
+      </div>
     </div>
   );
 
@@ -104,7 +136,15 @@ export default function PneusMovimentacaoPage() {
       <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '1rem' }}>
         <div style={{ border: '1px solid #ddd', borderRadius: 8, padding: '0.5rem' }}>
           <div style={{ fontWeight: 600, marginBottom: 8 }}>Veículos</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 480, overflowY: 'auto' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 6,
+              maxHeight: 480,
+              overflowY: 'auto',
+            }}
+          >
             {vehicles.map((v) => (
               <button
                 key={v.id}
@@ -127,7 +167,9 @@ export default function PneusMovimentacaoPage() {
         <div style={{ display: 'grid', gridTemplateRows: '340px 1fr', gap: '1rem' }}>
           {/* Grade de posições do veículo selecionado */}
           <div style={{ border: '1px solid #ddd', borderRadius: 8, padding: '0.5rem' }}>
-            <div style={{ fontWeight: 600, marginBottom: 8 }}>Posições – {selectedVehicle ? selectedVehicle.plate : 'Selecione um veículo'}</div>
+            <div style={{ fontWeight: 600, marginBottom: 8 }}>
+              Posições – {selectedVehicle ? selectedVehicle.plate : 'Selecione um veículo'}
+            </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, height: 280 }}>
               {POSITIONS.map((p) => {
                 const tire = tiresByPosition[p.key];
@@ -148,30 +190,38 @@ export default function PneusMovimentacaoPage() {
                   >
                     <div style={{ fontWeight: 600 }}>{p.label}</div>
                     {tire ? (
-                      <div style={{
-                        border: '1px solid #ccc',
-                        borderRadius: 6,
-                        padding: '8px',
-                        background: '#fff',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                      }}>
+                      <div
+                        style={{
+                          border: '1px solid #ccc',
+                          borderRadius: 6,
+                          padding: '8px',
+                          background: '#fff',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                        }}
+                      >
                         <div>
                           <div style={{ fontWeight: 600 }}>Pneu #{tire.id}</div>
-                          <div style={{ fontSize: 12, color: '#555' }}>Vida: {tire.life ?? '-'}%</div>
+                          <div style={{ fontSize: 12, color: '#555' }}>
+                            Vida: {tire.life ?? '-'}%
+                          </div>
                         </div>
-                        <div style={{ fontSize: 12, color: '#777' }}>Arraste outro pneu aqui para trocar</div>
+                        <div style={{ fontSize: 12, color: '#777' }}>
+                          Arraste outro pneu aqui para trocar
+                        </div>
                       </div>
                     ) : (
-                      <div style={{
-                        border: '1px solid #eee',
-                        borderRadius: 6,
-                        padding: '8px',
-                        background: '#fff',
-                        color: '#888',
-                        textAlign: 'center',
-                      }}>
+                      <div
+                        style={{
+                          border: '1px solid #eee',
+                          borderRadius: 6,
+                          padding: '8px',
+                          background: '#fff',
+                          color: '#888',
+                          textAlign: 'center',
+                        }}
+                      >
                         Solte um pneu aqui
                       </div>
                     )}
@@ -184,8 +234,18 @@ export default function PneusMovimentacaoPage() {
           {/* Lista de pneus disponíveis para arrastar */}
           <div style={{ border: '1px solid #ddd', borderRadius: 8, padding: '0.5rem' }}>
             <div style={{ fontWeight: 600, marginBottom: 8 }}>Pneus disponíveis</div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 10 }}>
-              {availableTires.length === 0 && <div style={{ color: '#666' }}>Nenhum pneu disponível fora do veículo selecionado.</div>}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                gap: 10,
+              }}
+            >
+              {availableTires.length === 0 && (
+                <div style={{ color: '#666' }}>
+                  Nenhum pneu disponível fora do veículo selecionado.
+                </div>
+              )}
               {availableTires.map((t) => (
                 <div
                   key={t.id}
@@ -198,7 +258,7 @@ export default function PneusMovimentacaoPage() {
                     padding: 10,
                     background: '#fff',
                     cursor: 'grab',
-                    boxShadow: '0 1px 2px rgba(0,0,0,0.06)'
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
                   }}
                 >
                   <div style={{ fontWeight: 600 }}>Pneu #{t.id}</div>

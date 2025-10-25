@@ -9,7 +9,14 @@ export default function ContasAReceberPage() {
       <p style={{ color: colors.muted, fontSize: typography.subtitle }}>
         Faturas, boletos/PIX, inadimplência, renegociação e cobrança.
       </p>
-      <div style={{ border: `1px solid ${colors.border}`, borderRadius: 8, backgroundColor: colors.surface, padding: spacing.medium }}>
+      <div
+        style={{
+          border: `1px solid ${colors.border}`,
+          borderRadius: 8,
+          backgroundColor: colors.surface,
+          padding: spacing.medium,
+        }}
+      >
         <p style={{ margin: 0 }}>Tabela e fluxo de recebimento serão adicionados.</p>
       </div>
     </div>

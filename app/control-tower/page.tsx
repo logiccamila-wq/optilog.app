@@ -1,19 +1,19 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import dynamic from 'next/dynamic';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { useControlTowerWebSocket } from '@/hooks/useWebSocket';
 
 // Importação dinâmica do mapa para evitar problemas de SSR
-const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false });
-const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
-const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false });
-const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), { ssr: false });
-const Polyline = dynamic(() => import('react-leaflet').then(mod => mod.Polyline), { ssr: false });
+const MapContainer = dynamic(() => import('react-leaflet').then((mod) => mod.MapContainer), {
+  ssr: false,
+});
+const TileLayer = dynamic(() => import('react-leaflet').then((mod) => mod.TileLayer), {
+  ssr: false,
+});
+const Marker = dynamic(() => import('react-leaflet').then((mod) => mod.Marker), { ssr: false });
+const Popup = dynamic(() => import('react-leaflet').then((mod) => mod.Popup), { ssr: false });
+const Polyline = dynamic(() => import('react-leaflet').then((mod) => mod.Polyline), { ssr: false });
 
 interface Vehicle {
   id: string;
@@ -89,13 +89,13 @@ const MOCK_ROUTES = [
     progress: 65,
     stages: {
       checklist: 'completed',
-      departure: 'completed', 
+      departure: 'completed',
       transit: 'in_progress',
       arrival: 'pending',
-      delivery: 'pending'
+      delivery: 'pending',
     },
     workTime: '6h 15min',
-    lastUpdate: '13:45'
+    lastUpdate: '13:45',
   },
   {
     id: 'OTE1758',
@@ -115,10 +115,10 @@ const MOCK_ROUTES = [
       departure: 'completed',
       transit: 'in_progress',
       arrival: 'pending',
-      delivery: 'pending'
+      delivery: 'pending',
     },
     workTime: '7h 30min',
-    lastUpdate: '13:42'
+    lastUpdate: '13:42',
   },
   {
     id: 'JBX2021',
@@ -138,10 +138,10 @@ const MOCK_ROUTES = [
       departure: 'completed',
       transit: 'completed',
       arrival: 'in_progress',
-      delivery: 'pending'
+      delivery: 'pending',
     },
     workTime: '5h 45min',
-    lastUpdate: '13:47'
+    lastUpdate: '13:47',
   },
   {
     id: 'ABC4567',
@@ -161,11 +161,11 @@ const MOCK_ROUTES = [
       departure: 'in_progress',
       transit: 'pending',
       arrival: 'pending',
-      delivery: 'pending'
+      delivery: 'pending',
     },
     workTime: '1h 20min',
-    lastUpdate: '13:50'
-  }
+    lastUpdate: '13:50',
+  },
 ];
 
 const STATUS_CONFIG = {
@@ -173,88 +173,90 @@ const STATUS_CONFIG = {
   em_transito: { color: '#059669', bg: '#d1fae5', label: 'Em Trânsito' },
   atrasado: { color: '#dc2626', bg: '#fee2e2', label: 'Atrasado' },
   chegando: { color: '#f59e0b', bg: '#fef3c7', label: 'Chegando' },
-  entregue: { color: '#10b981', bg: '#d1fae5', label: 'Entregue' }
+  entregue: { color: '#10b981', bg: '#d1fae5', label: 'Entregue' },
 };
 
 const STAGE_CONFIG = {
   completed: { color: '#10b981', icon: '✓' },
   in_progress: { color: '#f59e0b', icon: '⏳' },
-  pending: { color: '#6b7280', icon: '○' }
+  pending: { color: '#6b7280', icon: '○' },
 };
 
 export default function ControlTower() {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
-  const [routes, setRoutes] = useState(MOCK_ROUTES);
+  const [routes] = useState(MOCK_ROUTES);
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm] = useState('');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [loading, setLoading] = useState(false);
   const [mapReady, setMapReady] = useState(false);
   const mapRef = useRef<any>(null);
-  
+
   // WebSocket integration for real-time updates
-  const { isConnected, vehicles, alerts, lastMessage } = useControlTowerWebSocket();
+  const { isConnected, alerts } = useControlTowerWebSocket();
 
   // Cores para diferentes status
   const statusColors = {
     em_transito: '#10b981', // Verde
-    carregando: '#f59e0b',  // Amarelo
-    entregue: '#6b7280',    // Cinza
-    alerta: '#ef4444'       // Vermelho
+    carregando: '#f59e0b', // Amarelo
+    entregue: '#6b7280', // Cinza
+    alerta: '#ef4444', // Vermelho
   };
 
   // Carregar dados do dashboard
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     try {
       setLoading(true);
       // Simular dados para demonstração
       const mockData: DashboardData = {
         summary: {
           totalVehicles: routes.length,
-          activeRoutes: routes.filter(r => r.status !== 'entregue').length,
-          vehiclesInTransit: routes.filter(r => r.status === 'em_transito').length,
-          vehiclesLoading: routes.filter(r => r.status === 'preparacao').length,
-          vehiclesDelivered: routes.filter(r => r.status === 'entregue').length,
-          totalAlerts: routes.filter(r => r.status === 'atrasado').length
+          activeRoutes: routes.filter((r) => r.status !== 'entregue').length,
+          vehiclesInTransit: routes.filter((r) => r.status === 'em_transito').length,
+          vehiclesLoading: routes.filter((r) => r.status === 'preparacao').length,
+          vehiclesDelivered: routes.filter((r) => r.status === 'entregue').length,
+          totalAlerts: routes.filter((r) => r.status === 'atrasado').length,
         },
-        vehicles: routes.map(route => ({
+        vehicles: routes.map((route) => ({
           id: route.id,
           driver: route.driver,
           plate: route.vehicle.split(' - ')[1] || route.vehicle,
           position: {
             lat: -23.5505 + (Math.random() - 0.5) * 10,
             lng: -46.6333 + (Math.random() - 0.5) * 10,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           },
           status: route.status,
           route: {
             origin: route.origin,
             destination: route.destination,
-            progress: route.progress
+            progress: route.progress,
           },
           cargo: route.cargo,
           speed: Math.floor(Math.random() * 80) + 40,
-          lastUpdate: route.lastUpdate
+          lastUpdate: route.lastUpdate,
         })),
-        routes: routes.map(route => ({
+        routes: routes.map((route) => ({
           id: route.id,
           vehicleId: route.id,
           waypoints: [
             { lat: -23.5505, lng: -46.6333, name: route.origin },
-            { lat: -22.9068, lng: -43.1729, name: route.destination }
+            { lat: -22.9068, lng: -43.1729, name: route.destination },
           ],
           distance: route.distance,
           estimatedTime: route.estimatedArrival,
-          alerts: []
+          alerts: [],
         })),
-        alerts: routes.filter(r => r.status === 'atrasado').map(route => ({
-          type: 'delay',
-          message: `Veículo ${route.vehicle} está atrasado`,
-          severity: 'high',
-          vehicleId: route.id,
-          routeId: route.id
-        }))
+        alerts: routes
+          .filter((r) => r.status === 'atrasado')
+          .map((route) => ({
+            type: 'delay',
+            message: `Veículo ${route.vehicle} está atrasado`,
+            severity: 'high',
+            vehicleId: route.id,
+            routeId: route.id,
+          })),
       };
       setDashboardData(mockData);
     } catch (error) {
@@ -262,7 +264,7 @@ export default function ControlTower() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [routes, setDashboardData, setLoading]);
 
   // Atualizar hora atual
   useEffect(() => {
@@ -272,12 +274,12 @@ export default function ControlTower() {
 
   useEffect(() => {
     fetchDashboardData();
-    
+
     // Atualizar dados a cada 30 segundos
     const interval = setInterval(fetchDashboardData, 30000);
-    
+
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchDashboardData]);
 
   useEffect(() => {
     // Carregar Leaflet CSS dinamicamente
@@ -286,38 +288,48 @@ export default function ControlTower() {
       link.rel = 'stylesheet';
       link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
       document.head.appendChild(link);
-      
+
       setMapReady(true);
     }
   }, []);
 
   // Filtrar rotas
-  const filteredRoutes = routes.filter(route => {
+  const filteredRoutes = routes.filter((route) => {
     const matchesStatus = statusFilter === 'todos' || route.status === statusFilter;
-    const matchesSearch = route.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         route.driver.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         route.client.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      route.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      route.driver.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      route.client.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesStatus && matchesSearch;
   });
 
-  const selectedRouteData = routes.find(r => r.id === selectedRoute);
+  const selectedRouteData = routes.find((r) => r.id === selectedRoute);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'em_transito': return '🚛';
-      case 'preparacao': return '📦';
-      case 'entregue': return '✅';
-      case 'atrasado': return '⚠️';
-      default: return '🚚';
+      case 'em_transito':
+        return '🚛';
+      case 'preparacao':
+        return '📦';
+      case 'entregue':
+        return '✅';
+      case 'atrasado':
+        return '⚠️';
+      default:
+        return '🚚';
     }
   };
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'high': return '#ef4444';
-      case 'medium': return '#f59e0b';
-      case 'low': return '#10b981';
-      default: return '#6b7280';
+      case 'high':
+        return '#ef4444';
+      case 'medium':
+        return '#f59e0b';
+      case 'low':
+        return '#10b981';
+      default:
+        return '#6b7280';
     }
   };
 
@@ -342,7 +354,9 @@ export default function ControlTower() {
               <h1 className="text-2xl font-bold text-gray-900">🏗️ Torre de Controle</h1>
               <div className="flex items-center gap-2">
                 <p className="text-sm text-gray-600">Monitoramento em Tempo Real da Frota</p>
-                <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                <div
+                  className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}
+                ></div>
                 <span className="text-xs text-gray-600">
                   {isConnected ? 'Conectado' : 'Desconectado'}
                 </span>
@@ -351,7 +365,9 @@ export default function ControlTower() {
             <div className="flex items-center gap-4">
               <div className="text-right">
                 <p className="text-sm text-gray-600">Última atualização</p>
-                <p className="font-medium text-gray-900">{currentTime.toLocaleTimeString('pt-BR')}</p>
+                <p className="font-medium text-gray-900">
+                  {currentTime.toLocaleTimeString('pt-BR')}
+                </p>
               </div>
               {alerts.length > 0 && (
                 <div className="flex items-center gap-2">
@@ -359,7 +375,7 @@ export default function ControlTower() {
                   <span className="text-xs text-red-600">{alerts.length} alertas</span>
                 </div>
               )}
-              <a 
+              <a
                 href="/control-tower/map"
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
               >
@@ -375,55 +391,66 @@ export default function ControlTower() {
         {dashboardData && (
           <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
             <div className="bg-white p-4 rounded-lg shadow">
-              <div className="text-2xl font-bold text-blue-600">{dashboardData.summary.totalVehicles}</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {dashboardData.summary.totalVehicles}
+              </div>
               <div className="text-sm text-gray-600">Total Veículos</div>
             </div>
             <div className="bg-white p-4 rounded-lg shadow">
-              <div className="text-2xl font-bold text-green-600">{dashboardData.summary.vehiclesInTransit}</div>
+              <div className="text-2xl font-bold text-green-600">
+                {dashboardData.summary.vehiclesInTransit}
+              </div>
               <div className="text-sm text-gray-600">Em Trânsito</div>
             </div>
             <div className="bg-white p-4 rounded-lg shadow">
-              <div className="text-2xl font-bold text-yellow-600">{dashboardData.summary.vehiclesLoading}</div>
+              <div className="text-2xl font-bold text-yellow-600">
+                {dashboardData.summary.vehiclesLoading}
+              </div>
               <div className="text-sm text-gray-600">Carregando</div>
             </div>
             <div className="bg-white p-4 rounded-lg shadow">
-              <div className="text-2xl font-bold text-gray-600">{dashboardData.summary.vehiclesDelivered}</div>
+              <div className="text-2xl font-bold text-gray-600">
+                {dashboardData.summary.vehiclesDelivered}
+              </div>
               <div className="text-sm text-gray-600">Entregues</div>
             </div>
             <div className="bg-white p-4 rounded-lg shadow">
-              <div className="text-2xl font-bold text-purple-600">{dashboardData.summary.activeRoutes}</div>
+              <div className="text-2xl font-bold text-purple-600">
+                {dashboardData.summary.activeRoutes}
+              </div>
               <div className="text-sm text-gray-600">Rotas Ativas</div>
             </div>
             <div className="bg-white p-4 rounded-lg shadow">
-              <div className="text-2xl font-bold text-red-600">{dashboardData.summary.totalAlerts}</div>
+              <div className="text-2xl font-bold text-red-600">
+                {dashboardData.summary.totalAlerts}
+              </div>
               <div className="text-sm text-gray-600">Alertas</div>
             </div>
           </div>
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          
           {/* Painel de Veículos */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-xl shadow-sm">
               <div className="p-6 border-b">
                 <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
                   <h2 className="text-lg font-semibold text-gray-900">🚛 Frota Ativa</h2>
-                  
-                <div className="mt-2">
-                  <select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-md text-sm"
-                  >
-                    <option value="todos">Todos os Status</option>
-                    <option value="preparacao">Preparação</option>
-                    <option value="em_transito">Em Trânsito</option>
-                    <option value="atrasado">Atrasado</option>
-                    <option value="chegando">Chegando</option>
-                    <option value="entregue">Entregue</option>
-                  </select>
-                </div>
+
+                  <div className="mt-2">
+                    <select
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                    >
+                      <option value="todos">Todos os Status</option>
+                      <option value="preparacao">Preparação</option>
+                      <option value="em_transito">Em Trânsito</option>
+                      <option value="atrasado">Atrasado</option>
+                      <option value="chegando">Chegando</option>
+                      <option value="entregue">Entregue</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -440,17 +467,23 @@ export default function ControlTower() {
                       <div className="flex items-center space-x-2">
                         <span className="text-lg">{getStatusIcon(route.status)}</span>
                         <div>
-                          <div className="font-medium text-sm">{route.vehicle.split(' - ')[1] || route.vehicle}</div>
+                          <div className="font-medium text-sm">
+                            {route.vehicle.split(' - ')[1] || route.vehicle}
+                          </div>
                           <div className="text-xs text-gray-600">{route.driver}</div>
                         </div>
                       </div>
                       <div
                         className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: statusColors[route.status as keyof typeof statusColors] }}
+                        style={{
+                          backgroundColor: statusColors[route.status as keyof typeof statusColors],
+                        }}
                       ></div>
                     </div>
                     <div className="mt-2 text-xs text-gray-600">
-                      <div>{route.origin} → {route.destination}</div>
+                      <div>
+                        {route.origin} → {route.destination}
+                      </div>
                       <div className="flex justify-between mt-1">
                         <span>Progresso: {route.progress}%</span>
                         <span>ETA: {route.estimatedArrival}</span>
@@ -514,38 +547,47 @@ export default function ControlTower() {
                       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                       attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     />
-                    
+
                     {/* Marcadores dos veículos */}
-                    {dashboardData.vehicles.filter(vehicle => 
-                      statusFilter === 'todos' || vehicle.status === statusFilter
-                    ).map((vehicle) => (
-                      <Marker
-                        key={vehicle.id}
-                        position={[vehicle.position.lat, vehicle.position.lng]}
-                      >
-                        <Popup>
-                          <div className="text-sm">
-                            <strong>{vehicle.plate}</strong><br />
-                            Motorista: {vehicle.driver}<br />
-                            Status: {vehicle.status}<br />
-                            Velocidade: {vehicle.speed} km/h<br />
-                            Carga: {vehicle.cargo}<br />
-                            Rota: {vehicle.route.origin} → {vehicle.route.destination}<br />
-                            Progresso: {vehicle.route.progress}%
-                          </div>
-                        </Popup>
-                      </Marker>
-                    ))}
+                    {dashboardData.vehicles
+                      .filter(
+                        (vehicle) => statusFilter === 'todos' || vehicle.status === statusFilter
+                      )
+                      .map((vehicle) => (
+                        <Marker
+                          key={vehicle.id}
+                          position={[vehicle.position.lat, vehicle.position.lng]}
+                        >
+                          <Popup>
+                            <div className="text-sm">
+                              <strong>{vehicle.plate}</strong>
+                              <br />
+                              Motorista: {vehicle.driver}
+                              <br />
+                              Status: {vehicle.status}
+                              <br />
+                              Velocidade: {vehicle.speed} km/h
+                              <br />
+                              Carga: {vehicle.cargo}
+                              <br />
+                              Rota: {vehicle.route.origin} → {vehicle.route.destination}
+                              <br />
+                              Progresso: {vehicle.route.progress}%
+                            </div>
+                          </Popup>
+                        </Marker>
+                      ))}
 
                     {/* Rotas */}
                     {dashboardData.routes.map((route) => {
-                      const vehicle = dashboardData.vehicles.find(v => v.id === route.vehicleId);
-                      if (!vehicle || (statusFilter !== 'todos' && vehicle.status !== statusFilter)) return null;
-                      
+                      const vehicle = dashboardData.vehicles.find((v) => v.id === route.vehicleId);
+                      if (!vehicle || (statusFilter !== 'todos' && vehicle.status !== statusFilter))
+                        return null;
+
                       return (
                         <Polyline
                           key={route.id}
-                          positions={route.waypoints.map(wp => [wp.lat, wp.lng])}
+                          positions={route.waypoints.map((wp) => [wp.lat, wp.lng])}
                           color={statusColors[vehicle.status as keyof typeof statusColors]}
                           weight={3}
                           opacity={0.7}
@@ -571,30 +613,45 @@ export default function ControlTower() {
               <div className="p-6 border-b">
                 <h2 className="text-xl font-semibold text-gray-900">📊 Detalhes da Rota</h2>
               </div>
-              
+
               {selectedRouteData ? (
                 <div className="p-6 space-y-6">
                   {/* Informações Básicas */}
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-3">Informações Gerais</h3>
                     <div className="space-y-2 text-sm">
-                      <p><strong>ID:</strong> {selectedRouteData.id}</p>
-                      <p><strong>Motorista:</strong> {selectedRouteData.driver}</p>
-                      <p><strong>Veículo:</strong> {selectedRouteData.vehicle}</p>
-                      <p><strong>Cliente:</strong> {selectedRouteData.client}</p>
-                      <p><strong>Carga:</strong> {selectedRouteData.cargo}</p>
-                      <p><strong>Distância:</strong> {selectedRouteData.distance}</p>
+                      <p>
+                        <strong>ID:</strong> {selectedRouteData.id}
+                      </p>
+                      <p>
+                        <strong>Motorista:</strong> {selectedRouteData.driver}
+                      </p>
+                      <p>
+                        <strong>Veículo:</strong> {selectedRouteData.vehicle}
+                      </p>
+                      <p>
+                        <strong>Cliente:</strong> {selectedRouteData.client}
+                      </p>
+                      <p>
+                        <strong>Carga:</strong> {selectedRouteData.cargo}
+                      </p>
+                      <p>
+                        <strong>Distância:</strong> {selectedRouteData.distance}
+                      </p>
                     </div>
                   </div>
 
                   {/* Status Atual */}
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-3">Status Atual</h3>
-                    <div 
+                    <div
                       className="p-3 rounded-lg text-center font-medium"
-                      style={{ 
-                        color: STATUS_CONFIG[selectedRouteData.status as keyof typeof STATUS_CONFIG].color,
-                        backgroundColor: STATUS_CONFIG[selectedRouteData.status as keyof typeof STATUS_CONFIG].bg
+                      style={{
+                        color:
+                          STATUS_CONFIG[selectedRouteData.status as keyof typeof STATUS_CONFIG]
+                            .color,
+                        backgroundColor:
+                          STATUS_CONFIG[selectedRouteData.status as keyof typeof STATUS_CONFIG].bg,
                       }}
                     >
                       {STATUS_CONFIG[selectedRouteData.status as keyof typeof STATUS_CONFIG].label}
@@ -611,9 +668,12 @@ export default function ControlTower() {
                       {Object.entries(selectedRouteData.stages).map(([stage, status]) => (
                         <div key={stage} className="flex items-center justify-between">
                           <span className="text-sm capitalize">{stage.replace('_', ' ')}</span>
-                          <div 
+                          <div
                             className="flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold text-white"
-                            style={{ backgroundColor: STAGE_CONFIG[status as keyof typeof STAGE_CONFIG].color }}
+                            style={{
+                              backgroundColor:
+                                STAGE_CONFIG[status as keyof typeof STAGE_CONFIG].color,
+                            }}
                           >
                             {STAGE_CONFIG[status as keyof typeof STAGE_CONFIG].icon}
                           </div>
@@ -626,8 +686,12 @@ export default function ControlTower() {
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-3">Tempo de Trabalho</h3>
                     <div className="p-3 bg-gray-50 rounded-lg">
-                      <p className="text-sm"><strong>Tempo Atual:</strong> {selectedRouteData.workTime}</p>
-                      <p className="text-sm"><strong>ETA:</strong> {selectedRouteData.estimatedArrival}</p>
+                      <p className="text-sm">
+                        <strong>Tempo Atual:</strong> {selectedRouteData.workTime}
+                      </p>
+                      <p className="text-sm">
+                        <strong>ETA:</strong> {selectedRouteData.estimatedArrival}
+                      </p>
                     </div>
                   </div>
 
@@ -664,37 +728,37 @@ export default function ControlTower() {
               <div className="text-blue-600 text-2xl">🚛</div>
             </div>
           </div>
-          
+
           <div className="bg-white p-4 rounded-xl shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Em Trânsito</p>
                 <p className="text-2xl font-bold text-green-600">
-                  {routes.filter(r => r.status === 'em_transito').length}
+                  {routes.filter((r) => r.status === 'em_transito').length}
                 </p>
               </div>
               <div className="text-green-600 text-2xl">✅</div>
             </div>
           </div>
-          
+
           <div className="bg-white p-4 rounded-xl shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Atrasados</p>
                 <p className="text-2xl font-bold text-red-600">
-                  {routes.filter(r => r.status === 'atrasado').length}
+                  {routes.filter((r) => r.status === 'atrasado').length}
                 </p>
               </div>
               <div className="text-red-600 text-2xl">⚠️</div>
             </div>
           </div>
-          
+
           <div className="bg-white p-4 rounded-xl shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Chegando</p>
                 <p className="text-2xl font-bold text-orange-600">
-                  {routes.filter(r => r.status === 'chegando').length}
+                  {routes.filter((r) => r.status === 'chegando').length}
                 </p>
               </div>
               <div className="text-orange-600 text-2xl">🎯</div>

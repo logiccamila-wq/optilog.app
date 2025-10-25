@@ -4,6 +4,7 @@ Kits Backend (API)
 - Stack: Node.js 20, Express, Firestore (via SDK), util `utils/api.ts` para consumo.
 
 Padrão de rota Express (template)
+
 ```
 const express = require('express');
 const router = express.Router();
@@ -34,12 +35,14 @@ module.exports = router;
 ```
 
 Endpoints sugeridos
+
 - `/tires` (pneus): listar e atualizar métricas.
 - `/vehicles` (veículos): cadastro e manutenção.
 - `/shipments` (logística): tracking,
 - `/invoices` (financeiro): faturas (open/paid/overdue).
 
 Boas práticas
+
 - Validar `req.body` antes de persistir.
 - Paginar listagens longas.
 - Utilizar códigos HTTP consistentes.

@@ -47,7 +47,13 @@ function AnimatedCube() {
         <line x1={176} y1={96} x2={156} y2={136} />
         <line x1={116} y1={116} x2={96} y2={156} />
         {/* Center node */}
-        <circle cx={128} cy={128} r={4} fill="currentColor" className="animate-[glow_3s_ease-in-out_infinite]" />
+        <circle
+          cx={128}
+          cy={128}
+          r={4}
+          fill="currentColor"
+          className="animate-[glow_3s_ease-in-out_infinite]"
+        />
       </g>
     </svg>
   );
@@ -55,25 +61,36 @@ function AnimatedCube() {
 
 export default function QuemSomosPage() {
   return (
-    <main className="container" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 24, alignItems: 'center' }}>
+    <main
+      className="container"
+      style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 24, alignItems: 'center' }}
+    >
       <section>
-        <h1 className="header" style={{ letterSpacing: '0.02em' }}>Quem somos</h1>
+        <h1 className="header" style={{ letterSpacing: '0.02em' }}>
+          Quem somos
+        </h1>
         <p style={{ fontSize: 18, lineHeight: 1.7, color: 'var(--color-text)' }}>
           Somos a <strong>XYZ LogicFlow Technology</strong>, uma equipe apaixonada por unir dados,
-          automação e experiência do usuário para acelerar decisões operacionais.
-          Nosso sistema integra <em>WMS, TMS, OMS, SCM, CRM</em> e <em>ERP</em> em um único fluxo —
-          com dashboards responsivos, IA aplicada e uma arquitetura segura e escalável.
+          automação e experiência do usuário para acelerar decisões operacionais. Nosso sistema
+          integra <em>WMS, TMS, OMS, SCM, CRM</em> e <em>ERP</em> em um único fluxo — com dashboards
+          responsivos, IA aplicada e uma arquitetura segura e escalável.
         </p>
         <p style={{ fontSize: 18, lineHeight: 1.7, marginTop: 12, color: 'var(--color-text)' }}>
           A plataforma foi projetada para visibilidade em tempo real, redução de custos e
-          performance. Com temas personalizáveis e paletas dinâmicas, a identidade visual
-          acompanha sua marca, enquanto os módulos colaboram de ponta a ponta.
+          performance. Com temas personalizáveis e paletas dinâmicas, a identidade visual acompanha
+          sua marca, enquanto os módulos colaboram de ponta a ponta.
         </p>
         <div style={{ display: 'flex', gap: 12, marginTop: 20 }}>
-          <a href="/resources" className="inline-flex items-center justify-center rounded-lg border border-[var(--color-brand)] px-4 py-2 text-[var(--color-brand)] hover:bg-[var(--color-secondary)]">
+          <a
+            href="/resources"
+            className="inline-flex items-center justify-center rounded-lg border border-[var(--color-brand)] px-4 py-2 text-[var(--color-brand)] hover:bg-[var(--color-secondary)]"
+          >
             Recursos
           </a>
-          <a href="/signup" className="inline-flex items-center justify-center rounded-lg bg-[var(--color-brand)] px-4 py-2 text-[var(--color-on-brand)] hover:opacity-90">
+          <a
+            href="/signup"
+            className="inline-flex items-center justify-center rounded-lg bg-[var(--color-brand)] px-4 py-2 text-[var(--color-on-brand)] hover:opacity-90"
+          >
             Começar agora
           </a>
         </div>

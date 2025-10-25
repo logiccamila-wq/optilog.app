@@ -13,6 +13,7 @@ O Render cria/atualiza serviços automaticamente conforme pushs no branch config
 - No projeto, `package.json` define "engines.node": "20.x" para compatibilidade com Vercel/Render.
 
 ## Variáveis de ambiente (Frontend)
+
 Defina no serviço `optilog-frontend`:
 
 - `NEXT_PUBLIC_DISABLE_FIREBASE` — "1" para desativar Firebase (demo/local)
@@ -29,6 +30,7 @@ Defina no serviço `optilog-frontend`:
 Observação: variáveis `NEXT_PUBLIC_*` são expostas no cliente.
 
 ## Variáveis de ambiente (Backend)
+
 Defina no serviço `optilog-backend`:
 
 - `DATABASE_URL` — conexão para Postgres (Neon)

@@ -3,11 +3,14 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Script from 'next/script';
 
 declare global {
-  interface Window { Chart: any }
+  interface Window {
+    Chart: any;
+  }
 }
 
 function useThemeVars() {
-  const readVar = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name)?.trim();
+  const readVar = (name: string) =>
+    getComputedStyle(document.documentElement).getPropertyValue(name)?.trim();
   const hexToRgb = (hex: string) => {
     const h = hex.replace('#', '');
     const bigint = parseInt(h, 16);
@@ -16,7 +19,8 @@ function useThemeVars() {
     const b = bigint & 255;
     return { r, g, b };
   };
-  const rgbToHex = (r: number, g: number, b: number) => '#' + [r, g, b].map((x) => x.toString(16).padStart(2, '0')).join('');
+  const rgbToHex = (r: number, g: number, b: number) =>
+    '#' + [r, g, b].map((x) => x.toString(16).padStart(2, '0')).join('');
   const lighten = (hex: string, amt: number) => {
     const { r, g, b } = hexToRgb(hex);
     const lr = Math.min(255, Math.round(r + (255 - r) * amt));
@@ -88,15 +92,25 @@ export default function TireDashboardPage() {
   const alerts = useMemo(() => {
     return [
       { vehicle: 'ABC-1234', issue: 'Pneu dianteiro esq. abaixo de 28 PSI', priority: 'Alta' },
-      { vehicle: 'QWE-5678', issue: 'Temperatura acima de 65°C (trajeto urbano)', priority: 'Média' },
+      {
+        vehicle: 'QWE-5678',
+        issue: 'Temperatura acima de 65°C (trajeto urbano)',
+        priority: 'Média',
+      },
       { vehicle: 'XYZ-9012', issue: 'Vida útil < 10% (traseiro dir.)', priority: 'Alta' },
-      { vehicle: 'JKL-3456', issue: 'Desbalanceamento detectado (sensor vibração)', priority: 'Média' },
+      {
+        vehicle: 'JKL-3456',
+        issue: 'Desbalanceamento detectado (sensor vibração)',
+        priority: 'Média',
+      },
     ];
   }, []);
 
   // Dados filtrados
   const filteredDistribution = useMemo(() => {
-    const values = distribution.values.map((v, i) => (selectedStatuses.includes(distribution.labels[i]) ? v : 0));
+    const values = distribution.values.map((v, i) =>
+      selectedStatuses.includes(distribution.labels[i]) ? v : 0
+    );
     return { labels: distribution.labels, values };
   }, [distribution, selectedStatuses]);
 
@@ -110,9 +124,10 @@ export default function TireDashboardPage() {
 
   const filteredAlerts = useMemo(() => {
     const s = search.trim().toLowerCase();
-    return alerts.filter((a) =>
-      (priority === 'Todas' || a.priority === priority) &&
-      (s === '' || a.vehicle.toLowerCase().includes(s) || a.issue.toLowerCase().includes(s))
+    return alerts.filter(
+      (a) =>
+        (priority === 'Todas' || a.priority === priority) &&
+        (s === '' || a.vehicle.toLowerCase().includes(s) || a.issue.toLowerCase().includes(s))
     );
   }, [alerts, priority, search]);
 
@@ -132,9 +147,15 @@ export default function TireDashboardPage() {
     URL.revokeObjectURL(url);
   };
 
-  const exportCanvasToPNG = (chartObj: any, canvasRef: React.RefObject<HTMLCanvasElement>, filename: string) => {
+  const exportCanvasToPNG = (
+    chartObj: any,
+    canvasRef: React.RefObject<HTMLCanvasElement>,
+    filename: string
+  ) => {
     try {
-      const dataUrl = chartObj?.toBase64Image ? chartObj.toBase64Image() : canvasRef.current?.toDataURL('image/png') || '';
+      const dataUrl = chartObj?.toBase64Image
+        ? chartObj.toBase64Image()
+        : canvasRef.current?.toDataURL('image/png') || '';
       if (!dataUrl) return;
       const a = document.createElement('a');
       a.href = dataUrl;
@@ -232,38 +253,73 @@ export default function TireDashboardPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg)', color: text }}>
-      <Script src="https://cdn.jsdelivr.net/npm/chart.js" strategy="afterInteractive" onLoad={() => setChartReady(true)} />
+      <Script
+        src="https://cdn.jsdelivr.net/npm/chart.js"
+        strategy="afterInteractive"
+        onLoad={() => setChartReady(true)}
+      />
 
       <header className="sticky top-0 z-10 shadow-md" style={{ background: secondary }}>
         <div className="container px-4 pt-4">
-          <h1 className="text-2xl font-bold" style={{ color: brand }}>Painel de Gestão de Pneus</h1>
-          <p className="text-sm mb-2" style={{ color: text }}>Monitoramento de estoque, serviços e alertas críticos.</p>
+          <h1 className="text-2xl font-bold" style={{ color: brand }}>
+            Painel de Gestão de Pneus
+          </h1>
+          <p className="text-sm mb-2" style={{ color: text }}>
+            Monitoramento de estoque, serviços e alertas críticos.
+          </p>
         </div>
       </header>
 
       <main className="container px-4 py-6">
         {/* Filtro e exportação */}
-        <section className="shadow p-4 mb-6" style={{ background: secondary, border: `1px solid ${border}`, borderRadius: radius }}>
+        <section
+          className="shadow p-4 mb-6"
+          style={{ background: secondary, border: `1px solid ${border}`, borderRadius: radius }}
+        >
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div>
-              <label className="text-sm" style={{ color: text }}>Período</label>
-              <select aria-label="Período" value={period} onChange={(e) => setPeriod(e.target.value as '3m' | '6m' | '12m')}
-                style={{ border: `1px solid ${border}`, background: 'var(--color-bg)', color: text, borderRadius: radius, padding: '8px' }}>
+              <label className="text-sm" style={{ color: text }}>
+                Período
+              </label>
+              <select
+                aria-label="Período"
+                value={period}
+                onChange={(e) => setPeriod(e.target.value as '3m' | '6m' | '12m')}
+                style={{
+                  border: `1px solid ${border}`,
+                  background: 'var(--color-bg)',
+                  color: text,
+                  borderRadius: radius,
+                  padding: '8px',
+                }}
+              >
                 <option value="3m">3 meses</option>
                 <option value="6m">6 meses</option>
                 <option value="12m">12 meses</option>
               </select>
             </div>
             <div>
-              <span className="text-sm block mb-1" style={{ color: text }}>Status do estoque</span>
+              <span className="text-sm block mb-1" style={{ color: text }}>
+                Status do estoque
+              </span>
               <div className="flex flex-wrap gap-2">
                 {distribution.labels.map((l) => {
                   const checked = selectedStatuses.includes(l);
                   return (
-                    <label key={l} className="text-sm flex items-center gap-2" style={{ color: text }}>
-                      <input type="checkbox" checked={checked} onChange={(e) => {
-                        setSelectedStatuses((prev) => e.target.checked ? [...prev, l] : prev.filter((x) => x !== l));
-                      }} />
+                    <label
+                      key={l}
+                      className="text-sm flex items-center gap-2"
+                      style={{ color: text }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={(e) => {
+                          setSelectedStatuses((prev) =>
+                            e.target.checked ? [...prev, l] : prev.filter((x) => x !== l)
+                          );
+                        }}
+                      />
                       {l}
                     </label>
                   );
@@ -271,48 +327,111 @@ export default function TireDashboardPage() {
               </div>
             </div>
             <div>
-              <label className="text-sm" style={{ color: text }}>Prioridade</label>
-              <select aria-label="Prioridade" value={priority} onChange={(e) => setPriority(e.target.value as 'Todas' | 'Alta' | 'Média')}
-                style={{ border: `1px solid ${border}`, background: 'var(--color-bg)', color: text, borderRadius: radius, padding: '8px' }}>
+              <label className="text-sm" style={{ color: text }}>
+                Prioridade
+              </label>
+              <select
+                aria-label="Prioridade"
+                value={priority}
+                onChange={(e) => setPriority(e.target.value as 'Todas' | 'Alta' | 'Média')}
+                style={{
+                  border: `1px solid ${border}`,
+                  background: 'var(--color-bg)',
+                  color: text,
+                  borderRadius: radius,
+                  padding: '8px',
+                }}
+              >
                 <option value="Todas">Todas</option>
                 <option value="Alta">Alta</option>
                 <option value="Média">Média</option>
               </select>
             </div>
             <div>
-              <label className="text-sm" style={{ color: text }}>Buscar veículo</label>
-              <input aria-label="Buscar veículo" type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Placa ou id"
-                style={{ border: `1px solid ${border}`, background: 'var(--color-bg)', color: text, borderRadius: radius, padding: '8px', width: '100%' }} />
+              <label className="text-sm" style={{ color: text }}>
+                Buscar veículo
+              </label>
+              <input
+                aria-label="Buscar veículo"
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Placa ou id"
+                style={{
+                  border: `1px solid ${border}`,
+                  background: 'var(--color-bg)',
+                  color: text,
+                  borderRadius: radius,
+                  padding: '8px',
+                  width: '100%',
+                }}
+              />
             </div>
           </div>
           <div className="mt-4 flex gap-2 flex-wrap">
-            <button onClick={exportAlertsToCSV} className="px-3 py-2" style={{ background: brand, color: onBrand, borderRadius: radius }}>Exportar alertas (CSV)</button>
-            <button onClick={() => exportCanvasToPNG(donutChartRef.current, donutRef, 'distribuicao.png')} className="px-3 py-2" style={{ background: brand, color: onBrand, borderRadius: radius }}>Exportar donut (PNG)</button>
-            <button onClick={() => exportCanvasToPNG(trendChartRef.current, trendRef, 'servicos.png')} className="px-3 py-2" style={{ background: brand, color: onBrand, borderRadius: radius }}>Exportar linha (PNG)</button>
+            <button
+              onClick={exportAlertsToCSV}
+              className="px-3 py-2"
+              style={{ background: brand, color: onBrand, borderRadius: radius }}
+            >
+              Exportar alertas (CSV)
+            </button>
+            <button
+              onClick={() => exportCanvasToPNG(donutChartRef.current, donutRef, 'distribuicao.png')}
+              className="px-3 py-2"
+              style={{ background: brand, color: onBrand, borderRadius: radius }}
+            >
+              Exportar donut (PNG)
+            </button>
+            <button
+              onClick={() => exportCanvasToPNG(trendChartRef.current, trendRef, 'servicos.png')}
+              className="px-3 py-2"
+              style={{ background: brand, color: onBrand, borderRadius: radius }}
+            >
+              Exportar linha (PNG)
+            </button>
           </div>
         </section>
 
         {/* KPI Cards */}
         <section className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           {kpis.map((k) => (
-            <div key={k.label} className="shadow p-4" style={{ background: secondary, border: `1px solid ${border}`, borderRadius: radius }}>
-              <div className="text-sm" style={{ color: text }}>{k.label}</div>
-              <div className="text-2xl font-extrabold" style={{ color: brand }}>{k.value}</div>
+            <div
+              key={k.label}
+              className="shadow p-4"
+              style={{ background: secondary, border: `1px solid ${border}`, borderRadius: radius }}
+            >
+              <div className="text-sm" style={{ color: text }}>
+                {k.label}
+              </div>
+              <div className="text-2xl font-extrabold" style={{ color: brand }}>
+                {k.value}
+              </div>
             </div>
           ))}
         </section>
 
         {/* Charts */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div className="shadow p-4" style={{ background: secondary, border: `1px solid ${border}`, borderRadius: radius }}>
-            <h2 className="font-semibold mb-2" style={{ color: brand }}>Distribuição do Estoque</h2>
+          <div
+            className="shadow p-4"
+            style={{ background: secondary, border: `1px solid ${border}`, borderRadius: radius }}
+          >
+            <h2 className="font-semibold mb-2" style={{ color: brand }}>
+              Distribuição do Estoque
+            </h2>
             <div style={{ position: 'relative', height: 280 }}>
               <canvas ref={donutRef} />
             </div>
           </div>
 
-          <div className="shadow p-4" style={{ background: secondary, border: `1px solid ${border}`, borderRadius: radius }}>
-            <h2 className="font-semibold mb-2" style={{ color: brand }}>Frequência de Serviços</h2>
+          <div
+            className="shadow p-4"
+            style={{ background: secondary, border: `1px solid ${border}`, borderRadius: radius }}
+          >
+            <h2 className="font-semibold mb-2" style={{ color: brand }}>
+              Frequência de Serviços
+            </h2>
             <div style={{ position: 'relative', height: 280 }}>
               <canvas ref={trendRef} />
             </div>
@@ -320,16 +439,39 @@ export default function TireDashboardPage() {
         </section>
 
         {/* Alerts */}
-        <section className="shadow p-4" style={{ background: secondary, border: `1px solid ${border}`, borderRadius: radius }}>
-          <h2 className="font-semibold mb-3" style={{ color: brand }}>Alertas Críticos</h2>
+        <section
+          className="shadow p-4"
+          style={{ background: secondary, border: `1px solid ${border}`, borderRadius: radius }}
+        >
+          <h2 className="font-semibold mb-3" style={{ color: brand }}>
+            Alertas Críticos
+          </h2>
           <ul className="grid gap-2">
             {filteredAlerts.map((a, idx) => (
-              <li key={idx} className="p-3" style={{ background: 'var(--color-bg)', border: `1px solid ${border}`, borderRadius: radius }}>
+              <li
+                key={idx}
+                className="p-3"
+                style={{
+                  background: 'var(--color-bg)',
+                  border: `1px solid ${border}`,
+                  borderRadius: radius,
+                }}
+              >
                 <div className="flex justify-between">
                   <span style={{ color: text }}>
                     <strong>{a.vehicle}</strong> — {a.issue}
                   </span>
-                  <span className="text-xs" style={{ background: brand, color: onBrand, padding: '2px 8px', borderRadius: radius }}>{a.priority}</span>
+                  <span
+                    className="text-xs"
+                    style={{
+                      background: brand,
+                      color: onBrand,
+                      padding: '2px 8px',
+                      borderRadius: radius,
+                    }}
+                  >
+                    {a.priority}
+                  </span>
                 </div>
               </li>
             ))}

@@ -10,7 +10,10 @@ export async function GET() {
     const json = JSON.parse(raw);
     return NextResponse.json(json);
   } catch (err: any) {
-    return NextResponse.json({ error: err?.message || 'Erro ao carregar parâmetros' }, { status: 500 });
+    return NextResponse.json(
+      { error: err?.message || 'Erro ao carregar parâmetros' },
+      { status: 500 }
+    );
   }
 }
 
@@ -41,6 +44,9 @@ export async function PUT(req: Request) {
     await fs.writeFile(filePath, JSON.stringify(body, null, 2), 'utf-8');
     return NextResponse.json({ ok: true });
   } catch (err: any) {
-    return NextResponse.json({ error: err?.message || 'Erro ao salvar parâmetros' }, { status: 500 });
+    return NextResponse.json(
+      { error: err?.message || 'Erro ao salvar parâmetros' },
+      { status: 500 }
+    );
   }
 }

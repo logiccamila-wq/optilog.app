@@ -14,7 +14,9 @@ async function ensureSchema(sql: any) {
     updated_at timestamptz default now()
   )`;
   // garante coluna em bases existentes
-  await sql('alter table if exists drivers add column if not exists updated_at timestamptz default now()');
+  await sql(
+    'alter table if exists drivers add column if not exists updated_at timestamptz default now()'
+  );
   await sql`create unique index if not exists idx_drivers_cnh_unique on drivers (cnh)`;
 }
 
@@ -60,7 +62,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         return NextResponse.json({ error: 'Motorista não encontrado' }, { status: 404 });
       }
       // publica evento de atualização
-      publishEvent('driver', 'update', driver).catch(() => {});
+      publishEvent({ entity: 'driver', action: 'update', data: driver }).catch(() => {});
       return NextResponse.json({ ok: true, driver }, { status: 200 });
     } catch (e: any) {
       if (e?.code === '23505') {
@@ -89,7 +91,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
       return NextResponse.json({ error: 'Motorista não encontrado' }, { status: 404 });
     }
     // publica evento de exclusão
-    publishEvent('driver', 'delete', { id }).catch(() => {});
+    publishEvent({ entity: 'driver', action: 'delete', data: { id } }).catch(() => {});
     return NextResponse.json({ ok: true }, { status: 200 });
   } catch (err: any) {
     return NextResponse.json({ error: err?.message || 'Erro interno' }, { status: 500 });

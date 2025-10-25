@@ -49,7 +49,13 @@ export async function GET(req: Request) {
       idf[t] = Math.log(N / df);
     }
 
-    const items = [] as Array<{ id: string; title: string; snippets: string[]; file: string; score: number }>;
+    const items = [] as Array<{
+      id: string;
+      title: string;
+      snippets: string[];
+      file: string;
+      score: number;
+    }>;
 
     for (const f of mdFiles) {
       const content = fileContents[f];

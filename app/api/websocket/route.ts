@@ -13,29 +13,26 @@ export async function GET(request: NextRequest) {
       'Journey event tracking',
       'Status changes',
       'Alert notifications',
-      'Driver-Control Tower communication'
-    ]
+      'Driver-Control Tower communication',
+    ],
   });
 }
 
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
-    
+
     // Simulate WebSocket message processing
     console.log('WebSocket message received:', data);
-    
+
     // In production, this would broadcast to connected clients
     return NextResponse.json({
       success: true,
       message: 'WebSocket message processed',
       data: data,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to process WebSocket message' },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: 'Failed to process WebSocket message' }, { status: 400 });
   }
 }

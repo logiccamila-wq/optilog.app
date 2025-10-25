@@ -44,19 +44,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user]);
 
-  const value = useMemo<AuthContextValue>(() => ({
-    user,
-    loading,
-    login: (u: User) => setUser(u),
-    logout: () => setUser(null),
-    setRoles: (roles: Role[]) => setUser(prev => prev ? { ...prev, roles } : prev),
-  }), [user, loading]);
-
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo<AuthContextValue>(
+    () => ({
+      user,
+      loading,
+      login: (u: User) => setUser(u),
+      logout: () => setUser(null),
+      setRoles: (roles: Role[]) => setUser((prev) => (prev ? { ...prev, roles } : prev)),
+    }),
+    [user, loading]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth(): AuthContextValue {

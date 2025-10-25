@@ -13,7 +13,7 @@ function toCSV(rows: any[]): string {
   };
   const lines = [headers.join(',')];
   for (const r of rows) {
-    lines.push(headers.map(h => escape(r[h])).join(','));
+    lines.push(headers.map((h) => escape(r[h])).join(','));
   }
   return lines.join('\n');
 }
@@ -25,14 +25,28 @@ export async function GET(req: NextRequest) {
     const sql = getSql();
 
     if (entity === 'process') {
-      const rows = await sql`SELECT id, name, description, owner, status, created_at, updated_at FROM pop_processes ORDER BY id`;
+      const rows =
+        await sql`SELECT id, name, description, owner, status, created_at, updated_at FROM pop_processes ORDER BY id`;
       const csv = toCSV(rows as any[]);
-      return new NextResponse(csv, { status: 200, headers: { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': 'attachment; filename=pop_processes.csv' } });
+      return new NextResponse(csv, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/csv; charset=utf-8',
+          'Content-Disposition': 'attachment; filename=pop_processes.csv',
+        },
+      });
     }
     if (entity === 'occurrence') {
-      const rows = await sql`SELECT id, process_id, title, severity, description, happened_at, created_at, updated_at FROM pop_occurrences ORDER BY happened_at DESC NULLS LAST, id`;
+      const rows =
+        await sql`SELECT id, process_id, title, severity, description, happened_at, created_at, updated_at FROM pop_occurrences ORDER BY happened_at DESC NULLS LAST, id`;
       const csv = toCSV(rows as any[]);
-      return new NextResponse(csv, { status: 200, headers: { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': 'attachment; filename=pop_occurrences.csv' } });
+      return new NextResponse(csv, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/csv; charset=utf-8',
+          'Content-Disposition': 'attachment; filename=pop_occurrences.csv',
+        },
+      });
     }
 
     return NextResponse.json({ error: 'entity inválido' }, { status: 400 });

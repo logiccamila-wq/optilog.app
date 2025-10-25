@@ -2,7 +2,8 @@
 import 'dotenv/config';
 import { Pool } from 'pg';
 
-const DEFAULT_URL = process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/optilog';
+const DEFAULT_URL =
+  process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/optilog';
 
 const pool = new Pool({ connectionString: DEFAULT_URL });
 
@@ -100,7 +101,7 @@ async function ensureSchema() {
       item TEXT,
       nivel INTEGER,
       pontoReposicao INTEGER
-    )`
+    )`,
   ];
   for (const q of sqls) {
     await pool.query(q);
@@ -139,7 +140,7 @@ async function seedIfEmpty() {
       ['delivered', v2, new Date(now.getTime() - 7200_000), 98.3, -22.9, -47.05, 'u2'],
       ['delayed', v1, new Date(now.getTime() - 5400_000), 150.0, -23.1, -45.9, 'u3'],
       ['in_transit', v2, new Date(now.getTime() - 1800_000), 75.0, -23.2, -46.5, 'u1'],
-      ['in_transit', v1, new Date(now.getTime() - 300_000), 45.7, -23.6, -46.7, 'u2']
+      ['in_transit', v1, new Date(now.getTime() - 300_000), 45.7, -23.6, -46.7, 'u2'],
     ];
     for (const row of values) {
       await pool.query(
@@ -153,16 +154,14 @@ async function seedIfEmpty() {
     const vRes = await pool.query('SELECT id FROM vehicles ORDER BY id ASC');
     const v1 = vRes.rows[0]?.id || null;
     const now = new Date();
-    await pool.query('INSERT INTO maintenances (vehicle_id, status, schedule_at) VALUES ($1,$2,$3)', [
-      v1,
-      'scheduled',
-      new Date(now.getTime() + 7 * 86400_000)
-    ]);
-    await pool.query('INSERT INTO maintenances (vehicle_id, status, schedule_at) VALUES ($1,$2,$3)', [
-      v1,
-      'scheduled',
-      new Date(now.getTime() + 14 * 86400_000)
-    ]);
+    await pool.query(
+      'INSERT INTO maintenances (vehicle_id, status, schedule_at) VALUES ($1,$2,$3)',
+      [v1, 'scheduled', new Date(now.getTime() + 7 * 86400_000)]
+    );
+    await pool.query(
+      'INSERT INTO maintenances (vehicle_id, status, schedule_at) VALUES ($1,$2,$3)',
+      [v1, 'scheduled', new Date(now.getTime() + 14 * 86400_000)]
+    );
   }
   const invCount = (await pool.query('SELECT COUNT(*)::int AS c FROM invoices')).rows[0].c;
   if (invCount === 0) {
@@ -170,7 +169,11 @@ async function seedIfEmpty() {
     await pool.query(
       `INSERT INTO invoices (amount, status, issued_at) VALUES 
        (1200.0,'paid',$1),(850.5,'pending',$2),(450.75,'overdue',$3)`,
-      [new Date(now.getTime() - 86400_000), new Date(now.getTime() - 2 * 86400_000), new Date(now.getTime() - 3 * 86400_000)]
+      [
+        new Date(now.getTime() - 86400_000),
+        new Date(now.getTime() - 2 * 86400_000),
+        new Date(now.getTime() - 3 * 86400_000),
+      ]
     );
   }
   const recCount = (await pool.query('SELECT COUNT(*)::int AS c FROM receivables')).rows[0].c;
@@ -179,7 +182,11 @@ async function seedIfEmpty() {
     await pool.query(
       `INSERT INTO receivables (amount, status, due_at) VALUES 
        (500.0,'pending',$1),(900.0,'pending',$2),(120.0,'paid',$3)`,
-      [new Date(now.getTime() + 86400_000), new Date(now.getTime() + 2 * 86400_000), new Date(now.getTime() - 86400_000)]
+      [
+        new Date(now.getTime() + 86400_000),
+        new Date(now.getTime() + 2 * 86400_000),
+        new Date(now.getTime() - 86400_000),
+      ]
     );
   }
   const payCount = (await pool.query('SELECT COUNT(*)::int AS c FROM payables')).rows[0].c;
@@ -188,7 +195,11 @@ async function seedIfEmpty() {
     await pool.query(
       `INSERT INTO payables (amount, status, due_at) VALUES 
        (300.0,'pending',$1),(150.0,'paid',$2),(700.0,'pending',$3)`,
-      [new Date(now.getTime() + 2 * 86400_000), new Date(now.getTime() - 86400_000), new Date(now.getTime() + 5 * 86400_000)]
+      [
+        new Date(now.getTime() + 2 * 86400_000),
+        new Date(now.getTime() - 86400_000),
+        new Date(now.getTime() + 5 * 86400_000),
+      ]
     );
   }
   const alertCount = (await pool.query('SELECT COUNT(*)::int AS c FROM alerts')).rows[0].c;
@@ -230,15 +241,28 @@ async function seedIfEmpty() {
   if (orderCount === 0) {
     const custRes = await pool.query('SELECT id FROM customers ORDER BY id ASC');
     const prodRes = await pool.query('SELECT id FROM products ORDER BY id ASC');
-    const c1 = custRes.rows[0]?.id; const c2 = custRes.rows[1]?.id;
-    const p1 = prodRes.rows[0]?.id; const p2 = prodRes.rows[1]?.id;
-    await pool.query('INSERT INTO orders (customer_id, product_id, quantity) VALUES ($1,$2,$3)', [c1, p1, 10]);
-    await pool.query('INSERT INTO orders (customer_id, product_id, quantity) VALUES ($1,$2,$3)', [c2, p2, 5]);
+    const c1 = custRes.rows[0]?.id;
+    const c2 = custRes.rows[1]?.id;
+    const p1 = prodRes.rows[0]?.id;
+    const p2 = prodRes.rows[1]?.id;
+    await pool.query('INSERT INTO orders (customer_id, product_id, quantity) VALUES ($1,$2,$3)', [
+      c1,
+      p1,
+      10,
+    ]);
+    await pool.query('INSERT INTO orders (customer_id, product_id, quantity) VALUES ($1,$2,$3)', [
+      c2,
+      p2,
+      5,
+    ]);
   }
 }
 
 async function main() {
-  console.log('Connecting to Postgres:', DEFAULT_URL.replace(/:\/\/([^:]+):([^@]+)@/, '://***:***@'));
+  console.log(
+    'Connecting to Postgres:',
+    DEFAULT_URL.replace(/:\/\/([^:]+):([^@]+)@/, '://***:***@')
+  );
   try {
     await ensureSchema();
     await seedIfEmpty();

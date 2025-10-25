@@ -17,7 +17,9 @@ app.post('/route', async (req, res) => {
   try {
     const { coordinates = [], profile = 'driving-car' } = req.body || {};
     if (!Array.isArray(coordinates) || coordinates.length < 2) {
-      return res.status(400).json({ error: 'coordinates deve conter ao menos origem e destino [lng, lat]' });
+      return res
+        .status(400)
+        .json({ error: 'coordinates deve conter ao menos origem e destino [lng, lat]' });
     }
     if (!ORS_API_KEY) return res.status(400).json({ error: 'ORS_API_KEY não definida' });
 

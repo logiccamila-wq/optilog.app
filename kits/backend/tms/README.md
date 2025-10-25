@@ -45,7 +45,10 @@ export async function POST(req: NextRequest) {
   const origin = String(body?.origin || '').trim();
   const destination = String(body?.destination || '').trim();
   if (!ref || !origin || !destination) {
-    return NextResponse.json({ error: 'Campos obrigatórios: ref, origin, destination' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Campos obrigatórios: ref, origin, destination' },
+      { status: 400 }
+    );
   }
   await sql`create table if not exists shipments (
     id bigserial primary key,
@@ -56,7 +59,8 @@ export async function POST(req: NextRequest) {
     created_at timestamptz default now(),
     updated_at timestamptz default now()
   )`;
-  const rows = await sql`insert into shipments (ref, origin, destination) values (${ref}, ${origin}, ${destination}) returning *`;
+  const rows =
+    await sql`insert into shipments (ref, origin, destination) values (${ref}, ${origin}, ${destination}) returning *`;
   return NextResponse.json(rows?.[0], { status: 201 });
 }
 ```

@@ -39,7 +39,7 @@ export interface LedgerEntry {
 export interface DREPeriod {
   id: UUID;
   periodStart: string; // ISO Date
-  periodEnd: string;   // ISO Date
+  periodEnd: string; // ISO Date
   createdAt: string;
 }
 

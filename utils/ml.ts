@@ -14,11 +14,11 @@ export type MLPredictOutput = {
 };
 
 export async function mlPredictRisk(input: MLPredictInput): Promise<MLPredictOutput | null> {
-  const base = process.env.NEXT_PUBLIC_ML_URL || "http://localhost:8000";
+  const base = process.env.NEXT_PUBLIC_ML_URL || 'http://localhost:8000';
   try {
     const resp = await fetch(`${base}/predict`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(input),
     });
     if (!resp.ok) return null;

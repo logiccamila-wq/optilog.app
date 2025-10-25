@@ -16,18 +16,74 @@ export default function DashboardPage() {
   const { user } = useAuth();
 
   const modules = [
-    { key: 'visao-geral', title: t('modules.overview.title'), desc: t('modules.overview.desc'), icon: '📊', color: '#0ea5e9' },
-    { key: 'pedidos', title: t('modules.orders.title'), desc: t('modules.orders.desc'), icon: '📦', color: '#8b5cf6' },
-    { key: 'crm', title: t('modules.crm.title'), desc: t('modules.crm.desc'), icon: '👥', color: '#14b8a6' },
-    { key: 'logistica', title: t('modules.logistics.title'), desc: t('modules.logistics.desc'), icon: '🛣️', color: '#22c55e' },
-    { key: 'estoque', title: t('modules.inventory.title'), desc: t('modules.inventory.desc'), icon: '🏷️', color: '#f59e0b' },
-    { key: 'frota', title: t('modules.fleet.title'), desc: t('modules.fleet.desc'), icon: '🚚', color: '#ef4444' },
-    { key: 'pneus', title: t('modules.tires.title'), desc: t('modules.tires.desc'), icon: '🛞', color: '#64748b' },
-    { key: 'financeiro', title: t('modules.finance.title'), desc: t('modules.finance.desc'), icon: '💰', color: '#0f766e' },
-    { key: 'analise', title: t('modules.analytics.title'), desc: t('modules.analytics.desc'), icon: '🔎', color: '#334155' },
+    {
+      key: 'visao-geral',
+      title: t('modules.overview.title'),
+      desc: t('modules.overview.desc'),
+      icon: '📊',
+      color: '#0ea5e9',
+    },
+    {
+      key: 'pedidos',
+      title: t('modules.orders.title'),
+      desc: t('modules.orders.desc'),
+      icon: '📦',
+      color: '#8b5cf6',
+    },
+    {
+      key: 'crm',
+      title: t('modules.crm.title'),
+      desc: t('modules.crm.desc'),
+      icon: '👥',
+      color: '#14b8a6',
+    },
+    {
+      key: 'logistica',
+      title: t('modules.logistics.title'),
+      desc: t('modules.logistics.desc'),
+      icon: '🛣️',
+      color: '#22c55e',
+    },
+    {
+      key: 'estoque',
+      title: t('modules.inventory.title'),
+      desc: t('modules.inventory.desc'),
+      icon: '🏷️',
+      color: '#f59e0b',
+    },
+    {
+      key: 'frota',
+      title: t('modules.fleet.title'),
+      desc: t('modules.fleet.desc'),
+      icon: '🚚',
+      color: '#ef4444',
+    },
+    {
+      key: 'pneus',
+      title: t('modules.tires.title'),
+      desc: t('modules.tires.desc'),
+      icon: '🛞',
+      color: '#64748b',
+    },
+    {
+      key: 'financeiro',
+      title: t('modules.finance.title'),
+      desc: t('modules.finance.desc'),
+      icon: '💰',
+      color: '#0f766e',
+    },
+    {
+      key: 'analise',
+      title: t('modules.analytics.title'),
+      desc: t('modules.analytics.desc'),
+      icon: '🔎',
+      color: '#334155',
+    },
   ];
 
-  const filteredModules = modules.filter((m) => m.key !== 'financeiro' || hasAnyRole(user, ['admin', 'finance']));
+  const filteredModules = modules.filter(
+    (m) => m.key !== 'financeiro' || hasAnyRole(user, ['admin', 'finance'])
+  );
 
   // Se existir URL externa configurada, redireciona automaticamente
   useEffect(() => {
@@ -73,7 +129,18 @@ export default function DashboardPage() {
                   gap: 10,
                 }}
               >
-                <span style={{ width: 28, height: 28, display: 'grid', placeItems: 'center', borderRadius: 8, backgroundColor: m.color }}>{m.icon}</span>
+                <span
+                  style={{
+                    width: 28,
+                    height: 28,
+                    display: 'grid',
+                    placeItems: 'center',
+                    borderRadius: 8,
+                    backgroundColor: m.color,
+                  }}
+                >
+                  {m.icon}
+                </span>
                 <div>
                   <strong>{m.title}</strong>
                   <div style={{ color: '#888', fontSize: 12 }}>{m.desc}</div>
@@ -156,8 +223,7 @@ export default function DashboardPage() {
             </div>
           )}
           <p style={{ color: colors.muted, fontSize: typography.subtitle, margin: 0 }}>
-            {t('dashboard.explore')}{' '}
-            <Link href="/login">login</Link> {''}
+            {t('dashboard.explore')} <Link href="/login">login</Link> {''}
             ou <Link href="/signup">cadastro</Link>.
           </p>
         </div>
@@ -180,9 +246,23 @@ export default function DashboardPage() {
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <span style={{ width: 40, height: 40, display: 'grid', placeItems: 'center', borderRadius: 12, backgroundColor: m.color, fontSize: 24 }}>{m.icon}</span>
+                  <span
+                    style={{
+                      width: 40,
+                      height: 40,
+                      display: 'grid',
+                      placeItems: 'center',
+                      borderRadius: 12,
+                      backgroundColor: m.color,
+                      fontSize: 24,
+                    }}
+                  >
+                    {m.icon}
+                  </span>
                   <div>
-                    <h2 style={{ fontSize: typography.h2, marginTop: 0, marginBottom: 4 }}>{m.title}</h2>
+                    <h2 style={{ fontSize: typography.h2, marginTop: 0, marginBottom: 4 }}>
+                      {m.title}
+                    </h2>
                     <p style={{ color: colors.muted, marginBottom: 0 }}>{m.desc}</p>
                   </div>
                 </div>

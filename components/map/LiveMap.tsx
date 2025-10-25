@@ -40,7 +40,9 @@ export default function LiveMap({
       socket.on('shipments:changed', (data: Shipment[]) => setLiveShipments(data || []));
     } catch {}
     return () => {
-      try { socket?.disconnect(); } catch {}
+      try {
+        socket?.disconnect();
+      } catch {}
     };
   }, []);
 

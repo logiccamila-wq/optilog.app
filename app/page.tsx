@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import { Typography, Button, Box, Grid, TextField } from "@mui/material";
-import Link from "next/link";
-import Image from "next/image";
-import styles from "./page.module.css";
+import React, { useState } from 'react';
+import { Typography, Button, Box, Grid, TextField } from '@mui/material';
+import Link from 'next/link';
+import Image from 'next/image';
+import styles from './page.module.css';
 
 export default function HomePage() {
-  const themes = ["theme-blue", "theme-purple", "theme-green"] as const;
+  const themes = ['theme-blue', 'theme-purple', 'theme-green'] as const;
   const [themeIndex, setThemeIndex] = useState(0);
   const currentTheme = themes[themeIndex];
 
@@ -27,7 +27,7 @@ export default function HomePage() {
           <Typography variant="h3" component="h1" sx={{ mb: 1, fontWeight: 800 }}>
             Devoptilog: Desenvolvimento Otimizado para Logística
           </Typography>
-          <Typography variant="body1" sx={{ color: "rgba(255,255,255,0.78)" }}>
+          <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.78)' }}>
             Transforme a gestão de frotas com inteligência artificial e fluxo contínuo.
           </Typography>
         </div>
@@ -39,14 +39,14 @@ export default function HomePage() {
             type="email"
             fullWidth
             sx={{
-              "& .MuiInputLabel-root": { color: "rgba(255,255,255,0.82)" },
-              "& .MuiFormLabel-root.Mui-focused": { color: "var(--accent-color)" },
-              "& .MuiOutlinedInput-input": { color: "rgba(255,255,255,0.92)" },
-              "& .MuiOutlinedInput-root": {
-                background: "rgba(255,255,255,0.05)",
-                "& fieldset": { borderColor: "rgba(255,255,255,0.26)" },
-                "&:hover fieldset": { borderColor: "rgba(255,255,255,0.38)" },
-                "&.Mui-focused fieldset": { borderColor: "var(--accent-color)" },
+              '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.82)' },
+              '& .MuiFormLabel-root.Mui-focused': { color: 'var(--accent-color)' },
+              '& .MuiOutlinedInput-input': { color: 'rgba(255,255,255,0.92)' },
+              '& .MuiOutlinedInput-root': {
+                background: 'rgba(255,255,255,0.05)',
+                '& fieldset': { borderColor: 'rgba(255,255,255,0.26)' },
+                '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.38)' },
+                '&.Mui-focused fieldset': { borderColor: 'var(--accent-color)' },
               },
             }}
           />
@@ -55,14 +55,14 @@ export default function HomePage() {
             type="password"
             fullWidth
             sx={{
-              "& .MuiInputLabel-root": { color: "rgba(255,255,255,0.82)" },
-              "& .MuiFormLabel-root.Mui-focused": { color: "var(--accent-color)" },
-              "& .MuiOutlinedInput-input": { color: "rgba(255,255,255,0.92)" },
-              "& .MuiOutlinedInput-root": {
-                background: "rgba(255,255,255,0.05)",
-                "& fieldset": { borderColor: "rgba(255,255,255,0.26)" },
-                "&:hover fieldset": { borderColor: "rgba(255,255,255,0.38)" },
-                "&.Mui-focused fieldset": { borderColor: "var(--accent-color)" },
+              '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.82)' },
+              '& .MuiFormLabel-root.Mui-focused': { color: 'var(--accent-color)' },
+              '& .MuiOutlinedInput-input': { color: 'rgba(255,255,255,0.92)' },
+              '& .MuiOutlinedInput-root': {
+                background: 'rgba(255,255,255,0.05)',
+                '& fieldset': { borderColor: 'rgba(255,255,255,0.26)' },
+                '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.38)' },
+                '&.Mui-focused fieldset': { borderColor: 'var(--accent-color)' },
               },
             }}
           />
@@ -75,7 +75,11 @@ export default function HomePage() {
               href="/signup"
               variant="outlined"
               size="large"
-              sx={{ color: "#fff", borderColor: "rgba(255,255,255,0.3)", ":hover": { borderColor: "#fff" } }}
+              sx={{
+                color: '#fff',
+                borderColor: 'rgba(255,255,255,0.3)',
+                ':hover': { borderColor: '#fff' },
+              }}
             >
               Cadastre-se Grátis
             </Button>
@@ -84,7 +88,11 @@ export default function HomePage() {
               href="/dashboard"
               variant="outlined"
               size="large"
-              sx={{ color: "#fff", borderColor: "rgba(255,255,255,0.3)", ":hover": { borderColor: "#fff" } }}
+              sx={{
+                color: '#fff',
+                borderColor: 'rgba(255,255,255,0.3)',
+                ':hover': { borderColor: '#fff' },
+              }}
             >
               Ver dashboard
             </Button>
@@ -92,7 +100,7 @@ export default function HomePage() {
               onClick={cycleTheme}
               variant="text"
               size="large"
-              sx={{ color: "#fff" }}
+              sx={{ color: '#fff' }}
               aria-label="Mudar cor"
             >
               Mudar cor

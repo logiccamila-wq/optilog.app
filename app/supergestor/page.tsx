@@ -40,15 +40,14 @@ export default function SuperGestorPage() {
       <div style={{ maxWidth: 900, margin: '32px auto', padding: 24 }}>
         <h1 style={{ color: '#a6d3ff', fontSize: 28 }}>{t('nav.supergestor')}</h1>
         <p style={{ color: '#bbb', marginTop: 8 }}>
-          Para abrir o módulo SuperGestor hospedado externamente, defina `NEXT_PUBLIC_SUPERGESTOR_URL`.
+          Para abrir o módulo SuperGestor hospedado externamente, defina
+          `NEXT_PUBLIC_SUPERGESTOR_URL`.
         </p>
         <p style={{ color: '#999', marginTop: 8 }}>
           Exemplo: `https://supergestor.seu-dominio.com` ou instância em Render/Vercel.
         </p>
         <div style={{ marginTop: 16, color: '#667' }}>
-          <p>
-            Enquanto não estiver configurado, você pode acessar os módulos locais no Dashboard.
-          </p>
+          <p>Enquanto não estiver configurado, você pode acessar os módulos locais no Dashboard.</p>
         </div>
       </div>
     </AccessControl>

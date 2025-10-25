@@ -26,7 +26,14 @@ export default function SimpleBarChart({
               <small style={{ color: text, opacity: 0.8 }}>{l}</small>
               <small style={{ color: text, opacity: 0.7 }}>{v.toFixed(2)}</small>
             </div>
-            <div style={{ background: secondary, borderRadius: radius, height: 10, overflow: 'hidden' }}>
+            <div
+              style={{
+                background: secondary,
+                borderRadius: radius,
+                height: 10,
+                overflow: 'hidden',
+              }}
+            >
               <div style={{ width: `${pct}%`, height: 10, background: colors?.[i] || brand }} />
             </div>
           </div>

@@ -6,15 +6,17 @@ export const runtime = 'nodejs';
 export async function GET() {
   try {
     const sql = getSql();
-    const rows = await sql<{
-      id: number;
-      slug: string;
-      title: string;
-      content: string | null;
-      is_published: boolean;
-      author_id: string | null;
-      created_at: string;
-    }[]>`
+    const rows = await sql<
+      {
+        id: number;
+        slug: string;
+        title: string;
+        content: string | null;
+        is_published: boolean;
+        author_id: string | null;
+        created_at: string;
+      }[]
+    >`
       SELECT id, slug, title, content, is_published, author_id, created_at
       FROM posts
       WHERE is_published = TRUE

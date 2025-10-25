@@ -12,8 +12,8 @@ export default function UsuariosPage() {
       </Typography>
       <Paper variant="outlined" sx={{ p: 2 }}>
         <Alert severity="info" sx={{ mb: 2 }}>
-          Gestão de usuários desativada. Este módulo dependia do Firebase e foi removido.
-          Configure um backend próprio de autenticação/usuários para habilitar novamente.
+          Gestão de usuários desativada. Este módulo dependia do Firebase e foi removido. Configure
+          um backend próprio de autenticação/usuários para habilitar novamente.
         </Alert>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Button component={Link} href="/login-modern" variant="contained">

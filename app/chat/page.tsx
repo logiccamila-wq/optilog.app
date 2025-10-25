@@ -32,15 +32,17 @@ export default function ChatPage() {
           ...m,
           {
             fromAgent: true,
-            text:
-              'Não encontrei conteúdo relacionado na documentação local. Tente outra palavra-chave ou acesse o link oficial do manual Sicro2 na página de documentação.',
+            text: 'Não encontrei conteúdo relacionado na documentação local. Tente outra palavra-chave ou acesse o link oficial do manual Sicro2 na página de documentação.',
           },
         ]);
       }
     } catch (e: any) {
       setMessages((m) => [
         ...m,
-        { fromAgent: true, text: `Ocorreu um erro ao consultar a documentação: ${e?.message || 'erro desconhecido'}` },
+        {
+          fromAgent: true,
+          text: `Ocorreu um erro ao consultar a documentação: ${e?.message || 'erro desconhecido'}`,
+        },
       ]);
     } finally {
       setLoading(false);
@@ -62,12 +64,17 @@ export default function ChatPage() {
           placeholder="Pergunte sobre custos Sicro2, PBTC, etc."
           style={{ flex: 1, padding: 8, borderRadius: 6, border: '1px solid #ddd' }}
         />
-        <button onClick={onSend} disabled={loading} style={{ padding: '8px 12px', borderRadius: 6 }}>
+        <button
+          onClick={onSend}
+          disabled={loading}
+          style={{ padding: '8px 12px', borderRadius: 6 }}
+        >
           {loading ? 'Consultando...' : 'Enviar'}
         </button>
       </div>
       <p style={{ fontSize: 12, color: '#666' }}>
-        Fonte local: documentação em <code>/docs/sicro2-manual.md</code> e API <code>/api/search-docs</code>.
+        Fonte local: documentação em <code>/docs/sicro2-manual.md</code> e API{' '}
+        <code>/api/search-docs</code>.
       </p>
     </main>
   );

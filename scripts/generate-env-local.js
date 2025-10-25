@@ -22,7 +22,8 @@ const defaults = {
   // Company info for UI/invoices/footer
   NEXT_PUBLIC_COMPANY_CNPJ: '49.174.848/0001-09',
   NEXT_PUBLIC_COMPANY_NAME: 'XYZ LOGIC FLOW INOVA SIMPLES (I.S.)',
-  NEXT_PUBLIC_COMPANY_ADDRESS: 'Rua Padre Hamilton Tadeu Maito, 125, Cidade Vitoria, Assis/SP, 19807-075',
+  NEXT_PUBLIC_COMPANY_ADDRESS:
+    'Rua Padre Hamilton Tadeu Maito, 125, Cidade Vitoria, Assis/SP, 19807-075',
   NEXT_PUBLIC_COMPANY_EMAIL: 'xyzlogicflow@gmail.com',
   NEXT_PUBLIC_COMPANY_PHONE: '+55 18 99636-1278',
   NEXT_PUBLIC_FOOTER_LABEL_STARTUP: 'xyzlogicflow startup',

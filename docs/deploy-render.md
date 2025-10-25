@@ -3,6 +3,7 @@
 Este documento orienta como publicar o `optilog-frontend` (Next.js) e o `optilog-backend` no Render usando o `render.yaml` do repositório `logiccamila-wq/optilog.app`.
 
 ## Pré-requisitos
+
 - Acesso ao Render com os serviços:
   - Web Service: `optilog-frontend` (Service ID `srv-d3pke9ripnbc73a01m4g`)
   - Web Service: `optilog-backend`
@@ -10,7 +11,9 @@ Este documento orienta como publicar o `optilog-frontend` (Next.js) e o `optilog
 - Branch `main` conectado ao Render.
 
 ## Variáveis de Ambiente (Render)
+
 Configure no Render (Settings → Environment):
+
 - Frontend (`optilog-frontend`)
   - `NODE_VERSION=20.19.5`
   - `NEXT_TELEMETRY_DISABLED=1`
@@ -26,11 +29,13 @@ Configure no Render (Settings → Environment):
   - `CORS_ORIGIN` → origem permitida (ex.: `https://optilog-app.onrender.com`)
 
 Observações:
+
 - `render.yaml` com secrets marcados `sync: false` devem ser preenchidos via Dashboard.
 - `output_directory` do Next recomendada: `.next/standalone` com `NEXT_OUTPUT=standalone`.
 - Mantenha blueprint único na raiz do repositório e remova duplicados em subpastas; defina `rootDir: optilog-app` para o frontend.
 
 ## Fluxo de Deploy
+
 1. Confirmar que o `main` foi atualizado (GitHub → `logiccamila-wq/optilog.app`).
 2. No Render, abrir o serviço `optilog-frontend`.
 3. Em `Environment`, conferir/definir `DATABASE_URL`.
@@ -39,6 +44,7 @@ Observações:
 6. Repetir para `optilog-backend` caso necessário.
 
 ## Validações Pós-Deploy
+
 - Frontend (Next.js)
   - `GET https://optilog-app.onrender.com/api/health` deve retornar `{ ok: true }`.
   - Acessar `/cadastro/motoristas` e `/cadastro/veiculos`; enviar formulários e validar inserts no Neon.
@@ -47,14 +53,17 @@ Observações:
   - Verificar tabelas `drivers` e `vehicles` e registros inseridos.
 
 ## Problemas comuns
+
 - Free Instance do Render: pode hibernar e atrasar a primeira resposta (~50s).
 - Porta ocupada local (`EADDRINUSE`): usar `3001` ao testar local.
 - Husky bloqueando commit por lint: usar `git commit --no-verify` quando necessário.
 
 ## Rollback
+
 - Use `Manual Deploy` para redeploy do commit anterior ou ajuste env vars e redeploy.
 
 ## Referências
+
 - `render.yaml`: serviços `optilog-frontend` e `optilog-backend`
 - `lib/db.ts`: conexão Neon (`getSql()`)
 - APIs: `/api/drivers`, `/api/vehicles`, `/api/functions-status`, `/api/health`

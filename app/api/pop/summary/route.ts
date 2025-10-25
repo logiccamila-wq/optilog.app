@@ -26,16 +26,20 @@ export async function GET(req: NextRequest) {
 
     // Totais
     const [procCountRow] = await sql`SELECT count(*)::int as total FROM pop_processes ${whereProc}`;
-    const [kpiCountRow] = await sql`SELECT count(*)::int as total FROM pop_kpis ${process_id ? sql`WHERE process_id = ${process_id}` : sql``}`;
+    const [kpiCountRow] =
+      await sql`SELECT count(*)::int as total FROM pop_kpis ${process_id ? sql`WHERE process_id = ${process_id}` : sql``}`;
 
     // Ocorrências por severidade
     const occWhereClause = whereOcc?.sql?.trim() ? sql`WHERE ${whereOcc}` : sql``;
-    const occSeverityRows = await sql`SELECT COALESCE(severity,'indefinido') as severity, count(*)::int as count FROM pop_occurrences ${occWhereClause} GROUP BY severity ORDER BY severity`;
+    const occSeverityRows =
+      await sql`SELECT COALESCE(severity,'indefinido') as severity, count(*)::int as count FROM pop_occurrences ${occWhereClause} GROUP BY severity ORDER BY severity`;
 
     // Avaliações: média por processo e últimas N
     const evalWhereClause = whereEval?.sql?.trim() ? sql`WHERE ${whereEval}` : sql``;
-    const evalAvgRows = await sql`SELECT process_id, avg(score)::float as avg_score, count(*)::int as count FROM pop_evaluations ${evalWhereClause} GROUP BY process_id ORDER BY process_id`;
-    const latestEvaluations = await sql`SELECT id, process_id, evaluator, score, notes, evaluated_at FROM pop_evaluations ${evalWhereClause} ORDER BY evaluated_at DESC NULLS LAST, id DESC LIMIT 10`;
+    const evalAvgRows =
+      await sql`SELECT process_id, avg(score)::float as avg_score, count(*)::int as count FROM pop_evaluations ${evalWhereClause} GROUP BY process_id ORDER BY process_id`;
+    const latestEvaluations =
+      await sql`SELECT id, process_id, evaluator, score, notes, evaluated_at FROM pop_evaluations ${evalWhereClause} ORDER BY evaluated_at DESC NULLS LAST, id DESC LIMIT 10`;
 
     // Processos para mapeamento
     const processes = await sql`SELECT id, name, status FROM pop_processes ${whereProc}`;
@@ -45,7 +49,7 @@ export async function GET(req: NextRequest) {
       totals: { processes: procCountRow?.total ?? 0, kpis: kpiCountRow?.total ?? 0 },
       occurrencesBySeverity: occSeverityRows,
       evaluations: { averages: evalAvgRows, latest: latestEvaluations },
-      processes
+      processes,
     });
   } catch (err: any) {
     return NextResponse.json({ error: err?.message || 'Erro interno' }, { status: 500 });

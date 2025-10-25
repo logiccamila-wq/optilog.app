@@ -13,7 +13,8 @@ export type CrudEvent = {
 const DEFAULT_ENDPOINT = 'http://localhost:8084/events';
 
 export async function publishEvent(event: CrudEvent): Promise<void> {
-  const endpoint = process.env.INTEGRATION_GATEWAY_URL || process.env.INTEGRATION_ENDPOINT || DEFAULT_ENDPOINT;
+  const endpoint =
+    process.env.INTEGRATION_GATEWAY_URL || process.env.INTEGRATION_ENDPOINT || DEFAULT_ENDPOINT;
   // If endpoint is disabled or empty, silently skip
   if (!endpoint) return;
 
@@ -38,8 +39,8 @@ export async function publishEvent(event: CrudEvent): Promise<void> {
     // Do not throw on non-200; we log but keep request flow resilient
     if (!resp.ok) {
       // optional: consume response text to avoid Node warnings
-      try { 
-        await resp.text(); 
+      try {
+        await resp.text();
       } catch {
         // Ignore text parsing errors
       }

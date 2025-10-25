@@ -1,15 +1,15 @@
 {
-  "depreciation_per_km": 0.60,
+  "depreciation_per_km": 0.6,
   "capital_remuneration_per_month": 2500,
-  "insurance_per_km": 0.10,
+  "insurance_per_km": 0.1,
   "licenses_fixed_per_month": 800,
   "fuel_consumption_l_per_km": 0.35,
-  "fuel_price_per_l": 6.20,
+  "fuel_price_per_l": 6.2,
   "lubricants_per_km": 0.05,
-  "tires_per_km": 0.20,
-  "maintenance_per_km": 0.30,
-  "tolls_per_km_default": 0.50,
-  "labor_per_km": 0.80,
+  "tires_per_km": 0.2,
+  "maintenance_per_km": 0.3,
+  "tolls_per_km_default": 0.5,
+  "labor_per_km": 0.8,
   "admin_per_km": 0.25,
   "margin_rate": 0.15
 }

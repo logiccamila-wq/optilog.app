@@ -23,7 +23,7 @@ Este documento organiza os módulos desejados (TMS, CRM, TPMS, ERP, Frota, Logí
 
 - Planejamento de cargas e rotas.
 - Tabelas de frete, SLA e promessas de entrega.
-- Tracking em tempo real (GPS, eventos de viagem). 
+- Tracking em tempo real (GPS, eventos de viagem).
 - Janela de coleta/entrega, consolidado e desconsolidado.
 - Documentos de transporte (CT-e, MDF-e), integrações fiscais (quando aplicável).
 - Auditoria de custos logísticos (pedágio, diesel, diárias) e simulações.

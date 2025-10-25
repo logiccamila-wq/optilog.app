@@ -10,5 +10,5 @@ export default function WmsPage() {
         <li>Transferências e controle de entrega</li>
       </ul>
     </section>
-  )
+  );
 }

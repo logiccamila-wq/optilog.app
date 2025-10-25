@@ -19,7 +19,7 @@ wss.on('connection', (ws, req) => {
     type: null,
     driverId: null,
     vehicleId: null,
-    connectedAt: new Date()
+    connectedAt: new Date(),
   });
 
   console.log(`📱 Nova conexão: ${connectionId}`);
@@ -46,7 +46,7 @@ wss.on('connection', (ws, req) => {
   sendToConnection(connectionId, {
     type: 'connected',
     connectionId,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 });
 
@@ -60,27 +60,27 @@ function handleMessage(connectionId, message) {
     case 'register':
       handleRegister(connectionId, message);
       break;
-    
+
     case 'location_update':
       handleLocationUpdate(connectionId, message);
       break;
-    
+
     case 'journey_event':
       handleJourneyEvent(connectionId, message);
       break;
-    
+
     case 'status_change':
       handleStatusChange(connectionId, message);
       break;
-    
+
     case 'alert':
       handleAlert(connectionId, message);
       break;
-    
+
     case 'ping':
       sendToConnection(connectionId, { type: 'pong', timestamp: new Date().toISOString() });
       break;
-    
+
     default:
       console.log(`⚠️ Tipo de mensagem desconhecido: ${message.type}`);
   }
@@ -94,13 +94,15 @@ function handleRegister(connectionId, message) {
   connection.driverId = message.driverId;
   connection.vehicleId = message.vehicleId;
 
-  console.log(`✅ Cliente registrado: ${message.clientType} - Driver: ${message.driverId} - Vehicle: ${message.vehicleId}`);
+  console.log(
+    `✅ Cliente registrado: ${message.clientType} - Driver: ${message.driverId} - Vehicle: ${message.vehicleId}`
+  );
 
   // Confirmar registro
   sendToConnection(connectionId, {
     type: 'registered',
     clientType: message.clientType,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 
   // Se for um motorista, inicializar dados do veículo
@@ -111,7 +113,7 @@ function handleRegister(connectionId, message) {
       status: 'idle',
       location: null,
       lastUpdate: new Date(),
-      connectionId
+      connectionId,
     });
   }
 }
@@ -136,7 +138,7 @@ function handleLocationUpdate(connectionId, message) {
     vehicleId,
     driverId,
     location: message.data || message.location || null,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 }
 
@@ -183,7 +185,7 @@ function handleJourneyEvent(connectionId, message) {
     driverId,
     event,
     data: message.data,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 }
 
@@ -201,7 +203,7 @@ function handleStatusChange(connectionId, message) {
     vehicleId,
     driverId,
     status,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 }
 
@@ -218,7 +220,7 @@ function handleAlert(connectionId, message) {
     message: message.message,
     severity: message.severity || 'medium',
     timestamp: new Date().toISOString(),
-    resolved: false
+    resolved: false,
   };
 
   alerts.push(alert);
@@ -227,7 +229,7 @@ function handleAlert(connectionId, message) {
   // Broadcast para Torre de Controle
   broadcastToControlTowers({
     type: 'new_alert',
-    alert
+    alert,
   });
 }
 
@@ -255,15 +257,15 @@ setInterval(() => {
   const dashboardData = {
     type: 'dashboard_update',
     vehicles: Array.from(vehicles.values()),
-    alerts: alerts.filter(alert => !alert.resolved),
+    alerts: alerts.filter((alert) => !alert.resolved),
     stats: {
       totalVehicles: vehicles.size,
-      activeVehicles: Array.from(vehicles.values()).filter(v => v.status === 'in_transit').length,
-      onBreakVehicles: Array.from(vehicles.values()).filter(v => v.status === 'on_break').length,
-      idleVehicles: Array.from(vehicles.values()).filter(v => v.status === 'idle').length,
-      totalAlerts: alerts.filter(alert => !alert.resolved).length
+      activeVehicles: Array.from(vehicles.values()).filter((v) => v.status === 'in_transit').length,
+      onBreakVehicles: Array.from(vehicles.values()).filter((v) => v.status === 'on_break').length,
+      idleVehicles: Array.from(vehicles.values()).filter((v) => v.status === 'idle').length,
+      totalAlerts: alerts.filter((alert) => !alert.resolved).length,
     },
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 
   broadcastToControlTowers(dashboardData);

@@ -1,11 +1,13 @@
-'use client'
-import React, { ReactNode } from 'react'
-import Link from 'next/link'
-import { Boxes, Package, Truck, ShoppingCart, Users, Grid3X3 } from 'lucide-react'
+'use client';
+import React, { ReactNode } from 'react';
+import Link from 'next/link';
+import { Boxes, Package, Truck, ShoppingCart, Users, Grid3X3 } from 'lucide-react';
 
 export default function ModulesLayout({ children }: { children: ReactNode }) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', minHeight: 'calc(100vh - 60px)' }}>
+    <div
+      style={{ display: 'grid', gridTemplateColumns: '260px 1fr', minHeight: 'calc(100vh - 60px)' }}
+    >
       <aside
         style={{
           borderRight: '1px solid #222',
@@ -62,5 +64,5 @@ export default function ModulesLayout({ children }: { children: ReactNode }) {
       </aside>
       <main style={{ padding: 16 }}>{children}</main>
     </div>
-  )
+  );
 }

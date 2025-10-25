@@ -241,7 +241,9 @@ async function setup() {
     console.log('Conexão encerrada');
   } catch (err) {
     console.error('Erro durante setup:', err);
-    try { await client.query('ROLLBACK'); } catch (e) {}
+    try {
+      await client.query('ROLLBACK');
+    } catch (e) {}
     await client.end();
     process.exit(1);
   }

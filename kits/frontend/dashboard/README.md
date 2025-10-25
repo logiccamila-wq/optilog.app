@@ -21,14 +21,30 @@ import { useEffect, useState } from 'react';
 export default function SimpleTable() {
   const [rows, setRows] = useState<any[]>([]);
   const [q, setQ] = useState('');
-  useEffect(() => { fetch(`/api/vehicles?q=${encodeURIComponent(q)}`).then(r => r.json()).then(setRows); }, [q]);
+  useEffect(() => {
+    fetch(`/api/vehicles?q=${encodeURIComponent(q)}`)
+      .then((r) => r.json())
+      .then(setRows);
+  }, [q]);
   return (
     <div>
-      <input placeholder="Buscar" value={q} onChange={e => setQ(e.target.value)} />
+      <input placeholder="Buscar" value={q} onChange={(e) => setQ(e.target.value)} />
       <table>
-        <thead><tr><th>ID</th><th>Placa</th><th>Modelo</th></tr></thead>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Placa</th>
+            <th>Modelo</th>
+          </tr>
+        </thead>
         <tbody>
-          {rows.map(r => (<tr key={r.id}><td>{r.id}</td><td>{r.plate}</td><td>{r.model}</td></tr>))}
+          {rows.map((r) => (
+            <tr key={r.id}>
+              <td>{r.id}</td>
+              <td>{r.plate}</td>
+              <td>{r.model}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>

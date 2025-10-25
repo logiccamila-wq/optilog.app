@@ -9,7 +9,14 @@ export default function ConciliacaoBancariaPage() {
       <p style={{ color: colors.muted, fontSize: typography.subtitle }}>
         Importe extratos, reconcilie lançamentos e audite diferenças.
       </p>
-      <div style={{ border: `1px solid ${colors.border}`, borderRadius: 8, backgroundColor: colors.surface, padding: spacing.medium }}>
+      <div
+        style={{
+          border: `1px solid ${colors.border}`,
+          borderRadius: 8,
+          backgroundColor: colors.surface,
+          padding: spacing.medium,
+        }}
+      >
         <p style={{ margin: 0 }}>Upload e reconciliação automática serão inseridos aqui.</p>
       </div>
     </div>
