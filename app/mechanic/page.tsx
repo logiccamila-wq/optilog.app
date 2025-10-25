@@ -1,7 +1,10 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
+import AccessControl from '@/components/AccessControl';
 import { useTheme } from '@/app/providers/ThemeProvider';
+import Link from 'next/link';
 
 export default function MechanicAppPage() {
   const { effectiveMode, setMode, accent } = useTheme();
@@ -17,7 +20,8 @@ export default function MechanicAppPage() {
   }), [effectiveMode, accent]);
 
   return (
-    <main className="container" style={{ display: 'grid', gap: 16, color: colors.text }}>
+    <AccessControl roles={["mechanic", "admin"]}>
+      <main className="container" style={{ display: 'grid', gap: 16, color: colors.text }}>
       <header style={{ position: 'sticky', top: 0, background: colors.bg, paddingTop: 8 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h1 style={{ margin: 0, fontSize: 24 }}>Painel do Mecânico • Gestão Integrada</h1>
@@ -35,6 +39,11 @@ export default function MechanicAppPage() {
               {effectiveMode === 'dark' ? 'Modo Claro' : 'Modo Escuro'}
             </button>
           </div>
+        </div>
+        {/* Links rápidos para Frota */}
+        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+          <Link href="/frota/manutencoes" style={{ border: `1px solid ${colors.border}`, borderRadius: 8, padding: '6px 10px', textDecoration: 'none', color: colors.text }}>Manutenções</Link>
+          <Link href="/frota/abastecimentos" style={{ border: `1px solid ${colors.border}`, borderRadius: 8, padding: '6px 10px', textDecoration: 'none', color: colors.text }}>Abastecimentos</Link>
         </div>
         <nav style={{ display: 'flex', gap: 8, marginTop: 12 }}>
           {[
@@ -184,5 +193,6 @@ export default function MechanicAppPage() {
         </section>
       )}
     </main>
+    </AccessControl>
   );
 }

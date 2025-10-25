@@ -1,0 +1,24 @@
+{
+  "name": "optilog-websocket-server",
+  "version": "1.0.0",
+  "description": "Servidor WebSocket para comunicação em tempo real entre motoristas e torre de controle",
+  "main": "websocket.js",
+  "scripts": {
+    "start": "node websocket.js",
+    "dev": "nodemon websocket.js"
+  },
+  "dependencies": {
+    "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "websocket",
+    "real-time",
+    "logistics",
+    "fleet-management"
+  ],
+  "author": "OptiLog Team",
+  "license": "MIT"
+}

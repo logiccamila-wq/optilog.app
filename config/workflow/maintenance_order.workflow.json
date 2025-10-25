@@ -1,0 +1,149 @@
+{
+  "workflow": {
+    "name": "maintenance_order",
+    "version": "1.0.0",
+    "roles": [
+      { "id": "mechanic", "label": "Mecânico" },
+      { "id": "foreman", "label": "Encarregado" },
+      { "id": "director", "label": "Diretor Operacional" },
+      { "id": "finance", "label": "Financeiro" },
+      { "id": "admin", "label": "Administrador" }
+    ],
+    "actions": [
+      "create_order",
+      "attach_photos",
+      "update_technical_status",
+      "approve_service",
+      "request_adjustments",
+      "forward_to_director",
+      "authorize_execution",
+      "authorize_purchase",
+      "execute_payment",
+      "record_invoice",
+      "cancel_order",
+      "delete_record"
+    ],
+    "permissions": {
+      "mechanic": ["create_order", "attach_photos", "update_technical_status"],
+      "foreman": ["approve_service", "request_adjustments", "forward_to_director"],
+      "director": ["authorize_execution", "authorize_purchase", "cancel_order"],
+      "finance": ["execute_payment", "record_invoice", "cancel_order"],
+      "admin": ["delete_record"]
+    },
+    "states": [
+      { "id": "created", "label": "Aberta", "category": "input" },
+      { "id": "technical_validated", "label": "Validada tecnicamente", "category": "validation" },
+      { "id": "operational_authorized", "label": "Autorizada operacionalmente", "category": "authorization" },
+      { "id": "purchase_authorized", "label": "Compra autorizada", "category": "authorization" },
+      { "id": "payment_executed", "label": "Pagamento efetuado", "category": "finance" },
+      { "id": "finalized", "label": "Finalizada", "category": "final" },
+      { "id": "canceled", "label": "Cancelada", "category": "final" }
+    ],
+    "transitions": [
+      {
+        "from": "created",
+        "to": "technical_validated",
+        "action": "approve_service",
+        "allowed_roles": ["foreman"],
+        "audit": "mandatory"
+      },
+      {
+        "from": "technical_validated",
+        "to": "operational_authorized",
+        "action": "authorize_execution",
+        "allowed_roles": ["director"],
+        "audit": "mandatory"
+      },
+      {
+        "from": "operational_authorized",
+        "to": "purchase_authorized",
+        "action": "authorize_purchase",
+        "allowed_roles": ["director"],
+        "audit": "mandatory"
+      },
+      {
+        "from": "purchase_authorized",
+        "to": "payment_executed",
+        "action": "execute_payment",
+        "allowed_roles": ["finance"],
+        "audit": "mandatory"
+      },
+      {
+        "from": "payment_executed",
+        "to": "finalized",
+        "action": "finalize_order",
+        "allowed_roles": ["finance", "foreman"],
+        "audit": "optional"
+      },
+      {
+        "from": "technical_validated",
+        "to": "created",
+        "action": "request_adjustments",
+        "allowed_roles": ["foreman"],
+        "audit": "mandatory"
+      },
+      {
+        "from": "operational_authorized",
+        "to": "canceled",
+        "action": "cancel_order",
+        "allowed_roles": ["director", "finance"],
+        "audit": "mandatory",
+        "requires_reason": true
+      }
+    ],
+    "alerts": [
+      {
+        "id": "stalled_48h",
+        "rule": "state_in(['created','technical_validated','operational_authorized']) && age_hours >= 48",
+        "send_to": ["foreman", "director"],
+        "channel": ["chatbot"],
+        "message": "Ordem parada há mais de 48h"
+      },
+      {
+        "id": "pending_above_limit",
+        "rule": "pending_count > limit",
+        "send_to": ["director"],
+        "channel": ["chatbot"],
+        "message": "Pendências acima do limite definido"
+      },
+      {
+        "id": "no_invoice",
+        "rule": "state == 'purchase_authorized' && !has_invoice",
+        "send_to": ["finance"],
+        "channel": ["chatbot"],
+        "message": "Solicitação sem nota fiscal"
+      },
+      {
+        "id": "budget_exceeded",
+        "rule": "month_cost > monthly_budget",
+        "send_to": ["director", "finance"],
+        "channel": ["chatbot"],
+        "severity": "high",
+        "message": "Meta orçamentária excedida"
+      }
+    ],
+    "kpis": [
+      { "id": "shop_completed_per_day", "query": "orders.count(state='finalized').group_by(day)", "sector": "workshop" },
+      { "id": "authorization_rate", "query": "orders.count(state='operational_authorized')/orders.count()", "sector": "operational" },
+      { "id": "payments_approved", "query": "orders.count(state='payment_executed')", "sector": "finance" },
+      { "id": "monthly_costs", "query": "orders.sum(cost).group_by(month)", "sector": "board" }
+    ],
+    "notifications": {
+      "chatbot": {
+        "channels": ["whatsapp", "telegram", "panel"],
+        "templates": {
+          "approval_request": "Aprovar ordem #{{id}}? Custo: {{cost}} ✅❌",
+          "daily_summary": "Resumo diário: {{sector}} - concluídas: {{completed}}, pendentes: {{pending}}"
+        }
+      }
+    },
+    "audit": {
+      "enabled": true,
+      "fields": ["user_id", "role", "timestamp", "action", "reason"],
+      "log_retention_days": 365
+    },
+    "security": {
+      "delete_record": { "allowed_roles": ["admin"], "soft_delete": true, "audit": "mandatory" }
+    }
+  }
+}

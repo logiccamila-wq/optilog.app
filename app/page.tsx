@@ -1,64 +1,107 @@
-'use client';
+"use client";
 
-import { Typography, Button, Box, Paper, Grid, Chip } from '@mui/material';
-import Link from 'next/link';
-import Card from '@/components/ui/card';
+import React, { useState } from "react";
+import { Typography, Button, Box, Grid, TextField } from "@mui/material";
+import Link from "next/link";
+import Image from "next/image";
+import styles from "./page.module.css";
 
 export default function HomePage() {
+  const themes = ["theme-blue", "theme-purple", "theme-green"] as const;
+  const [themeIndex, setThemeIndex] = useState(0);
+  const currentTheme = themes[themeIndex];
+
+  const cycleTheme = () => setThemeIndex((i) => (i + 1) % themes.length);
+
   return (
-    <main className="container">
-      {/* Hero */}
-      <Paper sx={{ p: 6, textAlign: 'center', background: 'linear-gradient(180deg, rgba(14,83,154,0.08), rgba(14,83,154,0.03))' }} variant="outlined">
-        <Chip label="Powered by TRAE • Next 14" sx={{ mb: 2, color: '#9ecfff', borderColor: '#1e3a8a' }} variant="outlined" />
-        <Typography variant="h3" component="h1" sx={{ mb: 2, fontWeight: 800 }}>
-          A melhor startup — recursos modernos para operações
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-          Plataforma unificada com módulos WMS, TMS, OMS, SCM, CRM e ERP — neon/tech, segura e escalável.
-        </Typography>
-        <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Button component={Link} href="/signup" variant="contained" color="primary" size="large">
-            Começar agora
-          </Button>
-          <Button component={Link} href="/resources" variant="outlined" color="secondary" size="large">
-            Explorar recursos
-          </Button>
-          <Button component={Link} href="/dashboard" variant="outlined" color="primary" size="large">
-            Ver dashboard
-          </Button>
+    <main className={`${styles.heroContainer} ${currentTheme}`}>
+      <div className={styles.heroBg} />
+
+      <section className={styles.heroCard} aria-label="Devoptilog Hero">
+        <div className={styles.headerRow}>
+          <Image src="/logo.svg" alt="Devoptilog" width={160} height={48} />
+          <span className={styles.poweredChip}>Powered by TRAE IDE • Next 14</span>
+        </div>
+
+        <div className={styles.copy}>
+          <Typography variant="h3" component="h1" sx={{ mb: 1, fontWeight: 800 }}>
+            Devoptilog: Desenvolvimento Otimizado para Logística
+          </Typography>
+          <Typography variant="body1" sx={{ color: "rgba(255,255,255,0.78)" }}>
+            Transforme a gestão de frotas com inteligência artificial e fluxo contínuo.
+          </Typography>
+        </div>
+
+        {/* Card de login integrado ao hero */}
+        <Box component="form" className={styles.formWrap}>
+          <TextField
+            label="Email ou Usuário"
+            type="email"
+            fullWidth
+            sx={{
+              "& .MuiInputLabel-root": { color: "rgba(255,255,255,0.82)" },
+              "& .MuiFormLabel-root.Mui-focused": { color: "var(--accent-color)" },
+              "& .MuiOutlinedInput-input": { color: "rgba(255,255,255,0.92)" },
+              "& .MuiOutlinedInput-root": {
+                background: "rgba(255,255,255,0.05)",
+                "& fieldset": { borderColor: "rgba(255,255,255,0.26)" },
+                "&:hover fieldset": { borderColor: "rgba(255,255,255,0.38)" },
+                "&.Mui-focused fieldset": { borderColor: "var(--accent-color)" },
+              },
+            }}
+          />
+          <TextField
+            label="Senha"
+            type="password"
+            fullWidth
+            sx={{
+              "& .MuiInputLabel-root": { color: "rgba(255,255,255,0.82)" },
+              "& .MuiFormLabel-root.Mui-focused": { color: "var(--accent-color)" },
+              "& .MuiOutlinedInput-input": { color: "rgba(255,255,255,0.92)" },
+              "& .MuiOutlinedInput-root": {
+                background: "rgba(255,255,255,0.05)",
+                "& fieldset": { borderColor: "rgba(255,255,255,0.26)" },
+                "&:hover fieldset": { borderColor: "rgba(255,255,255,0.38)" },
+                "&.Mui-focused fieldset": { borderColor: "var(--accent-color)" },
+              },
+            }}
+          />
+          <Box className={styles.buttons}>
+            <Button component={Link} href="/login" variant="contained" size="large">
+              Entrar
+            </Button>
+            <Button
+              component={Link}
+              href="/signup"
+              variant="outlined"
+              size="large"
+              sx={{ color: "#fff", borderColor: "rgba(255,255,255,0.3)", ":hover": { borderColor: "#fff" } }}
+            >
+              Cadastre-se Grátis
+            </Button>
+            <Button
+              component={Link}
+              href="/dashboard"
+              variant="outlined"
+              size="large"
+              sx={{ color: "#fff", borderColor: "rgba(255,255,255,0.3)", ":hover": { borderColor: "#fff" } }}
+            >
+              Ver dashboard
+            </Button>
+            <Button
+              onClick={cycleTheme}
+              variant="text"
+              size="large"
+              sx={{ color: "#fff" }}
+              aria-label="Mudar cor"
+            >
+              Mudar cor
+            </Button>
+          </Box>
         </Box>
-      </Paper>
 
-      {/* Quick Apps */}
-      <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', mt: 3 }}>
-        <Button component={Link} href="/driver" variant="text" color="primary" size="medium">
-          App do Motorista
-        </Button>
-        <Button component={Link} href="/admin" variant="text" color="primary" size="medium">
-          Área Admin
-        </Button>
-        <Button component={Link} href="/modules" variant="text" color="primary" size="medium">
-          Módulos
-        </Button>
-      </Box>
-
-      {/* Features Grid */}
-      <Grid container spacing={2} sx={{ mt: 4 }}>
-        {[
-          { title: 'WMS', description: 'Inventário, recebimento, expedição, transferências.', href: '/modules/wms' },
-          { title: 'TMS', description: 'Rastreamento, cargas, faturamento, simulações de rotas.', href: '/modules/tms' },
-          { title: 'OMS', description: 'Pedidos, multicanal, tempo real e centralização.', href: '/modules/oms' },
-          { title: 'SCM', description: 'Compras, inventários, PDV, exportações e distribuição.', href: '/modules/scm' },
-          { title: 'CRM', description: 'Atendimento, análise de dados, campanhas e tarefas.', href: '/modules/crm' },
-          { title: 'ERP', description: 'Financeiro, produção, RH, relatórios e ativos.', href: '/modules/erp' },
-        ].map((f) => (
-          <Grid key={f.title} item xs={12} sm={6} md={4}>
-            <Link href={f.href} style={{ textDecoration: 'none' }}>
-              <Card title={f.title} description={f.description} />
-            </Link>
-          </Grid>
-        ))}
-      </Grid>
+        <div className={styles.footerNote}>Melhor experiência começa com login ou cadastro.</div>
+      </section>
     </main>
   );
 }

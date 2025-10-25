@@ -1,0 +1,5 @@
+Motorista App ←→ WebSocket Server ←→ Torre de Controle
+     ↓                ↓                    ↓
+- Localização    - Broadcast         - Monitoramento
+- Eventos        - Persistência      - Alertas  
+- Status         - Reconexão         - Dashboard

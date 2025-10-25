@@ -7,6 +7,7 @@ export default function ResourcesPage() {
     { label: 'Kits Frontend', href: '/kits/frontend' },
     { label: 'Kits Backend', href: '/kits/backend' },
     { label: 'API Data (docs/data-api.md)', href: '/docs/data-api.md' },
+    { label: 'DevTools (modo desenvolvedor)', href: '/dev' },
   ]
 
   return (
