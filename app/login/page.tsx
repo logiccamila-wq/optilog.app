@@ -1,157 +1,310 @@
-'use client';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { getAuthInstance } from '@/lib/firebaseClient';
-import { useToast } from '@/components/ui/ToastProvider';
-import styles from './page.module.css';
+"use client";
 
-function translateAuthError(err: any): string {
-  const code = err?.code || '';
-  switch (code) {
-    case 'auth/email-already-in-use':
-      return 'Email já cadastrado. Faça login ou redefina sua senha.';
-    case 'auth/invalid-email':
-      return 'Email inválido.';
-    case 'auth/user-not-found':
-      return 'Usuário não encontrado.';
-    case 'auth/wrong-password':
-      return 'Senha incorreta.';
-    case 'auth/invalid-credential':
-      return 'Credencial inválida ou expirada. Redefina sua senha ou tente novamente.';
-    case 'auth/too-many-requests':
-      return 'Muitas tentativas. Aguarde alguns minutos e tente novamente.';
-    case 'auth/network-request-failed':
-      return 'Falha de rede. Verifique sua conexão.';
-    case 'auth/operation-not-allowed':
-      return 'Login por email/senha desativado no projeto.';
-    case 'auth/unauthorized-domain':
-      return 'Domínio não autorizado no Firebase Auth.';
-    case 'auth/invalid-api-key':
-      return 'API key inválida ou não configurada.';
-    default:
-      return err?.message || 'Falha no login.';
-  }
-}
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [info, setInfo] = useState<string | null>(null);
-  const toast = useToast();
   const router = useRouter();
+  const [isLogin, setIsLogin] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    const auth = await getAuthInstance();
-    if (!auth) {
-      setError('Autenticação não configurada. Defina variáveis NEXT_PUBLIC_* no .env.local');
-      return;
-    }
     setLoading(true);
+    setError("");
+    setSuccess("");
+
     try {
-      throw new Error('Autenticação via Firebase removida');
-      toast.show('Login realizado com sucesso!', 'success');
-      router.push('/');
+      const endpoint = isLogin ? "/api/auth/login" : "/api/auth/register";
+      const body = isLogin
+        ? { email: formData.email, password: formData.password }
+        : formData;
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Erro na autenticação");
+      }
+
+      if (typeof window !== "undefined") {
+        localStorage.setItem("auth_token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+      }
+
+      setSuccess(isLogin ? "Login realizado!" : "Cadastro realizado!");
+      setTimeout(() => router.push("/dashboard"), 1000);
     } catch (err: any) {
-      const msg = translateAuthError(err);
-      setError(msg);
-      toast.show(msg, 'error');
+      setError(err.message || "Erro ao processar requisição");
     } finally {
       setLoading(false);
     }
   };
 
-  const onResetPassword = async () => {
-    setError(null);
-    setInfo(null);
-    const auth = await getAuthInstance();
-    if (!auth) {
-      setError('Firebase não configurado. Preencha NEXT_PUBLIC_FIREBASE_* no .env.local');
-      return;
-    }
-    if (!email) {
-      setError('Informe seu email para redefinir a senha.');
-      return;
-    }
-    try {
-      throw new Error('Recuperação de senha via Firebase removida');
-      const msg = 'Enviamos um link de redefinição de senha para seu email.';
-      setInfo(msg);
-      toast.show(msg, 'info');
-    } catch (err: any) {
-      const msg = translateAuthError(err);
-      setError(msg);
-      toast.show(msg, 'error');
-    }
-  };
-
   return (
-    <div className={styles.container}>
-      <div className={styles.backgroundEffect} />
-
-      <section className={styles.loginCard} aria-label="Login Devoptilog">
-        <div className={styles.logoSection}>
-          <img src="https://i.imgur.com/your_devoptilog_favicon_url.png" alt="Logo Devoptilog" />
-          <h2>Devoptilog</h2>
+    <div style={{
+      minHeight: "100vh",
+      background: "linear-gradient(135deg, #1e3a8a 0%, #1e293b 50%, #581c87 100%)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "1rem"
+    }}>
+      <div style={{ width: "100%", maxWidth: "28rem" }}>
+        
+        {/* Header */}
+        <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+          <div style={{
+            display: "inline-block",
+            padding: "1rem",
+            background: "rgba(59, 130, 246, 0.2)",
+            borderRadius: "1rem",
+            marginBottom: "1rem"
+          }}>
+            <div style={{ fontSize: "2.5rem" }}>📦</div>
+          </div>
+          <h1 style={{ fontSize: "2rem", fontWeight: "bold", color: "white", marginBottom: "0.5rem" }}>
+            Optilog.app
+          </h1>
+          <p style={{ color: "rgba(255,255,255,0.7)" }}>
+            Gestão Inteligente de Logística
+          </p>
         </div>
-        <p className={styles.slogan}>Optimized Logistics Development</p>
 
-        <h1 className={styles.mainTitle}>Faça login para continuar</h1>
-        <p className={styles.subtitle}>
-          Acesse sua conta para gerenciar frotas, rotas e indicadores com
-          inteligência artificial e fluxo contínuo.
-        </p>
-
-        <form onSubmit={onSubmit} className={styles.form}>
-          {error && <div className={styles.alertError}>{error}</div>}
-          {info && <div className={styles.alertInfo}>{info}</div>}
-
-          <div className={styles.inputGroup}>
-            <span className={styles.icon}>@</span>
-            <input
-              type="email"
-              placeholder="Email ou Usuário"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={loading}
-              required
-              aria-label="Email ou usuário"
-            />
-          </div>
-
-          <div className={styles.inputGroup}>
-            <span className={styles.icon}>🔒</span>
-            <input
-              type="password"
-              placeholder="Senha"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={loading}
-              required
-              aria-label="Senha"
-            />
-          </div>
-
-          <div className={styles.buttonGroup}>
-            <button type="submit" className={styles.btnPrimary} disabled={loading}>
-              {loading ? 'Entrando...' : 'Entrar'}
+        {/* Card */}
+        <div style={{
+          background: "rgba(30, 41, 59, 0.5)",
+          backdropFilter: "blur(10px)",
+          borderRadius: "1rem",
+          border: "1px solid rgba(71, 85, 105, 1)",
+          padding: "2rem"
+        }}>
+          
+          {/* Tabs */}
+          <div style={{
+            display: "flex",
+            gap: "0.5rem",
+            marginBottom: "1.5rem",
+            background: "rgba(15, 23, 42, 0.5)",
+            borderRadius: "0.5rem",
+            padding: "0.25rem"
+          }}>
+            <button
+              onClick={() => setIsLogin(true)}
+              style={{
+                flex: 1,
+                padding: "0.75rem",
+                borderRadius: "0.5rem",
+                fontWeight: "600",
+                border: "none",
+                cursor: "pointer",
+                background: isLogin ? "#3b82f6" : "transparent",
+                color: isLogin ? "white" : "rgba(255,255,255,0.6)",
+                transition: "all 0.2s"
+              }}
+            >
+              Entrar
             </button>
-            <Link href="/signup" className={styles.btnSecondary}>
-              Cadastre-se Grátis
-            </Link>
+            <button
+              onClick={() => setIsLogin(false)}
+              style={{
+                flex: 1,
+                padding: "0.75rem",
+                borderRadius: "0.5rem",
+                fontWeight: "600",
+                border: "none",
+                cursor: "pointer",
+                background: !isLogin ? "#3b82f6" : "transparent",
+                color: !isLogin ? "white" : "rgba(255,255,255,0.6)",
+                transition: "all 0.2s"
+              }}
+            >
+              Cadastrar
+            </button>
           </div>
-        </form>
 
-        <button type="button" className={styles.linkButton} onClick={onResetPassword} disabled={loading}>
-          Esqueci minha senha
-        </button>
+          {/* Alerts */}
+          {error && (
+            <div style={{
+              padding: "1rem",
+              background: "rgba(239, 68, 68, 0.1)",
+              border: "1px solid rgba(239, 68, 68, 0.3)",
+              borderRadius: "0.5rem",
+              marginBottom: "1rem"
+            }}>
+              <p style={{ color: "#fca5a5", fontSize: "0.875rem" }}>{error}</p>
+            </div>
+          )}
 
-        <div className={styles.powered}>Powered by TRAE IDE • Next 14</div>
-      </section>
+          {success && (
+            <div style={{
+              padding: "1rem",
+              background: "rgba(34, 197, 94, 0.1)",
+              border: "1px solid rgba(34, 197, 94, 0.3)",
+              borderRadius: "0.5rem",
+              marginBottom: "1rem"
+            }}>
+              <p style={{ color: "#86efac", fontSize: "0.875rem" }}>{success}</p>
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            
+            {!isLogin && (
+              <div>
+                <label style={{ display: "block", color: "rgba(255,255,255,0.8)", fontSize: "0.875rem", marginBottom: "0.5rem" }}>
+                  Nome Completo
+                </label>
+                <input
+                  type="text"
+                  required={!isLogin}
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="Seu nome"
+                  style={{
+                    width: "100%",
+                    padding: "0.75rem 1rem",
+                    background: "rgba(15, 23, 42, 0.5)",
+                    border: "1px solid rgba(71, 85, 105, 1)",
+                    borderRadius: "0.5rem",
+                    color: "white",
+                    fontSize: "1rem",
+                    outline: "none"
+                  }}
+                />
+              </div>
+            )}
+
+            <div>
+              <label style={{ display: "block", color: "rgba(255,255,255,0.8)", fontSize: "0.875rem", marginBottom: "0.5rem" }}>
+                Email
+              </label>
+              <input
+                type="email"
+                required
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                placeholder="seu@email.com"
+                style={{
+                  width: "100%",
+                  padding: "0.75rem 1rem",
+                  background: "rgba(15, 23, 42, 0.5)",
+                  border: "1px solid rgba(71, 85, 105, 1)",
+                  borderRadius: "0.5rem",
+                  color: "white",
+                  fontSize: "1rem",
+                  outline: "none"
+                }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: "block", color: "rgba(255,255,255,0.8)", fontSize: "0.875rem", marginBottom: "0.5rem" }}>
+                Senha
+              </label>
+              <input
+                type="password"
+                required
+                minLength={6}
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                placeholder="••••••••"
+                style={{
+                  width: "100%",
+                  padding: "0.75rem 1rem",
+                  background: "rgba(15, 23, 42, 0.5)",
+                  border: "1px solid rgba(71, 85, 105, 1)",
+                  borderRadius: "0.5rem",
+                  color: "white",
+                  fontSize: "1rem",
+                  outline: "none"
+                }}
+              />
+              {!isLogin && (
+                <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.75rem", marginTop: "0.25rem" }}>
+                  Mínimo 6 caracteres
+                </p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                width: "100%",
+                padding: "0.75rem",
+                background: loading ? "rgba(59, 130, 246, 0.5)" : "linear-gradient(to right, #3b82f6, #a855f7)",
+                color: "white",
+                fontWeight: "600",
+                borderRadius: "0.5rem",
+                border: "none",
+                cursor: loading ? "not-allowed" : "pointer",
+                fontSize: "1rem",
+                transition: "all 0.2s"
+              }}
+            >
+              {loading ? "Processando..." : (isLogin ? "Entrar" : "Criar Conta")}
+            </button>
+          </form>
+
+          <div style={{ marginTop: "1.5rem", textAlign: "center", fontSize: "0.875rem", color: "rgba(255,255,255,0.6)" }}>
+            {isLogin ? (
+              <p>
+                Não tem conta?{" "}
+                <button
+                  onClick={() => setIsLogin(false)}
+                  style={{
+                    color: "#60a5fa",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    fontWeight: "600",
+                    fontSize: "0.875rem"
+                  }}
+                >
+                  Cadastre-se
+                </button>
+              </p>
+            ) : (
+              <p>
+                Já tem conta?{" "}
+                <button
+                  onClick={() => setIsLogin(true)}
+                  style={{
+                    color: "#60a5fa",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    fontWeight: "600",
+                    fontSize: "0.875rem"
+                  }}
+                >
+                  Entrar
+                </button>
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
+          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.75rem" }}>
+            🔒 Dados protegidos com criptografia
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
