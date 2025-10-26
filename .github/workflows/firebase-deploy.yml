@@ -21,6 +21,12 @@ jobs:
     name: Deploy to Firebase
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    
+    # Restrict GITHUB_TOKEN permissions for security
+    permissions:
+      contents: read
+      pull-requests: write # For preview URL comments
+      checks: write # For deployment status
 
     # Only run on main branch pushes or PRs (not forks without secrets)
     if: |

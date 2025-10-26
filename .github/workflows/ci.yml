@@ -21,6 +21,12 @@ jobs:
     name: Build and Test Monorepo
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    
+    # Restrict GITHUB_TOKEN permissions for security
+    permissions:
+      contents: read
+      pull-requests: write # For commenting on PRs if needed
+      actions: read # For downloading artifacts
 
     steps:
       # Checkout repository code
