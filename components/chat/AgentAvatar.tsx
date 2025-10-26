@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import Image from 'next/image';
 
 export default function AgentAvatar({ size = 48 }: { size?: number }) {

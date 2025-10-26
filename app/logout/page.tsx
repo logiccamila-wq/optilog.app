@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { useEffect, useState } from 'react';
 import { getAuthInstance } from '@/lib/firebaseClient';
 import { Typography, Alert, Paper, CircularProgress, Box } from '@mui/material';
@@ -11,7 +11,10 @@ export default function LogoutPage() {
     const run = async () => {
       try {
         const auth = await getAuthInstance();
-        // Autenticação via Firebase removida; nenhuma ação de signOut necessária.
+        if (auth) {
+          const { signOut } = await import('firebase/auth');
+          await signOut(auth);
+        }
       } catch (e: any) {
         setError(e?.message || 'Falha ao sair');
       } finally {

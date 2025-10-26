@@ -20,7 +20,10 @@
         }
       },
       "extensions": {
-        "recommended": ["esbenp.prettier-vscode", "ms-vscode.vscode-eslint"]
+        "recommended": [
+          "esbenp.prettier-vscode",
+          "ms-vscode.vscode-eslint"
+        ]
       }
     }
   },

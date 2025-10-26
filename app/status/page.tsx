@@ -1,93 +1,68 @@
-'use client';
+"use client";
 import { useEffect, useState } from 'react';
-import { app, getDb, getAuthInstance } from '@/lib/firebaseClient';
+import { stackAuth } from '@/lib/stackAuth';
+import { neonClient } from '@/lib/neonClient';
 import { Paper, Typography, List, ListItem, ListItemText, Chip, Box, Stack } from '@mui/material';
 
 type Check = { name: string; ok: boolean; detail?: string };
 
 export default function StatusPage() {
   const [authChecks, setAuthChecks] = useState<Check[]>([]);
-  const [fsChecks, setFsChecks] = useState<Check[]>([]);
-  const [fnChecks, setFnChecks] = useState<Check[]>([]);
-  const isDev = process.env.NODE_ENV !== 'production';
-  const dashboardUrl = process.env.NEXT_PUBLIC_DASHBOARD_URL || '';
+  const [dbChecks, setDbChecks] = useState<Check[]>([]);
 
   useEffect(() => {
     const run = async () => {
       const checksAuth: Check[] = [];
-      const checksFs: Check[] = [];
-      const checksFn: Check[] = [];
+      const checksDb: Check[] = [];
 
-      // Config
-      const pid = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '—';
-      const domain = process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '—';
-
-      // Auth via SDK modular (carregado dinamicamente no client)
+      // Stack Auth
       try {
-        // Autenticação desativada
-        checksAuth.push({
-          name: 'Firebase App',
-          ok: false,
-          detail: 'Autenticação via Firebase desativada',
+        const user = await stackAuth.getCurrentUser();
+        checksAuth.push({ 
+          name: 'Stack Auth', 
+          ok: !!user, 
+          detail: user ? `Usuário: ${user.email}` : 'Não autenticado' 
         });
-        checksAuth.push({
-          name: 'Sessão',
-          ok: false,
-          detail: 'Autenticação via Firebase desativada',
+        checksAuth.push({ 
+          name: 'Projeto', 
+          ok: !!process.env.NEXT_PUBLIC_STACK_AUTH_PROJECT_ID, 
+          detail: process.env.NEXT_PUBLIC_STACK_AUTH_PROJECT_ID || 'Não configurado' 
         });
-        checksAuth.push({ name: 'Domínio Auth', ok: !!domain, detail: domain });
       } catch (e: any) {
         checksAuth.push({ name: 'Auth erro', ok: false, detail: e?.message || String(e) });
       }
 
-      // Firestore
+      // Neon Database
       try {
-        // Firestore desativado
-        checksFs.push({
-          name: 'Firestore',
-          ok: false,
-          detail: 'Firestore desativado',
+        const hasUrl = !!process.env.NEXT_PUBLIC_NEON_REST_URL || !!process.env.NEON_REST_URL;
+        checksDb.push({ 
+          name: 'Neon REST API', 
+          ok: hasUrl, 
+          detail: hasUrl ? 'Configurado' : 'URL não configurada' 
+        });
+        
+        // Testa conexão
+        const response = await neonClient.list('orders');
+        checksDb.push({ 
+          name: 'Conexão DB', 
+          ok: response.success, 
+          detail: response.success ? 'OK' : (response.error || 'Erro ao conectar') 
         });
       } catch (e: any) {
-        checksFs.push({ name: 'Leitura posts erro', ok: false, detail: e?.message || String(e) });
-      }
-
-      // Functions: checagem via API server-side (evita dependências Node no client)
-      try {
-        const r = await fetch('/api/functions-status');
-        const j = await r.json();
-        checksFn.push({
-          name: 'Functions',
-          ok: !!j.ok,
-          detail: j.ok ? 'HTTP disponível' : j.error || `status=${j.status}`,
-        });
-      } catch (e: any) {
-        const msg = e?.message || String(e);
-        checksFn.push({
-          name: 'Functions',
-          ok: false,
-          detail: isDev
-            ? `Dev: chamada /api/functions-status falhou (possível ausência de função local ou credenciais). Detalhe: ${msg}`
-            : msg,
-        });
+        checksDb.push({ name: 'Database erro', ok: false, detail: e?.message || String(e) });
       }
 
       setAuthChecks(checksAuth);
-      setFsChecks(checksFs);
-      setFnChecks(checksFn);
+      setDbChecks(checksDb);
     };
     run();
   }, []);
 
-  const Section = ({ title, items }: { title: string; items: Check[] }) => (
+  const Section = ({ title, items }: { title: string, items: Check[] }) => (
     <Paper variant="outlined" sx={{ p: 2 }}>
-      <Typography variant="h6" sx={{ mb: 1 }}>
-        {title}
-      </Typography>
+      <Typography variant="h6" sx={{ mb: 1 }}>{title}</Typography>
       {items.length === 0 ? (
-        <Typography variant="body2" color="text.secondary">
-          Sem dados no momento.
-        </Typography>
+        <Typography variant="body2" color="text.secondary">Carregando...</Typography>
       ) : (
         <List dense>
           {items.map((c, i) => (
@@ -96,26 +71,10 @@ export default function StatusPage() {
                 primary={
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <span>{c.name}</span>
-                    <Chip
-                      size="small"
-                      color={c.ok ? 'success' : 'error'}
-                      label={
-                        c.ok
-                          ? 'OK'
-                          : c.name === 'Sessão'
-                            ? 'NÃO LOGADO'
-                            : c.name === 'Functions'
-                              ? 'N/A'
-                              : 'ERRO'
-                      }
-                    />
+                    <Chip size="small" color={c.ok ? 'success' : 'warning'} label={c.ok ? 'OK' : 'AVISO'} />
                   </Box>
                 }
-                secondary={
-                  <Typography variant="caption" color="text.secondary">
-                    {c.detail}
-                  </Typography>
-                }
+                secondary={<Typography variant="caption" color="text.secondary">{c.detail}</Typography>}
               />
             </ListItem>
           ))}
@@ -128,34 +87,15 @@ export default function StatusPage() {
     <main className="container">
       <Stack spacing={2}>
         <Box>
-          <Typography variant="h5" sx={{ mb: 1 }}>
-            Status do Backend
-          </Typography>
+          <Typography variant="h5" sx={{ mb: 1 }}>Status do Sistema</Typography>
           <Paper variant="outlined" sx={{ p: 1 }}>
             <Typography variant="caption" sx={{ display: 'block' }}>
-              Projeto: {process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '—'} | Domínio Auth:{' '}
-              {process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '—'}
+              Stack Auth + Neon Database + Vercel Deploy
             </Typography>
-            <Typography variant="caption" sx={{ display: 'block' }}>
-              Ambiente: {isDev ? 'Desenvolvimento' : 'Produção'} | Dashboard URL:{' '}
-              {dashboardUrl || '—'}
-            </Typography>
-            {!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && (
-              <Typography variant="caption" color="text.secondary">
-                Defina variáveis NEXT_PUBLIC_FIREBASE_* para dados completos.
-              </Typography>
-            )}
-            {!dashboardUrl && (
-              <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
-                Opcional: defina NEXT_PUBLIC_DASHBOARD_URL para habilitar redirecionamento
-                automático em /dashboard.
-              </Typography>
-            )}
           </Paper>
         </Box>
-        <Section title="Auth" items={authChecks} />
-        <Section title="Firestore" items={fsChecks} />
-        <Section title="Functions" items={fnChecks} />
+        <Section title="Autenticação" items={authChecks} />
+        <Section title="Database" items={dbChecks} />
       </Stack>
     </main>
   );

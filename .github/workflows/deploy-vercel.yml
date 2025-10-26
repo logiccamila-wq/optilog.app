@@ -1,0 +1,50 @@
+name: Deploy to Vercel
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy to Vercel (production)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Install dependencies (if present)
+        run: |
+          if [ -f package-lock.json ]; then npm ci --no-audit --no-fund || true; elif [ -f package.json ]; then npm install --no-audit --no-fund || true; fi
+
+      - name: Build (if build script exists)
+        run: |
+          if npm run | grep -q 'build'; then
+            npm run build || true
+          else
+            echo 'No build script detected; skipping build step.'
+          fi
+
+      - name: Deploy to Vercel (CLI)
+        if: ${{ secrets.VERCEL_TOKEN != '' && secrets.VERCEL_PROJECT_ID != '' && secrets.VERCEL_ORG_ID != '' }}
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+        run: |
+          npm install -g vercel@33 || true
+          vercel pull --yes --environment=production --token "$VERCEL_TOKEN"
+          vercel build --prod --token "$VERCEL_TOKEN"
+          vercel deploy --prebuilt --prod --yes --token "$VERCEL_TOKEN"
+
+      - name: Missing Vercel secrets warning
+        if: ${{ secrets.VERCEL_TOKEN == '' || secrets.VERCEL_PROJECT_ID == '' || secrets.VERCEL_ORG_ID == '' }}
+        run: |
+          echo "::warning::VERCEL_TOKEN, VERCEL_ORG_ID e VERCEL_PROJECT_ID são necessários para executar o deploy automático." 

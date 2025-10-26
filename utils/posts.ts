@@ -1,4 +1,4 @@
-// Firebase removido: não usar Firestore fallback
+import { getDb } from '@/lib/firebaseClient';
 
 const API_URL = process.env.NEXT_PUBLIC_POSTS_API_URL;
 
@@ -8,7 +8,6 @@ export type Post = {
   title: string;
   content: string;
   is_published: boolean;
-  is_featured?: boolean;
   author_id?: string | null;
   date?: string;
 };
@@ -18,40 +17,37 @@ export const demoPosts: Post[] = [
     id: 'demo-1',
     slug: 'boas-vindas',
     title: 'Boas-vindas ao Optilog!',
-    content:
-      '<p>Esta é uma postagem de demonstração exibida quando o backend não está configurado.</p>',
+    content: '<p>Esta é uma postagem de demonstração exibida quando o Firebase não está configurado.</p>',
     is_published: true,
     author_id: 'demo-user',
-    date: '2024-01-15',
+    date: '2024-01-15'
   },
   {
     id: 'demo-2',
     slug: 'como-configurar',
     title: 'Como configurar sua fonte de dados',
-    content: '<p>Defina as variáveis <code>NEXT_PUBLIC_*</code> para integrar seu backend.</p>',
+    content: '<p>Defina as variáveis <code>NEXT_PUBLIC_FIREBASE_*</code> para integrar seu backend Firestore.</p>',
     is_published: true,
     author_id: 'demo-user',
-    date: '2024-02-10',
+    date: '2024-02-10'
   },
   {
     id: 'demo-3',
     slug: 'ejg-apresentacao',
     title: 'Apresentação EJG',
-    content:
-      '<p>Bem-vindo ao preview da EJG com hospedagem temporária (7 dias).</p><p>Este canal expira automaticamente e é ideal para validação rápida.</p>',
+    content: '<p>Bem-vindo ao preview da EJG com Firebase Hosting (7 dias).</p><p>Este canal expira automaticamente e é ideal para validação rápida.</p>',
     is_published: true,
     author_id: 'demo-user',
-    date: '2024-03-05',
+    date: '2024-03-05'
   },
   {
     id: 'demo-4',
     slug: 'ejg-cases',
     title: 'Casos e Resultados EJG',
-    content:
-      '<ul><li>Redução de custos logísticos</li><li>Melhoria no last-mile</li><li>Integração com ERP</li></ul>',
+    content: '<ul><li>Redução de custos logísticos</li><li>Melhoria no last-mile</li><li>Integração com ERP</li></ul>',
     is_published: true,
     author_id: 'demo-user',
-    date: '2024-04-18',
+    date: '2024-04-18'
   },
   {
     id: 'demo-5',
@@ -60,7 +56,7 @@ export const demoPosts: Post[] = [
     content: '<p>Planejamento de entregas, SLAs e integrações prioritárias.</p>',
     is_published: true,
     author_id: 'demo-user',
-    date: '2024-05-12',
+    date: '2024-05-12'
   },
   {
     id: 'demo-6',
@@ -70,7 +66,7 @@ export const demoPosts: Post[] = [
       '<ul><li>Como acesso o dashboard? Faça login e vá em Dashboard.</li><li>Posso integrar com ERP? Sim, via APIs.</li><li>O preview dura quanto? 7 dias.</li></ul>',
     is_published: true,
     author_id: 'demo-user',
-    date: '2024-06-20',
+    date: '2024-06-20'
   },
   {
     id: 'demo-7',
@@ -79,7 +75,7 @@ export const demoPosts: Post[] = [
     content: '<p>Termos e condições para uso da plataforma Optilog pela EJG.</p>',
     is_published: true,
     author_id: 'demo-user',
-    date: '2024-06-21',
+    date: '2024-06-21'
   },
   {
     id: 'demo-8',
@@ -88,8 +84,8 @@ export const demoPosts: Post[] = [
     content: '<p>Política de privacidade e proteção de dados em conformidade com LGPD.</p>',
     is_published: true,
     author_id: 'demo-user',
-    date: '2024-06-22',
-  },
+    date: '2024-06-22'
+  }
 ];
 // Slugs adicionais para EJG
 export const extraDemoPosts: Post[] = [
@@ -100,7 +96,7 @@ export const extraDemoPosts: Post[] = [
     content: '<p>Passos de onboarding, permissões e acesso ao painel.</p>',
     is_published: true,
     author_id: 'demo-user',
-    date: '2024-06-05',
+    date: '2024-06-05'
   },
   {
     id: 'demo-7',
@@ -109,7 +105,7 @@ export const extraDemoPosts: Post[] = [
     content: '<p>Conexões com ERP, WMS e APIs de transporte.</p>',
     is_published: true,
     author_id: 'demo-user',
-    date: '2024-07-10',
+    date: '2024-07-10'
   },
   {
     id: 'demo-8',
@@ -118,7 +114,7 @@ export const extraDemoPosts: Post[] = [
     content: '<p>Visão de KPIs operacionais e metas trimestrais.</p>',
     is_published: true,
     author_id: 'demo-user',
-    date: '2024-08-14',
+    date: '2024-08-14'
   },
   {
     id: 'demo-9',
@@ -127,8 +123,8 @@ export const extraDemoPosts: Post[] = [
     content: '<p>Canais de suporte, SLA e escalonamento.</p>',
     is_published: true,
     author_id: 'demo-user',
-    date: '2024-09-20',
-  },
+    date: '2024-09-20'
+  }
 ];
 
 // Inclui extras no demoPosts, mantendo compatibilidade
@@ -148,9 +144,7 @@ export async function getPosts(): Promise<Post[]> {
           title: p.title ?? 'Sem título',
           content: p.content ?? p.description ?? '',
           is_published: Boolean(p.is_published ?? p.published ?? true),
-          is_featured: Boolean(p.is_featured ?? p.featured ?? false),
           author_id: p.author_id ?? p.authorId ?? null,
-          date: p.created_at ?? p.date ?? undefined,
         })) as Post[];
       }
     } catch (e) {
@@ -159,7 +153,19 @@ export async function getPosts(): Promise<Post[]> {
     }
   }
 
-  // 2) Firebase removido; sem fallback Firestore
+  // 2) Tenta Firestore, se configurado
+  const db = await getDb();
+  if (db) {
+    try {
+      const { collection, getDocs, query, where } = await import('firebase/firestore');
+      const q = query(collection(db, 'posts'), where('is_published', '==', true));
+      const snap = await getDocs(q);
+      return snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as Post[];
+    } catch (err) {
+      console.warn('Permissão/erro ao acessar Firestore, usando demo:', err);
+      return demoPosts;
+    }
+  }
 
   // 3) Fallback demo
   return demoPosts;
@@ -185,9 +191,7 @@ export async function getPost(slug: string): Promise<Post | null> {
             title: p.title ?? 'Sem título',
             content: p.content ?? p.description ?? '',
             is_published: Boolean(p.is_published ?? p.published ?? true),
-            is_featured: Boolean(p.is_featured ?? p.featured ?? false),
             author_id: p.author_id ?? p.authorId ?? null,
-            date: p.created_at ?? p.date ?? undefined,
           } as Post;
         }
       }
@@ -196,10 +200,29 @@ export async function getPost(slug: string): Promise<Post | null> {
     }
   }
 
-  // 2) Firebase removido; sem fallback Firestore
+  // 2) Tenta Firestore
+  const db = await getDb();
+  if (db) {
+    try {
+      const { collection, getDocs, query, where, limit } = await import('firebase/firestore');
+      const q = query(
+        collection(db, 'posts'),
+        where('slug', '==', slug),
+        where('is_published', '==', true),
+        limit(1)
+      );
+      const snap = await getDocs(q);
+      if (snap.empty) return null;
+      const doc = snap.docs[0];
+      return { id: doc.id, ...(doc.data() as any) } as Post;
+    } catch (err) {
+      console.warn('Permissão/erro ao buscar post no Firestore, usando demo:', err);
+      return demoPosts.find(p => p.slug === slug) || null;
+    }
+  }
 
   // 3) Fallback demo
-  return demoPosts.find((p) => p.slug === slug) || null;
+  return demoPosts.find(p => p.slug === slug) || null;
 }
 
 export async function getPostsPage(pageSize: number, afterSlug?: string): Promise<Post[]> {
@@ -218,7 +241,6 @@ export async function getPostsPage(pageSize: number, afterSlug?: string): Promis
             title: p.title ?? 'Sem título',
             content: p.content ?? p.description ?? '',
             is_published: Boolean(p.is_published ?? p.published ?? true),
-            is_featured: Boolean(p.is_featured ?? p.featured ?? false),
             author_id: p.author_id ?? p.authorId ?? null,
           })) as Post[];
         }
@@ -228,11 +250,45 @@ export async function getPostsPage(pageSize: number, afterSlug?: string): Promis
     }
   }
 
-  // 2) Firebase removido; sem fallback Firestore. Paginação usando demo.
+  // 2) Firestore com orderBy('slug') e startAfter
+  const db = await getDb();
+  if (db) {
+    try {
+      const { collection, getDocs, query, where, limit, orderBy, startAfter } = await import('firebase/firestore');
+      const baseQuery = afterSlug
+        ? query(
+            collection(db, 'posts'),
+            where('is_published', '==', true),
+            orderBy('slug'),
+            startAfter(afterSlug),
+            limit(pageSize)
+          )
+        : query(
+            collection(db, 'posts'),
+            where('is_published', '==', true),
+            orderBy('slug'),
+            limit(pageSize)
+          );
+      const snap = await getDocs(baseQuery);
+      return snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as Post[];
+    } catch (err) {
+      console.warn('Permissão/erro ao paginar Firestore, usando demo:', err);
+      // 3) Fallback demo com paginação baseada em slug
+      const sorted = [...demoPosts].sort((a, b) => a.slug.localeCompare(b.slug));
+      let startIndex = 0;
+      if (afterSlug) {
+        const idx = sorted.findIndex(p => p.slug === afterSlug);
+        startIndex = idx >= 0 ? idx + 1 : 0;
+      }
+      return sorted.slice(startIndex, startIndex + pageSize);
+    }
+  }
+
+  // 3) Fallback demo com paginação baseada em slug
   const sorted = [...demoPosts].sort((a, b) => a.slug.localeCompare(b.slug));
   let startIndex = 0;
   if (afterSlug) {
-    const idx = sorted.findIndex((p) => p.slug === afterSlug);
+    const idx = sorted.findIndex(p => p.slug === afterSlug);
     startIndex = idx >= 0 ? idx + 1 : 0;
   }
   return sorted.slice(startIndex, startIndex + pageSize);

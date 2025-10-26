@@ -1,81 +1,40 @@
-
-# Node / Next
+# node / build
 node_modules/
 .next/
-.next-aggressive/
-out/
 dist/
 build/
-.cache/
-.vercel/
-.npm/
+
+# firebase artifacts
+.firebase/
+.firebaserc
+firebase-debug*.log
+firebase.json
+
+# OS / tooling
+.DS_Store
+.vscode/settings.json
+.idea/
+
+# logs
+*.log
+
+# generated
+_ci_build_artifacts/
+
+# Dependencies
+node_modules
+
+# Next.js build output
+.next
+out
+
+# Local Environment Variables
+.env*.local
+
+# Misc
+.DS_Store
+
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-lock.yaml
-
-# Firebase local state
-.firebase/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# IDEs
-.vscode/
-.idea/
-*.iml
-
-# Logs
-logs/
-*.log
-
-# Builds / executáveis
-*.exe
-*.dll
-*.so
-*.dylib
-*.apk
-*.aab
-
-# Flutter / Dart
-.flutter-plugins
-.flutter-plugins-dependencies
-.dart_tool/
-.packages
-build/
-.pub/
-.pub-cache/
-pubspec.lock
-
-# Android / Gradle
-.gradle/
-**/build/
-local.properties
-
-# iOS
-Pods/
-Podfile.lock
-DerivedData/
-*.xcuserstate
-
-# Databases / secrets / envs
-*.sqlite
-*.db
-*.sql
-*.sqlite3
-.env
-.env.local
-.env.*.local
-.env.*.secret
-
-# Misc large / caches
-coverage/
-tmp/
-temp/
-.cache/
-\n# Ignore temporários em app\napp/Untitled-*.txt\napp/*Next.js*\n
-
-# Ignore Flutter SDK windows stable
-frontend/src/flutter_windows_3.24.3-stable/
-.vercel

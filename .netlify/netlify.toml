@@ -18,7 +18,7 @@ package = "netlify-plugin-cypress"
 [plugins.inputs]
 
 [build]
-publish = ".next"
+publish = "C:\\Users\\Pichau\\OneDrive\\Documentos\\optilog-app\\.next"
 publishOrigin = "config"
 commandOrigin = "config"
 command = "npm run build"

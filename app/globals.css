@@ -1,147 +1,21 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 body {
   margin: 0;
   padding: 0;
-  font-family: var(--font-sans, 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif);
-  background: var(--color-bg, #ffffff);
-  color: var(--color-text, #111827);
-  text-align: var(--text-align, left);
+  font-family: "Segoe UI Variable", "Inter", "Segoe UI", sans-serif;
+  background: radial-gradient(120% 120% at 50% 0%, #103d6b 0%, #0b1528 42%, #020614 100%);
+  color: #e5e7eb;
+  min-height: 100vh;
 }
 
-.container {
-  max-width: 960px;
-  margin: 2rem auto;
-  padding: 0 1rem;
+main {
+  display: block;
 }
 
-.header {
-  font-size: 2rem;
-  margin-bottom: 1rem;
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
-.post-card {
-  border: 1px solid var(--color-border);
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border-radius: var(--radius);
-}
-
-.subheader {
-  color: var(--color-text);
-  opacity: 0.7;
-}
-
-/* Global Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(-20px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-.animate-fadeIn {
-  animation: fadeIn 0.5s ease-out;
-}
-
-.animate-pulse {
-  animation: pulse 2s infinite;
-}
-
-.animate-slideIn {
-  animation: slideIn 0.5s ease-out;
-}
-
-.hover-lift {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.hover-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.hover-lift:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* Global theme variables */
-:root {
-  /* Brand palette and dark mode tokens */
-  --primary-blue: #3badff;
-  --primary-purple: #6f5dff;
-  --secondary-green: #2ecc71;
-  /* Add magenta accent for neon/tech palette */
-  --primary-magenta: #ff2e79;
-
-  --accent-color: var(--primary-blue);
-
-  --dark-bg: #0f172a;
-  --darker-bg: #16213e;
-  --card-bg: rgba(16, 24, 40, 0.7);
-  --text-light: #e5e7eb;
-  --text-medium: #9ca3af;
-
-  /* Inputs and borders used across pages */
-  --input-bg: rgba(255, 255, 255, 0.08);
-  --border-color: rgba(255, 255, 255, 0.15);
-
-  /* Base radius for components */
-  --radius: 10px;
-
-  /* Focus ring follows accent by default */
-  --focus-ring: var(--accent-color);
-}
-
-/* Theme toggles: set accent color */
-.theme-blue {
-  --accent-color: var(--primary-blue);
-}
-.theme-purple {
-  --accent-color: var(--primary-purple);
-}
-.theme-green {
-  --accent-color: var(--secondary-green);
-}
-/* New: magenta accent */
-.theme-magenta {
-  --accent-color: var(--primary-magenta);
-}
-
-/* Global focus styles and tokens usage */
-button,
-a,
-input,
-textarea,
-select {
-  border-radius: var(--radius, 10px);
-}
-
-button:focus-visible,
-a:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
-}
-
-input,
-textarea,
-select {
-  border: 1px solid var(--color-border);
-  background: var(--color-secondary);
-  color: var(--color-text);
+* {
+  box-sizing: border-box;
 }

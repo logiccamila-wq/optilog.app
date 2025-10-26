@@ -1,271 +1,161 @@
-'use client';
-
-import React from 'react';
+"use client";
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { stackAuth, stackAuthConfig } from '@/lib/stackAuth';
+import { Box, TextField, Button, Typography, Alert, Paper, CircularProgress, Container } from '@mui/material';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 export default function LoginPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    
+    if (!stackAuthConfig.isConfigured) {
+      setError('Autenticação não configurada. Configure as variáveis Stack Auth no .env.local');
+      return;
+    }
+
     setLoading(true);
-    setError('');
-
     try {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-  const response = await fetch(`${apiUrl}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Erro na autenticação');
-      }
-
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('token', data.token);
-      }
-
-      setTimeout(() => router.push('/dashboard'), 1000);
+      await stackAuth.signIn(email, password);
+      router.push('/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Erro ao processar requisição');
+      setError(err.message || 'Falha no login. Verifique suas credenciais.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <div className="logo">
-          <h1>OptiLog</h1>
-          <div className="subtitle">Sistema de Gestão Inteligente</div>
-        </div>
+    <Container maxWidth="sm" sx={{ py: 8 }}>
+      <Paper
+        elevation={0}
+        sx={{
+          p: 4,
+          borderRadius: 4,
+          border: '1px solid rgba(255,255,255,0.08)',
+          bgcolor: 'rgba(17,23,40,0.9)',
+        }}
+      >
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
+          <Box
+            sx={{
+              width: 64,
+              height: 64,
+              borderRadius: '50%',
+              bgcolor: 'primary.main',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              mb: 2,
+            }}
+          >
+            <LockOutlinedIcon fontSize="large" />
+          </Box>
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+            Entrar
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary', mt: 1 }}>
+            Acesse sua conta Optilog
+          </Typography>
+        </Box>
 
-        <form onSubmit={handleSubmit} className="login-form">
-          {error && (
-            <div className="error-message">
-              {error}
-            </div>
-          )}
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {error}
+          </Alert>
+        )}
 
-          <div className="input-group">
-            <label htmlFor="email">E-mail</label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoFocus
-              disabled={loading}
-            />
-          </div>
-          
-          <div className="input-group">
-            <label htmlFor="password">Senha</label>
-            <input
-              id="password" 
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={loading}
-            />
-          </div>
-          
-          <button 
-            type="submit"
-            className="login-button"
+        <Box component="form" onSubmit={onSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+          <TextField
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            fullWidth
             disabled={loading}
+            autoComplete="email"
+          />
+          <TextField
+            label="Senha"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            fullWidth
+            disabled={loading}
+            autoComplete="current-password"
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            disabled={loading}
+            fullWidth
+            sx={{ py: 1.5, fontWeight: 600 }}
+            startIcon={loading ? <CircularProgress color="inherit" size={20} /> : undefined}
           >
             {loading ? 'Entrando...' : 'Entrar'}
-          </button>
+          </Button>
+        </Box>
 
-          <div className="footer-links">
-            <a href="/forgot-password">Esqueceu a senha?</a>
-            <a href="/signup">Criar conta</a>
-          </div>
-        </form>
-      </div>
+        <Box sx={{ mt: 3, textAlign: 'center' }}>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            Não tem conta?{' '}
+            <Link href="/signup" style={{ color: '#64B5F6', textDecoration: 'none', fontWeight: 600 }}>
+              Cadastre-se
+            </Link>
+          </Typography>
+        </Box>
 
-      <div className="background-animation" />
-
-      <style jsx>{`
-+        .login-container {
-+          min-height: 100vh;
-+          display: flex;
-+          align-items: center;
-+          justify-content: center;
-+          background: #0F0F1A;
-+          position: relative;
-+          overflow: hidden;
-+        }
-+
-+        .login-card {
-+          background: rgba(15, 15, 26, 0.8);
-+          backdrop-filter: blur(10px);
-+          border: 1px solid rgba(106, 27, 154, 0.2);
-+          border-radius: 16px;
-+          padding: 40px;
-+          width: 100%;
-+          max-width: 400px;
-+          position: relative;
-+          z-index: 1;
-+        }
-+
-+        .logo {
-+          text-align: center;
-+          margin-bottom: 40px;
-+        }
-+
-+        h1 {
-+          color: #06B6D4;
-+          font-size: 2.5rem;
-+          font-weight: 700;
-+          margin: 0;
-+          text-transform: uppercase;
-+          letter-spacing: 2px;
-+        }
-+
-+        .subtitle {
-+          color: #EC4899;
-+          font-size: 0.875rem;
-+          margin-top: 8px;
-+        }
-+
-+        .login-form {
-+          display: flex;
-+          flex-direction: column;
-+          gap: 20px;
-+        }
-+
-+        .input-group {
-+          display: flex;
-+          flex-direction: column;
-+          gap: 8px;
-+        }
-+
-+        label {
-+          color: #ffffff;
-+          font-size: 0.875rem;
-+          font-weight: 500;
-+        }
-+
-+        input {
-+          background: rgba(255, 255, 255, 0.05);
-+          border: 1px solid rgba(106, 27, 154, 0.3);
-+          border-radius: 8px;
-+          padding: 12px 16px;
-+          color: #ffffff;
-+          font-size: 1rem;
-+          transition: all 0.2s;
-+        }
-+
-+        input:focus {
-+          outline: none;
-+          border-color: #06B6D4;
-+          box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2);
-+        }
-+
-+        .login-button {
-+          background: linear-gradient(135deg, #06B6D4, #6A1B9A);
-+          color: white;
-+          border: none;
-+          border-radius: 8px;
-+          padding: 14px;
-+          font-size: 1rem;
-+          font-weight: 600;
-+          cursor: pointer;
-+          transition: all 0.2s;
-+        }
-+
-+        .login-button:hover:not(:disabled) {
-+          transform: translateY(-1px);
-+          box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
-+        }
-+
-+        .login-button:disabled {
-+          opacity: 0.7;
-+          cursor: not-allowed;
-+        }
-+
-+        .error-message {
-+          background: rgba(239, 68, 68, 0.1);
-+          border: 1px solid rgba(239, 68, 68, 0.2);
-+          color: #ef4444;
-+          padding: 12px;
-+          border-radius: 8px;
-+          font-size: 0.875rem;
-+        }
-+
-+        .footer-links {
-+          display: flex;
-+          justify-content: space-between;
-+          font-size: 0.875rem;
-+        }
-+
-+        .footer-links a {
-+          color: #06B6D4;
-+          text-decoration: none;
-+          transition: color 0.2s;
-+        }
-+
-+        .footer-links a:hover {
-+          color: #EC4899;
-+        }
-+
-+        .background-animation {
-+          position: absolute;
-+          top: 0;
-+          left: 0;
-+          right: 0;
-+          bottom: 0;
-+          background: 
-+            radial-gradient(circle at top right, rgba(6, 182, 212, 0.1), transparent 50%),
-+            radial-gradient(circle at bottom left, rgba(236, 72, 153, 0.1), transparent 50%);
-+          animation: pulse 10s ease infinite;
-+          z-index: 0;
-+        }
-+
-+        @keyframes pulse {
-+          0% {
-+            transform: scale(1);
-+            opacity: 0.5;
-+          }
-+          50% {
-+            transform: scale(1.2);
-+            opacity: 0.8;
-+          }
-+          100% {
-+            transform: scale(1);
-+            opacity: 0.5;
-+          }
-+        }
-+
-+        @media (max-width: 480px) {
-+          .login-card {
-+            margin: 20px;
-+            padding: 30px;
-+          }
-+
-+          h1 {
-+            font-size: 2rem;
-+          }
-+        }
-+      `}</style>
-    </div>
+        <Box sx={{ mt: 3, pt: 3, borderTop: '1px solid rgba(255,255,255,0.06)', textAlign: 'center' }}>
+          <Typography variant="caption" sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
+            <LockOutlinedIcon fontSize="small" />
+            Dados protegidos com criptografia
+          </Typography>
+        </Box>
+      </Paper>
+    </Container>
   );
 }
+
+CREATE TABLE orders (
+  id SERIAL PRIMARY KEY,
+  customer_name TEXT NOT NULL,
+  status TEXT NOT NULL,
+  total DECIMAL(10,2) NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE vehicles (
+  id SERIAL PRIMARY KEY,
+  plate TEXT NOT NULL UNIQUE,
+  model TEXT NOT NULL,
+  status TEXT NOT NULL,
+  last_maintenance TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE finance_entries (
+  id SERIAL PRIMARY KEY,
+  description TEXT NOT NULL,
+  amount DECIMAL(10,2) NOT NULL,
+  type TEXT NOT NULL,
+  date TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+NEXT_PUBLIC_STACK_AUTH_PROJECT_ID=b0e4c9fa-4c2f-4870-a244-782996d4b593
+NEXT_PUBLIC_STACK_AUTH_JWKS_URL=https://api.stack-auth.com/api/v1/auth/jwks
+NEON_REST_URL=https://ep-small-shape-aclozfov.apirest.sa-east-1.aws.neon.tech/neondb/rest/v1

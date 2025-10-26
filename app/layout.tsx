@@ -1,4 +1,3 @@
-import '../styles/design-tokens.css';
 import './globals.css';
 import { ReactNode } from 'react';
 import Header from './Header';
@@ -6,19 +5,14 @@ import ToastProvider from '@/components/ui/ToastProvider';
 import { ThemeProvider } from '@/app/providers/ThemeProvider';
 import ServiceWorkerRegister from '@/app/providers/ServiceWorker';
 import SWUpdateSnackbar from '@/components/pwa/SWUpdateSnackbar';
-import { I18nProvider } from '@/app/providers/I18nProvider';
-import { AuthProvider } from '@/app/providers/AuthProvider';
-
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 
 export const metadata = {
   metadataBase: new URL('https://studio-4793785332-8ea02.web.app'),
   title: {
-    default: 'Devoptilog',
-    template: '%s • Devoptilog',
+    default: 'OptiLog • Plataforma de Insights',
+    template: '%s • OptiLog',
   },
-  description: 'Devoptilog: Optimized Logistics Development.',
+  description: 'OptiLog: conteúdo e ferramentas com IA em tema escuro.',
   icons: {
     icon: '/favicon.svg',
     shortcut: '/favicon.svg',
@@ -27,23 +21,25 @@ export const metadata = {
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
-    title: 'Devoptilog',
+    title: 'EJG Optilog',
     statusBarStyle: 'default',
   },
   openGraph: {
-    title: 'Devoptilog • Optimized Logistics',
-    description: 'Optimized logistics platform for operations and insights.',
+    title: 'OptiLog • Plataforma de Insights',
+    description: 'UI escura inspirada no Copilot, com destaque azul.',
     url: '/',
-    siteName: 'Devoptilog',
-    images: [{ url: '/logo.svg', width: 512, height: 512, alt: 'Devoptilog' }],
+    siteName: 'OptiLog',
+    images: [
+      { url: '/logo-xyz.svg', width: 512, height: 512, alt: 'OptiLog' },
+    ],
     locale: 'pt_BR',
     type: 'website',
   },
   twitter: {
     card: 'summary',
-    title: 'Devoptilog',
-    description: 'Optimized Logistics Development.',
-    images: ['/logo.svg'],
+    title: 'OptiLog',
+    description: 'UI escura com MUI e integração com IA.',
+    images: ['/logo-xyz.svg'],
   },
 };
 
@@ -55,18 +51,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="pt-BR">
       <body>
-        <AuthProvider>
-          <ThemeProvider>
-            <I18nProvider>
-              <ToastProvider>
-                <Header />
-                {children}
-                <ServiceWorkerRegister />
-                <SWUpdateSnackbar />
-              </ToastProvider>
-            </I18nProvider>
-          </ThemeProvider>
-        </AuthProvider>
+        <ThemeProvider>
+          <ToastProvider>
+            <Header />
+            {children}
+            <ServiceWorkerRegister />
+            <SWUpdateSnackbar />
+          </ToastProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
