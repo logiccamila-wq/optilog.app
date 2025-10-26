@@ -200,7 +200,11 @@ act push -W .github/workflows/ci.yml
 
 ### Build Failures
 
-- **Frontend build fails**: Check for missing dependencies in `package.json`
+- **Frontend build fails with missing modules**: The repository may have pre-existing build issues
+  - Missing `@/lib/firebase-admin`: Create this file or remove the import from `middleware.ts`
+  - Missing `@vercel/postgres`: Install the package or remove the import
+  - The CI workflow uses `continue-on-error` to allow testing other components
+  - The Firebase deploy workflow will fail until build issues are resolved
 - **Backend build fails**: Ensure backend has proper build script or is skipped
 - **Functions deploy fails**: Verify `FIREBASE_TOKEN` secret and Functions dependencies
 

@@ -16,6 +16,7 @@ pnpm-lock.yaml
 
 # Firebase local state
 .firebase/
+.firebaserc
 
 # OS
 .DS_Store
