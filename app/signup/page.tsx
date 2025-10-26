@@ -1,131 +1,187 @@
 "use client";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { auth, isConfigured } from '@/lib/firebaseClient';
-import { Box, TextField, Button, Typography, Alert, Paper, CircularProgress } from '@mui/material';
-import { useToast } from '@/components/ui/ToastProvider';
-
-function translateAuthError(err: any): string {
-  const code = err?.code || '';
-  switch (code) {
-    case 'auth/email-already-in-use':
-      return 'Email já cadastrado. Faça login ou redefina sua senha.';
-    case 'auth/invalid-email':
-      return 'Email inválido.';
-    case 'auth/user-not-found':
-      return 'Usuário não encontrado.';
-    case 'auth/wrong-password':
-      return 'Senha incorreta.';
-    case 'auth/invalid-credential':
-      return 'Credencial inválida ou expirada. Redefina sua senha ou tente novamente.';
-    case 'auth/too-many-requests':
-      return 'Muitas tentativas. Aguarde alguns minutos e tente novamente.';
-    case 'auth/network-request-failed':
-      return 'Falha de rede. Verifique sua conexão.';
-    case 'auth/operation-not-allowed':
-      return 'Login por email/senha desativado no projeto.';
-    case 'auth/unauthorized-domain':
-      return 'Domínio não autorizado no Firebase Auth.';
-    case 'auth/invalid-api-key':
-      return 'API key inválida ou não configurada.';
-    default:
-      return err?.message || 'Falha no cadastro.';
-  }
-}
+import {
+  Container,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  Box,
+  Link,
+  Alert,
+  InputAdornment,
+  IconButton,
+} from '@mui/material';
+import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { stackAuth } from '@/lib/stackAuth';
 
 export default function SignupPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [info, setInfo] = useState<string | null>(null);
-  const [lastErrorCode, setLastErrorCode] = useState<string | null>(null);
-  const toast = useToast();
   const router = useRouter();
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    name: '',
+  });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const onSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setInfo(null);
-    setLastErrorCode(null);
-    if (!isConfigured || !auth) {
-      setError('Firebase não configurado. Preencha NEXT_PUBLIC_FIREBASE_* no .env.local');
+    setError('');
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('As senhas não coincidem');
       return;
     }
+
+    if (formData.password.length < 8) {
+      setError('A senha deve ter no mínimo 8 caracteres');
+      return;
+    }
+
     setLoading(true);
-    try {
-      const { createUserWithEmailAndPassword, updateProfile } = await import('firebase/auth');
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
-      if (name) {
-        await updateProfile(cred.user, { displayName: name });
-      }
-      toast.show('Cadastro realizado com sucesso!', 'success');
-      router.push('/');
-    } catch (err: any) {
-      const msg = translateAuthError(err);
-      setError(msg);
-      setLastErrorCode(err?.code || null);
-      toast.show(msg, 'error');
-    } finally {
+    const response = await stackAuth.signUp(formData.email, formData.password);
+
+    if (response.success) {
+      router.push('/dashboard');
+    } else {
+      setError(response.error || 'Erro ao criar conta');
       setLoading(false);
     }
   };
 
-  const onResetPassword = async () => {
-    setError(null);
-    setInfo(null);
-    if (!isConfigured || !auth) {
-      setError('Firebase não configurado. Preencha NEXT_PUBLIC_FIREBASE_* no .env.local');
-      return;
-    }
-    if (!email) {
-      setError('Informe seu email para redefinir a senha.');
-      return;
-    }
-    try {
-      const { sendPasswordResetEmail } = await import('firebase/auth');
-      await sendPasswordResetEmail(auth, email);
-      const msg = 'Enviamos um link de redefinição de senha para seu email.';
-      setInfo(msg);
-      toast.show(msg, 'info');
-    } catch (err: any) {
-      const msg = translateAuthError(err);
-      setError(msg);
-      toast.show(msg, 'error');
-    }
-  };
-
   return (
-    <main className="container">
-      <Typography variant="h4" sx={{ mb: 2 }}>Cadastro</Typography>
-      <Paper sx={{ p: 2, mb: 2 }} variant="outlined">
-        <Typography variant="caption">
-          Projeto: {process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '—'} | Domínio Auth: {process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '—'}
+    <Container maxWidth="sm" sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', py: 4 }}>
+      <Paper
+        elevation={0}
+        sx={{
+          width: '100%',
+          p: 4,
+          borderRadius: 4,
+          backdropFilter: 'blur(10px)',
+          background: 'rgba(255, 255, 255, 0.05)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+        }}
+      >
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
+          <Box
+            sx={{
+              width: 56,
+              height: 56,
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              mb: 2,
+            }}
+          >
+            <PersonAddOutlinedIcon sx={{ color: 'white', fontSize: 32 }} />
+          </Box>
+          <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+            Criar Conta
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Comece a otimizar sua logística hoje
+          </Typography>
+        </Box>
+
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {error}
+          </Alert>
+        )}
+
+        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <TextField
+            label="Nome Completo"
+            type="text"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            required
+            fullWidth
+            autoFocus
+          />
+
+          <TextField
+            label="Email"
+            type="email"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            required
+            fullWidth
+            autoComplete="email"
+          />
+
+          <TextField
+            label="Senha"
+            type={showPassword ? 'text' : 'password'}
+            value={formData.password}
+            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            required
+            fullWidth
+            autoComplete="new-password"
+            helperText="Mínimo 8 caracteres"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowPassword(!showPassword)}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          <TextField
+            label="Confirmar Senha"
+            type={showPassword ? 'text' : 'password'}
+            value={formData.confirmPassword}
+            onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+            required
+            fullWidth
+            autoComplete="new-password"
+          />
+
+          <Button
+            type="submit"
+            variant="contained"
+            size="large"
+            disabled={loading}
+            sx={{
+              mt: 2,
+              py: 1.5,
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%)',
+              },
+            }}
+          >
+            {loading ? 'Criando conta...' : 'Criar Conta'}
+          </Button>
+
+          <Box sx={{ textAlign: 'center', mt: 2 }}>
+            <Typography variant="body2" color="text.secondary">
+              Já tem uma conta?{' '}
+              <Link href="/login" sx={{ fontWeight: 600, textDecoration: 'none' }}>
+                Entrar
+              </Link>
+            </Typography>
+          </Box>
+        </Box>
+
+        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center', mt: 4 }}>
+          🔒 Seus dados estão protegidos com criptografia
         </Typography>
       </Paper>
-      <Box aria-live="polite">
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-        {info && <Alert severity="info" sx={{ mb: 2 }}>{info}</Alert>}
-      </Box>
-      <Box component="form" onSubmit={onSubmit} sx={{ display: 'grid', gap: 2, maxWidth: 420 }}>
-        <TextField label="Nome" type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Opcional" fullWidth disabled={loading} />
-        <TextField label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required fullWidth disabled={loading} />
-        <TextField label="Senha" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required fullWidth disabled={loading} />
-        <Button type="submit" variant="contained" disabled={loading} startIcon={loading ? <CircularProgress color="inherit" size={16} /> : undefined}>
-          {loading ? 'Cadastrando...' : 'Cadastrar'}
-        </Button>
-      </Box>
-      {lastErrorCode === 'auth/email-already-in-use' && (
-        <Box sx={{ mt: 2 }}>
-          <Button type="button" onClick={onResetPassword} sx={{ mr: 1 }} disabled={loading}>Redefinir senha</Button>
-          <Button component={Link} href="/login">Ir para Login</Button>
-        </Box>
-      )}
-      <Typography sx={{ mt: 2 }}>
-        Já tem conta? <Link href="/login">Entrar</Link>
-      </Typography>
-    </main>
+    </Container>
   );
 }
