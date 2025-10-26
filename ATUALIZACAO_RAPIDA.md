@@ -33,34 +33,38 @@ node backend/scripts/db_setup_full.mjs
 
 ---
 
-## 🗄️ Configurar Banco de Dados (Primeira Vez)
+## 🗄️ Banco de Dados (JÁ CONFIGURADO! ✅)
 
-### **Passo 1: Criar Conta Neon (Grátis)**
-- Acesse: https://neon.tech
-- Crie projeto: `optilog-app`
+### **Status:**
+✅ **Neon já configurado na Vercel** (logiccamila@gmail.com)
+- Branch `main`: 31 MB (produção)
 - Região: `sa-east-1` (São Paulo)
+- Uso: 1.32h de 100h/mês (98.7h disponíveis)
 
-### **Passo 2: Configurar Localmente**
+### **Para Desenvolvimento Local:**
 
-Crie arquivo `.env.local` na raiz:
-
-```bash
-DATABASE_URL=postgresql://seu-usuario:senha@ep-xxx.sa-east-1.aws.neon.tech/neondb?sslmode=require
-```
-
-### **Passo 3: Criar Tabelas**
-
+**Passo 1:** Copie o template:
 ```powershell
-node backend/scripts/db_setup_full.mjs
+Copy-Item .env.local.template .env.local
 ```
 
-### **Passo 4: Configurar na Vercel**
+**Passo 2:** Obtenha a connection string:
+1. Acesse: https://console.neon.tech/app/projects
+2. Projeto: `optilog-app` (logiccamila@gmail.com)
+3. Branch: `main` → Connection Details
+4. Copie `DATABASE_URL`
 
-1. Vercel → Settings → Environment Variables
-2. Adicione `DATABASE_URL` com valor do Neon
-3. Redeploy automático!
+**Passo 3:** Cole no `.env.local`:
+```bash
+DATABASE_URL=postgresql://...sua-connection-string...
+```
 
-**📘 Guia Completo:** Veja `SETUP_DATABASE.md`
+**Passo 4:** Teste a conexão:
+```powershell
+node backend/test-neon.mjs
+```
+
+**📘 Detalhes:** Ver `SETUP_DATABASE.md` ou `.env.local.template`
 
 ---
 
