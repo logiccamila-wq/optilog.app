@@ -1,3 +1,25 @@
+# node / build
+node_modules/
+.next/
+dist/
+build/
+
+# firebase artifacts
+.firebase/
+.firebaserc
+firebase-debug*.log
+firebase.json
+
+# OS / tooling
+.DS_Store
+.vscode/settings.json
+.idea/
+
+# logs
+*.log
+
+# generated
+_ci_build_artifacts/
 
 # Dependencies
 node_modules
