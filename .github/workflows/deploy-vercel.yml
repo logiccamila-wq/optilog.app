@@ -33,10 +33,18 @@ jobs:
           fi
 
       - name: Deploy to Vercel (CLI)
-        if: secrets.VERCEL_TOKEN != ''
+        if: ${{ secrets.VERCEL_TOKEN != '' && secrets.VERCEL_PROJECT_ID != '' && secrets.VERCEL_ORG_ID != '' }}
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
         run: |
-          # Install Vercel CLI and deploy. Requires VERCEL_TOKEN secret.
-          npm install -g vercel@28 || true
-          npx vercel --prod --token "$VERCEL_TOKEN" --confirm
+          npm install -g vercel@33 || true
+          vercel pull --yes --environment=production --token "$VERCEL_TOKEN"
+          vercel build --prod --token "$VERCEL_TOKEN"
+          vercel deploy --prebuilt --prod --yes --token "$VERCEL_TOKEN"
+
+      - name: Missing Vercel secrets warning
+        if: ${{ secrets.VERCEL_TOKEN == '' || secrets.VERCEL_PROJECT_ID == '' || secrets.VERCEL_ORG_ID == '' }}
+        run: |
+          echo "::warning::VERCEL_TOKEN, VERCEL_ORG_ID e VERCEL_PROJECT_ID são necessários para executar o deploy automático." 

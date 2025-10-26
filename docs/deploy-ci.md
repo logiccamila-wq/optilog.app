@@ -1,53 +1,43 @@
 # Integração Contínua e Deploy (CI)
 
-Este documento descreve o workflow adicionado:
-- .github/workflows/ci.yml — CI para instalar dependências, lint, testes e builds (monorepo-aware).
+Este repositório conta com três workflows principais:
+- `.github/workflows/ci.yml` — instala dependências, executa lint/test/build em múltiplos pacotes (monorepo-aware) e publica artefatos.
+- `.github/workflows/deploy-vercel.yml` — realiza deploy automatizado na Vercel (em pushes para `main`).
+- `.github/workflows/build-and-publish-image.yml` — constrói imagem Docker e publica no GitHub Container Registry (opcional).
 
-Removidas integrações
-- As instruções e workflows relacionados a Firebase, Vercel e Neon foram removidos deste repositório por decisão de simplificação. Caso precise reintroduzir um desses provedores, reconfigure os workflows e as secrets adequadamente.
+## Remoções
+- Todas as integrações Firebase foram retiradas. Vercel (frontend) e Neon (Postgres) permanecem como provedores oficiais.
 
-# Integração Contínua e Deploy (CI)
+## Requisitos para pacotes Node
+- `npm run build` para gerar artefatos de produção (quando aplicável).
+- `npm run start` para execução em produção (se necessário).
+- Scripts `lint` e `test` são opcionais, mas recomendados.
 
-Este documento descreve o workflow adicionado:
- - .github/workflows/ci.yml — CI para instalar dependências, lint, testes e builds (monorepo-aware).
+## Fluxo do CI (`ci.yml`)
+1. Procura `package.json` em diretórios comuns (`./`, `./frontend`, `./app`, etc.).
+2. Executa `npm ci` (ou `npm install`) para cada pacote encontrado.
+3. Roda `npm run lint` (se existir) — falhas não quebram o job.
+4. Roda `npm test` (se existir) — falhas interrompem o job.
+5. Roda `npm run build` (se existir) e salva artefatos em `_ci_build_artifacts`.
 
-Removidas integrações
- - As instruções e workflows relacionados ao Firebase foram removidos deste repositório por decisão de simplificação. Vercel e Neon foram mantidos como opções recomendadas. Caso precise reintroduzir outro provedor, reconfigure os workflows e as secrets adequadamente.
+## Fluxo de deploy na Vercel (`deploy-vercel.yml`)
+- Exige os secrets `VERCEL_TOKEN`, `VERCEL_ORG_ID` e `VERCEL_PROJECT_ID`.
+- O job executa `vercel pull`, `vercel build` e `vercel deploy --prebuilt` de forma não interativa.
+- Caso os secrets não estejam definidos, o workflow emite um aviso e encerra sem tentar deploy.
 
-Requisitos
- - Os pacotes devem expor scripts no package.json:
-   - "build" para geração de artefatos de produção
-   - "start" para execução em produção (quando necessário)
-   - "test" (opcional)
-   - "lint" (opcional)
+## Publicação de imagem (GHCR)
+- Configure `GHCR_PAT` (ou amplie permissões do `GITHUB_TOKEN`) para permitir `docker login` e push para `ghcr.io`.
+- Use este workflow para hospedar contêineres em Render, Fly.io ou outro provedor.
 
-Como o CI funciona
- - O workflow tenta localizar package.json em vários caminhos comuns:
-   - ./, ./optilog-app, ./frontend, ./packages/frontend, ./app, ./optilog-app/frontend, ./optilog-app/backend, ./backend
- - Para cada diretório com package.json:
-   - instala dependências (npm ci quando houver package-lock.json)
-   - executa lint (se existir)
-   - executa testes (se existir) — falha o job se os testes falharem
-   - executa build (se existir) e preserva artifacts para inspeção
+## Segredos recomendados
+- `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`
+- `NEON_DATABASE_URL`, `NEON_REST_URL`, `NEON_API_KEY` (se usar a API REST)
+- `GHCR_PAT`
 
-Se precisar de deploy automático (Vercel / Docker / outro)
- - Recomenda-se criar um workflow de deploy dedicado e secrets específicos do provedor (não commitá-los).
- - Posso ajudar a gerar um workflow para Vercel/Netlify/Docker/Cloud Run se quiser.
- 
- Segredos recomendados para Vercel + Neon
- - `VERCEL_TOKEN` — token de deploy (se usar Vercel CLI/integração)
- - `NEON_DATABASE_URL` — string de conexão Postgres (Neon)
- - `GHCR_PAT` — se for publicar imagens no GitHub Container Registry (opcional)
- 
- Como adicionar segredos
- - Pelo site: Settings -> Secrets -> Actions
- - Via CLI (gh): `gh auth login` e `gh secret set NAME --body "value"`
- 
-GRANT SELECT, UPDATE, INSERT, DELETE ON ALL TABLES IN SCHEMA public TO authenticated;
-GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO authenticated;
-GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO authenticated;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, UPDATE, INSERT, DELETE ON TABLES TO authenticated;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE ON SEQUENCES TO authenticated;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT EXECUTE ON FUNCTIONS TO authenticated;
-GRANT SELECT ON ALL TABLES IN SCHEMA public TO anonymous;
-GRANT USAGE ON SCHEMA public TO authenticated, anonymous;
+## Como adicionar segredos
+- Via UI: `Settings → Secrets and variables → Actions`.
+- Via CLI: `gh auth login` e `gh secret set NOME --body "valor"`.
+
+## Dicas adicionais
+- Após aplicar mudanças no banco (ex.: GRANTs, RLS), mantenha scripts em `migrations/` para versionamento.
+- Utilize ambientes Vercel Preview para validar PRs e integre checks no fluxo de revisão.

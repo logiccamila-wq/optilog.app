@@ -1,5 +1,5 @@
 # update-ci.ps1
-# Script para criar/atualizar CI e remover integrações Firebase/Vercel/Neon
+# Script para criar/atualizar CI e remover integrações Firebase
 # Execute na raiz do repositório (onde está .git)
 
 $ErrorActionPreference = 'Stop'
@@ -118,43 +118,53 @@ $ci | Out-File -FilePath .github\workflows\ci.yml -Encoding utf8
 $deployci = @'
 # Integração Contínua e Deploy (CI)
 
-Este documento descreve o workflow adicionado:
+Este documento descreve os workflows adicionados:
+- `.github/workflows/ci.yml` — roda instalação, lint, testes e build em múltiplos pacotes (monorepo-aware).
+- `.github/workflows/deploy-vercel.yml` — faz deploy automatizado na Vercel (requer secrets).
+- `.github/workflows/build-and-publish-image.yml` — constrói imagem Docker e publica no GHCR (opcional).
 
-Removidas integrações
+Remoções
+- Configurações do Firebase foram removidas. Vercel e Neon permanecem como provedores oficiais.
 
-Requisitos
-  - "build" para geração de artefatos de produção
-  - "start" para execução em produção (quando necessário)
-  - "test" (opcional)
-  - "lint" (opcional)
+Requisitos para pacotes Node
+- `npm run build` para gerar artefatos de produção quando aplicável.
+- `npm run start` para execução em produção (se aplicável).
+- Scripts `lint` e `test` são opcionais, mas recomendados.
 
 Como o CI funciona
-  - ./, ./optilog-app, ./frontend, ./packages/frontend, ./app, ./optilog-app/frontend, ./optilog-app/backend, ./backend
-  - instala dependências (npm ci quando houver package-lock.json)
-  - executa lint (se existir)
-  - executa testes (se existir) — falha o job se os testes falharem
-  - executa build (se existir) e preserva artifacts para inspeção
+1. Procura `package.json` nos diretórios comuns (`./`, `./frontend`, `./app`, etc.).
+2. Executa `npm ci` (ou `npm install`) em cada pacote encontrado.
+3. Roda `npm run lint` se existir.
+4. Roda `npm test` se existir; falhas quebram o job.
+5. Roda `npm run build` se existir e armazena artefatos em `_ci_build_artifacts`.
 
-'Se precisar de deploy automático (Vercel / Docker / outro)'
+Segredos recomendados
+- `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`
+- `NEON_DATABASE_URL`
+- `GHCR_PAT` (se publicar imagens no GHCR)
+
+Como adicionar segredos
+- Via UI: Settings → Secrets and variables → Actions.
+- Via CLI: `gh auth login` e `gh secret set NOME --body "valor"`.
 '@
 
 $deployci | Out-File -FilePath docs\deploy-ci.md -Encoding utf8
 
 # 6) escrever README.md (versão simplificada)
 $readme = @'
-# Optilog.app (atualizado)
+# Optilog.app
 
+## Deploy e Hospedagem
+- Frontend: recomendado Vercel (workflow `deploy-vercel.yml`).
+- Backend/serviços: opcional via Neon (Postgres) e contêiner no GHCR.
 
-Hospedagem e deploy
+## Como rodar localmente
+1. `git clone <URL_DO_REPOSITORIO>`
+2. `cd optilog.app`
+3. `npm ci`
+4. `npm run dev`
 
-Como rodar localmente
-1. git clone <URL_DO_REPOSITORIO>
-2. cd optilog-app
-3. npm ci
-4. cd <frontend-dir> && npm run dev
-5. cd <backend-dir> && npm run dev
-
-Documentação de CI
+Consulte `docs/deploy-ci.md` para detalhes de CI/CD.
 '@
 
 $readme | Out-File -FilePath README.md -Encoding utf8
@@ -163,22 +173,18 @@ $readme | Out-File -FilePath README.md -Encoding utf8
 $apphosting = @'
 # Deploy / Hosting (nota)
 
-Observação: este documento foi simplificado e removido de referências específicas a Firebase, Vercel e Neon. Use o provedor de sua preferência para hospedar o frontend e o backend.
-
-Recomendações gerais:
-  - Frontend: GET /api/health
-  - Backend: GET /health
-
-Se quiser que eu gere um workflow de deploy para um serviço específico (Vercel / DigitalOcean Apps / Cloud Run), diga qual provedor prefere.
+- Firebase foi removido desta base. Mantemos Vercel (frontend) e Neon (Postgres) como provedores padrão.
+- Ajuste domínios e secrets de acordo com o ambiente.
+- Para outros provedores, crie workflows específicos ou solicite suporte adicional.
 '@
 
 $apphosting | Out-File -FilePath docs\apphosting-setup.md -Encoding utf8
 
 # 8) remover arquivos Firebase/Vercel/Neon comuns (ignora se não existirem)
 $removeList = @(
-  ".firebaserc","firebase.json",".vercelignore","vercel.json",
-  ".github\workflows\firebase-deploy.yml", ".github\workflows\vercel-deploy.yml",
-  ".vercel", ".firebase", "render.yaml"
+  ".firebaserc","firebase.json",
+  ".github\workflows\firebase-deploy.yml",
+  ".firebase", "render.yaml"
 )
 foreach ($f in $removeList) {
   if (Test-Path $f) {

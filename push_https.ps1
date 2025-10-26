@@ -1,7 +1,7 @@
 <#
 push_https.ps1
 
-Helper para empurrar a branch `ci/remove-firebase-verrel-neon` usando HTTPS + PAT.
+Helper para empurrar a branch `ci/remove-firebase-vercel-neon` usando HTTPS + PAT.
 
 Como funciona:
 - Se a variável de ambiente GITHUB_PAT estiver definida, o script usará esse token temporariamente
@@ -26,7 +26,7 @@ Set-StrictMode -Version Latest
 function Write-Info($m) { Write-Host "[INFO] $m" -ForegroundColor Cyan }
 function Write-Err($m) { Write-Host "[ERROR] $m" -ForegroundColor Red }
 
-$branch = 'ci/remove-firebase-verrel-neon'
+$branch = 'ci/remove-firebase-vercel-neon'
 $repo = 'logiccamila-wq/optilog.app'
 
 Write-Info "Verificando repositório e branch atual..."
