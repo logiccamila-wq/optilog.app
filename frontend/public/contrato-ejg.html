@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contrato – EJG & XYZ Logic Flow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; color: #1f2937; }
+    .brand { color: #9B0909; }
+    .brand-bg { background-color: #9B0909; }
+    .container { max-width: 900px; margin: 0 auto; padding: 24px; }
+    .card { background: #fff; border-radius: 14px; box-shadow: 0 10px 18px -8px rgba(0,0,0,.2); }
+    .btn { display: inline-flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; color: #fff; background: #9B0909; border: none; cursor: pointer; }
+    .btn:disabled { opacity: .6; cursor: not-allowed; }
+    .field { width: 100%; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 8px; }
+    .muted { color: #6b7280; }
+    .title { font-size: 24px; font-weight: 700; }
+    .subtitle { font-size: 18px; font-weight: 600; }
+    .contract-text { white-space: pre-wrap; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <header class="card" style="padding: 16px; border-bottom: 1px solid #eee;">
+    <div class="container">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span class="brand-bg" style="width:40px; height:40px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; border-radius:8px;">E</span>
+        <h1 class="title brand">Contrato – EJG Optilog & XYZ LogicFlow</h1>
+      </div>
+      <p class="muted" style="margin-top:6px;">Visualização e aceite digital do instrumento particular de prestação de serviços.</p>
+    </div>
+  </header>
+
+  <main class="container" style="margin-top: 18px;">
+    <section class="card" style="padding: 18px;">
+      <h2 class="subtitle brand">Instrumento Particular</h2>
+      <div class="contract-text" style="margin-top: 10px;">
+        Pelo presente instrumento particular, de um lado, EJG Evolução em Transporte Ltda., inscrita no CNPJ nº 44.185.912/0001-50, doravante denominada CONTRATANTE, e de outro lado, XYZ LOGIC FLOW INOVA SIMPLES (I.S.), inscrita no CNPJ nº 60.262.825/0001-06, com sede em Rua Coimbra, 381, Residencial Doce Bela, Casa 5, Candeias, Jaboatão dos Guararapes/PE, doravante denominada CONTRATADA, representada por sua diretora operacional, Camila Lareste, têm justo e contratado o que...
+      </div>
+      <p class="muted" style="margin-top: 10px;">(Insira aqui as cláusulas completas do contrato – objeto, vigência, valores, obrigações, confidencialidade, proteção de dados, rescisão, foro etc.)</p>
+    </section>
+
+    <section class="card" style="padding: 18px; margin-top: 16px;">
+      <h3 class="subtitle">Aceite Digital</h3>
+      <p class="muted">Preencha os dados do responsável e confirme o aceite.</p>
+      <form id="signForm" style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px;">
+        <div style="grid-column: span 2;">
+          <label class="muted">Responsável (Nome Completo)</label>
+          <input class="field" id="name" required placeholder="Nome Completo" />
+        </div>
+        <div>
+          <label class="muted">CPF/CNPJ</label>
+          <input class="field" id="doc" required placeholder="CPF/CNPJ" />
+        </div>
+        <div>
+          <label class="muted">E-mail</label>
+          <input class="field" id="email" required type="email" placeholder="email@exemplo.com" />
+        </div>
+        <div style="grid-column: span 2; display:flex; gap: 10px; justify-content:flex-end;">
+          <button type="submit" class="btn">Aceitar e Assinar</button>
+        </div>
+      </form>
+      <div id="result" class="muted" style="margin-top: 10px;"></div>
+    </section>
+  </main>
+
+  <script>
+    document.getElementById('signForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const doc = document.getElementById('doc').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const result = document.getElementById('result');
+      if (!name || !doc || !email) { result.textContent = 'Preencha todos os campos.'; return; }
+      // Integração futura: chamar Cloud Function onCall (signContract)
+      result.textContent = 'Assinatura registrada localmente. Integração backend será conectada em seguida.';
+    });
+  </script>
+</body>
+</html>

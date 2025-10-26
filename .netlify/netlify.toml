@@ -1,0 +1,38 @@
+headers = []
+redirects = []
+
+[functions]
+
+[functions."*"]
+
+[[plugins]]
+origin = "config"
+package = "@netlify/plugin-nextjs"
+
+[plugins.inputs]
+
+[[plugins]]
+origin = "config"
+package = "netlify-plugin-cypress"
+
+[plugins.inputs]
+
+[build]
+publish = "C:\\Users\\Pichau\\OneDrive\\Documentos\\optilog-app\\.next"
+publishOrigin = "config"
+commandOrigin = "config"
+command = "npm run build"
+
+[build.environment]
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]

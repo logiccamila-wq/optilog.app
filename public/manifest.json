@@ -1,0 +1,16 @@
+{
+  "name": "EJG Optilog",
+  "short_name": "EJG",
+  "description": "EJG Optilog — Evolução em Transporte",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0D111B",
+  "theme_color": "#b11212",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-256.png", "sizes": "256x256", "type": "image/png" },
+    { "src": "/icons/icon-384.png", "sizes": "384x384", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icons/ejg-app-icon.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "name": "optilog-app",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": "20"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "node scripts/start.js",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/material": "^7.3.4",
+    "firebase": "^10.7.0",
+    "next": "^14.2.11",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "24.7.2",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "eslint": "8.47.0",
+    "eslint-config-next": "13.5.6",
+    "typescript": "^5.3.0"
+  },
+  "browser": {
+    "undici": false,
+    "@undici/web": false,
+    "@undici/*": false
+  },
+  "description": "Super Gestor é uma plataforma de gestão de tarefas e conformidade, construída com Next.js, Firebase e Inteligência Artificial (Genkit). O projeto foi desenhado para organizar e monitorar fluxos de trabalho, garantindo conformidade com normas como a ISO 9001 e oferecendo insights inteligentes para otimização de processos.",
+  "main": "KpiCard.js",
+  "directories": {
+    "doc": "docs",
+    "lib": "lib"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

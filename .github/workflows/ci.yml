@@ -1,0 +1,81 @@
+# CI - Build & Test
+name: CI - Build & Test
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Install, Test and Build (monorepo-aware)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Detect packages and install + build
+        run: |
+          set -euo pipefail
+          WORKDIRS="./ ./optilog-app ./frontend ./packages/frontend ./app ./optilog-app/frontend ./optilog-app/backend ./backend"
+          ARTIFACTS_DIR="$GITHUB_WORKSPACE/_ci_build_artifacts"
+          mkdir -p "$ARTIFACTS_DIR"
+          any_built=false
+          for d in $WORKDIRS; do
+            if [ -f "$d/package.json" ]; then
+              echo "=== Found package.json in: $d ==="
+              pushd "$d" >/dev/null 2>&1
+              if [ -f package-lock.json ]; then
+                npm ci --no-audit --no-fund
+              else
+                npm install --no-audit --no-fund
+              fi
+              # Lint (non-blocking)
+              if npm run | grep -q 'lint'; then
+                echo "Running lint in $d"
+                npm run lint || echo "Lint failed in $d (non-blocking)"
+              fi
+              # Tests (if present) - fail the job if tests exist and fail
+              if npm run | grep -q 'test'; then
+                echo "Running tests in $d"
+                npm test
+              fi
+              # Build (if present)
+              if npm run | grep -q 'build'; then
+                echo "Running build in $d"
+                npm run build
+                # Collect common artifacts for debugging
+                if [ -d ".next" ]; then cp -r .next "$ARTIFACTS_DIR/$(basename $d)-next" || true; fi
+                if [ -d "build" ]; then cp -r build "$ARTIFACTS_DIR/$(basename $d)-build" || true; fi
+                if [ -d "dist" ]; then cp -r dist "$ARTIFACTS_DIR/$(basename $d)-dist" || true; fi
+                any_built=true
+              else
+                echo "No build script in $d"
+              fi
+              popd >/dev/null 2>&1
+            fi
+          done
+
+          if [ "$any_built" = false ]; then
+            echo "::warning::No build artifacts were created. Ensure your package.json build scripts are present."
+          fi
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-build-artifacts
+          path: _ci_build_artifacts

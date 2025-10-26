@@ -1,0 +1,21 @@
+{
+	"siteId": "7ad0ca45-93dd-4c3a-bec4-b520caf14c77",
+	"geolocation": {
+		"data": {
+			"city": "Jaboatão dos Guararapes",
+			"country": {
+				"code": "BR",
+				"name": "Brazil"
+			},
+			"subdivision": {
+				"code": "PE",
+				"name": "Pernambuco"
+			},
+			"timezone": "America/Recife",
+			"latitude": -8.1136,
+			"longitude": -35.0145,
+			"postalCode": "54000"
+		},
+		"timestamp": 1760084077214
+	}
+}

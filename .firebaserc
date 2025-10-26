@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "studio-4793785332-8ea02"
+  },
+  "targets": {
+    "studio-4793785332-8ea02": {
+      "hosting": {
+        "web": [
+          "studio-4793785332-8ea02"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

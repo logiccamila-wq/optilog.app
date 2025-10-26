@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+  <style>
+    .logo-text { font-family: Arial, sans-serif; font-weight: bold; }
+    .subtitle { font-family: Arial, sans-serif; letter-spacing: 3px; }
+  </style>
+  <rect width="300" height="300" fill="black"/>
+  <g transform="translate(150, 150)">
+    <!-- Hexagon network structure with gradient -->
+    <polygon points="0,-60 52,-30 52,30 0,60 -52,30 -52,-30" fill="none" stroke="url(#grad1)" stroke-width="3"/>
+    
+    <!-- Internal connections -->
+    <line x1="0" y1="-60" x2="0" y2="60" stroke="url(#grad1)" stroke-width="2"/>
+    <line x1="-52" y1="-30" x2="52" y2="30" stroke="url(#grad1)" stroke-width="2"/>
+    <line x1="-52" y1="30" x2="52" y2="-30" stroke="url(#grad1)" stroke-width="2"/>
+    
+    <!-- Nodes with gradient -->
+    <circle cx="0" cy="-60" r="6" fill="#00D8FF"/>
+    <circle cx="52" cy="-30" r="6" fill="#00D8FF"/>
+    <circle cx="52" cy="30" r="6" fill="#00D8FF"/>
+    <circle cx="0" cy="60" r="6" fill="#9C27B0"/>
+    <circle cx="-52" cy="30" r="6" fill="#9C27B0"/>
+    <circle cx="-52" cy="-30" r="6" fill="#5E35B1"/>
+    <circle cx="0" cy="0" r="6" fill="#5E35B1"/>
+  </g>
+  
+  <!-- Logo text -->
+  <text x="150" y="220" text-anchor="middle" fill="white" class="logo-text" font-size="28">XYZ LogicFlow</text>
+  <text x="150" y="250" text-anchor="middle" fill="#5E35B1" class="subtitle" font-size="16">Technology</text>
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9C27B0"/>
+      <stop offset="50%" stop-color="#5E35B1"/>
+      <stop offset="100%" stop-color="#00D8FF"/>
+    </linearGradient>
+  </defs>
+</svg>

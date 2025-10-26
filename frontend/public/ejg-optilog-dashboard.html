@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel de Controle - EJG Optilog</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; }
+    .ejg-red { color: #9B0909; }
+    .ejg-bg-red { background-color: #9B0909; }
+    .nav-link { cursor: pointer; padding: 0.75rem 1.25rem; border-bottom: 3px solid transparent; transition: all 0.3s ease; }
+    .nav-link.active { border-color: #9B0909; color: #9B0909; font-weight: 600; }
+    .nav-link:hover { background-color: #f1f5f9; }
+    .kpi-card { background-color: white; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
+    .kpi-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeIn .25s ease-in; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; }
+    ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+    .chart-container { position: relative; width: 100%; max-width: 900px; margin-left: auto; margin-right: auto; height: 400px; max-height: 55vh; }
+  </style>
+</head>
+<body class="text-gray-800">
+  <div id="app" class="min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+          <span class="ejg-bg-red text-white font-bold text-2xl w-10 h-10 flex items-center justify-center rounded-md">E</span>
+          <h1 class="text-2xl font-bold ejg-red">
+            EJG Optilog <span class="text-gray-500 font-medium text-xl hidden sm:inline">Painel Operacional</span>
+          </h1>
+        </div>
+      </div>
+      <nav class="border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex space-x-2 sm:space-x-4">
+            <a data-tab="visao-geral" class="nav-link active">Visão Geral</a>
+            <a data-tab="frota" class="nav-link">Análise de Frota</a>
+            <a data-tab="pneus" class="nav-link">Análise de Pneus</a>
+            <a data-tab="financeiro" class="nav-link">Financeiro</a>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Main -->
+    <main class="flex-grow p-4 sm:p-6 lg:p-8">
+      <div class="max-w-7xl mx-auto">
+
+        <!-- Visão Geral -->
+        <section id="visao-geral" class="tab-content active">
+          <div class="mb-6">
+            <h2 class="text-2xl font-semibold text-gray-700">Visão Geral da Operação</h2>
+            <p class="mt-1 text-gray-500">Resumo dos indicadores chave da frota em tempo real.</p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="kpi-card p-5">
+              <p class="text-gray-500 font-medium">Total de Veículos</p>
+              <p id="kpi-total-veiculos" class="text-3xl font-bold text-gray-800 mt-1">60</p>
+            </div>
+            <div class="kpi-card p-5">
+              <p class="text-gray-500 font-medium">Veículos Ativos</p>
+              <p id="kpi-veiculos-ativos" class="text-3xl font-bold text-gray-800 mt-1">48</p>
+            </div>
+            <div class="kpi-card p-5">
+              <p class="text-gray-500 font-medium">Entregas Hoje</p>
+              <p id="kpi-entregas" class="text-3xl font-bold text-gray-800 mt-1">164</p>
+            </div>
+            <div class="kpi-card p-5">
+              <p class="text-gray-500 font-medium">Pontualidade</p>
+              <p id="kpi-pontualidade" class="text-3xl font-bold text-gray-800 mt-1">94%</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="kpi-card p-5">
+              <h3 class="text-lg font-semibold mb-4">Status da Frota</h3>
+              <div class="chart-container">
+                <canvas id="chart-frota-status"></canvas>
+              </div>
+            </div>
+            <div class="kpi-card p-5">
+              <h3 class="text-lg font-semibold mb-4">Ocorrências Operacionais</h3>
+              <div class="chart-container">
+                <canvas id="chart-ocorrencias"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Análise de Frota -->
+        <section id="frota" class="tab-content">
+          <div class="mb-6">
+            <h2 class="text-2xl font-semibold text-gray-700">Análise de Frota</h2>
+            <p class="mt-1 text-gray-500">Acompanhe o desempenho de manutenções e consumo de combustível.</p>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="kpi-card p-5">
+              <h3 class="text-lg font-semibold mb-4">Manutenções por Mês</h3>
+              <div class="chart-container">
+                <canvas id="chart-manutencoes"></canvas>
+              </div>
+            </div>
+            <div class="kpi-card p-5">
+              <h3 class="text-lg font-semibold mb-4">Consumo Médio vs Meta (km/l)</h3>
+              <div class="chart-container">
+                <canvas id="chart-consumo"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Análise de Pneus -->
+        <section id="pneus" class="tab-content">
+          <div class="mb-6">
+            <h2 class="text-2xl font-semibold text-gray-700">Análise de Pneus (TPMS)</h2>
+            <p class="mt-1 text-gray-500">Tabela organizada com status dos sensores e alertas.</p>
+          </div>
+
+          <div class="kpi-card p-5 overflow-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Veículo</th>
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sensor</th>
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pressão (psi)</th>
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Temperatura (°C)</th>
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200" id="tpms-table-body">
+                <!-- Populado via JS -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Financeiro -->
+        <section id="financeiro" class="tab-content">
+          <div class="mb-6">
+            <h2 class="text-2xl font-semibold text-gray-700">Financeiro</h2>
+            <p class="mt-1 text-gray-500">Visão de receitas, despesas e margem.</p>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="kpi-card p-5">
+              <h3 class="text-lg font-semibold mb-4">Receitas vs Despesas</h3>
+              <div class="chart-container">
+                <canvas id="chart-financeiro"></canvas>
+              </div>
+            </div>
+            <div class="kpi-card p-5">
+              <h3 class="text-lg font-semibold mb-4">Margem por Categoria</h3>
+              <div class="chart-container">
+                <canvas id="chart-margem"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Tabs handler
+    const links = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.tab-content');
+    links.forEach(l => {
+      l.addEventListener('click', () => {
+        links.forEach(x => x.classList.remove('active'));
+        l.classList.add('active');
+        const id = l.getAttribute('data-tab');
+        sections.forEach(s => {
+          s.classList.toggle('active', s.id === id);
+        });
+      });
+    });
+
+    // Charts
+    const palette = {
+      red: '#9B0909',
+      green: '#22c55e',
+      amber: '#f59e0b',
+      indigo: '#5E35B1',
+      gray: '#6b7280'
+    };
+
+    // Visão Geral - Status da Frota (donut)
+    new Chart(document.getElementById('chart-frota-status'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Ativos', 'Manutenção', 'Inativos'],
+        datasets: [{
+          data: [48, 7, 5],
+          backgroundColor: [palette.green, palette.amber, palette.gray],
+          borderWidth: 1
+        }]
+      },
+      options: { plugins: { legend: { position: 'bottom' } } }
+    });
+
+    // Visão Geral - Ocorrências (bar)
+    new Chart(document.getElementById('chart-ocorrencias'), {
+      type: 'bar',
+      data: {
+        labels: ['Atraso', 'Pane', 'Rota'],
+        datasets: [{
+          label: 'Ocorrências',
+          data: [9, 3, 6],
+          backgroundColor: palette.indigo
+        }]
+      },
+      options: { scales: { y: { beginAtZero: true } } }
+    });
+
+    // Frota - Manutenções por mês (grouped bar)
+    new Chart(document.getElementById('chart-manutencoes'), {
+      type: 'bar',
+      data: {
+        labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+        datasets: [
+          { label: 'Preventiva', data: [10, 9, 11, 10, 12, 11], backgroundColor: '#22c55e' },
+          { label: 'Corretiva', data: [9, 8, 9, 10, 9, 8], backgroundColor: '#9B0909' }
+        ]
+      },
+      options: { responsive: true, scales: { y: { beginAtZero: true } } }
+    });
+
+    // Frota - Consumo vs Meta (line)
+    new Chart(document.getElementById('chart-consumo'), {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+        datasets: [
+          { label: 'Consumo Real', data: [3.2, 3.4, 3.0, 3.3, 3.6, 3.35], borderColor: palette.red, backgroundColor: 'rgba(155,9,9,.1)', tension: .3, fill: true },
+          { label: 'Meta', data: [3.45, 3.45, 3.45, 3.45, 3.45, 3.45], borderColor: '#22c55e', borderDash: [5, 5], pointRadius: 0 }
+        ]
+      },
+      options: { scales: { y: { beginAtZero: false, suggestedMin: 2.8, suggestedMax: 3.7 } } }
+    });
+
+    // Pneus - TPMS table data
+    const tpmsRows = [
+      { veiculo: 'Caminhão 12', sensor: 'FL', pressao: 102, temp: 34, status: 'OK' },
+      { veiculo: 'Caminhão 12', sensor: 'FR', pressao: 99, temp: 33, status: 'Atenção' },
+      { veiculo: 'Caminhão 27', sensor: 'RL', pressao: 88, temp: 38, status: 'Baixa pressão' },
+      { veiculo: 'Carreta 05', sensor: 'RR', pressao: 104, temp: 31, status: 'OK' },
+      { veiculo: 'Carreta 05', sensor: 'FR', pressao: 95, temp: 36, status: 'Atenção' }
+    ];
+    const tbody = document.getElementById('tpms-table-body');
+    tpmsRows.forEach(r => {
+      const tr = document.createElement('tr');
+      const badge = r.status === 'OK' ? 'bg-green-100 text-green-700' : r.status === 'Atenção' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700';
+      tr.innerHTML = `
+        <td class="px-4 py-2 text-sm">${r.veiculo}</td>
+        <td class="px-4 py-2 text-sm">${r.sensor}</td>
+        <td class="px-4 py-2 text-sm">${r.pressao}</td>
+        <td class="px-4 py-2 text-sm">${r.temp}</td>
+        <td class="px-4 py-2 text-sm"><span class="px-2 py-1 rounded ${badge}">${r.status}</span></td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    // Financeiro - Receitas vs Despesas (line)
+    new Chart(document.getElementById('chart-financeiro'), {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+        datasets: [
+          { label: 'Receitas', data: [420, 450, 440, 480, 520, 510], borderColor: '#16a34a', tension: .3 },
+          { label: 'Despesas', data: [300, 310, 320, 330, 340, 345], borderColor: '#f97316', tension: .3 }
+        ]
+      },
+      options: { plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true } } }
+    });
+
+    // Financeiro - Margem por Categoria (bar)
+    new Chart(document.getElementById('chart-margem'), {
+      type: 'bar',
+      data: {
+        labels: ['Last Mile', 'Regional', 'Longo Curso', 'Industrial'],
+        datasets: [{ label: 'Margem (%)', data: [18, 22, 15, 25], backgroundColor: palette.indigo }]
+      },
+      options: { scales: { y: { beginAtZero: true, max: 30 } } }
+    });
+  </script>
+</body>
+</html>

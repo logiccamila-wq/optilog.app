@@ -1,0 +1,60 @@
+[debug] [2025-10-13T14:11:00.186Z] ----------------------------------------------------------------------
+[debug] [2025-10-13T14:11:00.190Z] Command:       C:\nvm4w\nodejs\node.exe C:\Users\Pichau\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only hosting
+[debug] [2025-10-13T14:11:00.191Z] CLI Version:   14.19.1
+[debug] [2025-10-13T14:11:00.191Z] Platform:      win32
+[debug] [2025-10-13T14:11:00.191Z] Node Version:  v20.12.2
+[debug] [2025-10-13T14:11:00.191Z] Time:          Mon Oct 13 2025 11:11:00 GMT-0300 (Horário Padrão de Brasília)
+[debug] [2025-10-13T14:11:00.192Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-10-13T14:11:00.597Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-10-13T14:11:00.598Z] > authorizing via signed-in user (logiccamila@gmail.com)
+[debug] [2025-10-13T14:11:00.598Z] [iam] checking project studio-4793785332-8ea02 for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2025-10-13T14:11:00.600Z] Checked if tokens are valid: false, expires at: 1760364043231
+[debug] [2025-10-13T14:11:00.600Z] Checked if tokens are valid: false, expires at: 1760364043231
+[debug] [2025-10-13T14:11:00.601Z] > refreshing access token with scopes: []
+[debug] [2025-10-13T14:11:00.611Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-10-13T14:11:00.612Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-10-13T14:11:00.996Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-10-13T14:11:00.997Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-10-13T14:11:01.095Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/studio-4793785332-8ea02:testIamPermissions [none]
+[debug] [2025-10-13T14:11:01.096Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/studio-4793785332-8ea02:testIamPermissions x-goog-quota-user=projects/studio-4793785332-8ea02
+[debug] [2025-10-13T14:11:01.096Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/studio-4793785332-8ea02:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-10-13T14:11:02.027Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/studio-4793785332-8ea02:testIamPermissions 200
+[debug] [2025-10-13T14:11:02.027Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/studio-4793785332-8ea02:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-10-13T14:11:02.029Z] Checked if tokens are valid: true, expires at: 1760368259998
+[debug] [2025-10-13T14:11:02.030Z] Checked if tokens are valid: true, expires at: 1760368259998
+[debug] [2025-10-13T14:11:02.030Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/studio-4793785332-8ea02 [none]
+[debug] [2025-10-13T14:11:02.641Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/studio-4793785332-8ea02 200
+[debug] [2025-10-13T14:11:02.641Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/studio-4793785332-8ea02 {"projectId":"studio-4793785332-8ea02","projectNumber":"435822865745","displayName":"Firebase app","name":"projects/studio-4793785332-8ea02","resources":{"hostingSite":"studio-4793785332-8ea02"},"state":"ACTIVE","etag":"1_e02fb302-f77b-44a2-86fe-89fb34c82576"}
+[debug] [2025-10-13T14:11:06.118Z] Checked if tokens are valid: true, expires at: 1760368259998
+[debug] [2025-10-13T14:11:06.118Z] Checked if tokens are valid: true, expires at: 1760368259998
+[debug] [2025-10-13T14:11:06.119Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/studio-4793785332-8ea02/sites pageToken=&pageSize=10
+[debug] [2025-10-13T14:11:07.388Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/studio-4793785332-8ea02/sites 200
+[debug] [2025-10-13T14:11:07.388Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/studio-4793785332-8ea02/sites {"sites":[{"name":"projects/studio-4793785332-8ea02/sites/studio-4793785332-8ea02","defaultUrl":"https://studio-4793785332-8ea02.web.app","appId":"1:435822865745:web:51bc089558ac12631ef770","type":"DEFAULT_SITE"}]}
+[debug] [2025-10-13T14:11:07.388Z] Checked if tokens are valid: true, expires at: 1760368259998
+[debug] [2025-10-13T14:11:07.389Z] Checked if tokens are valid: true, expires at: 1760368259998
+[debug] [2025-10-13T14:11:07.389Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/-/webApps/1:435822865745:web:51bc089558ac12631ef770/config [none]
+[debug] [2025-10-13T14:11:08.747Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/-/webApps/1:435822865745:web:51bc089558ac12631ef770/config 200
+[debug] [2025-10-13T14:11:08.747Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/-/webApps/1:435822865745:web:51bc089558ac12631ef770/config {"projectId":"studio-4793785332-8ea02","appId":"1:435822865745:web:51bc089558ac12631ef770","storageBucket":"studio-4793785332-8ea02.firebasestorage.app","apiKey":"AIzaSyCErAtVhtvFAeA2_-7-AC9-sK-0QXkWUAA","authDomain":"studio-4793785332-8ea02.firebaseapp.com","messagingSenderId":"435822865745","projectNumber":"435822865745","version":"2"}
+[info] 
+   Thank you for trying our early preview of Next.js support on Firebase Hosting.
+   During the preview, support is best-effort and breaking changes can be expected. Proceed with caution.
+
+   Documentation: https://firebase.google.com/docs/hosting/frameworks/nextjs
+   File a bug: https://github.com/firebase/firebase-tools/issues/new?template=bug_report.md
+   Submit a feature request: https://github.com/firebase/firebase-tools/issues/new?template=feature_request.md
+
+   We'd love to learn from you. Express your interest in helping us shape the future of Firebase Hosting: https://goo.gle/41enW5X
+
+[debug] [2025-10-13T14:11:18.582Z] Checked if tokens are valid: true, expires at: 1760368259998
+[debug] [2025-10-13T14:11:18.582Z] Checked if tokens are valid: true, expires at: 1760368259998
+[debug] [2025-10-13T14:11:18.583Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/studio-4793785332-8ea02/sites/studio-4793785332-8ea02 [none]
+[debug] [2025-10-13T14:11:19.672Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/studio-4793785332-8ea02/sites/studio-4793785332-8ea02 200
+[debug] [2025-10-13T14:11:19.672Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/studio-4793785332-8ea02/sites/studio-4793785332-8ea02 {"name":"projects/studio-4793785332-8ea02/sites/studio-4793785332-8ea02","defaultUrl":"https://studio-4793785332-8ea02.web.app","appId":"1:435822865745:web:51bc089558ac12631ef770","type":"DEFAULT_SITE"}
+[info]   ▲ Next.js 14.2.11
+
+[info]   - Environments: .env.local
+  - Experiments (use with caution):
+    · esmExternals
+
+
