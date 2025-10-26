@@ -1,0 +1,42 @@
+name: Deploy to Vercel
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy to Vercel (production)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Install dependencies (if present)
+        run: |
+          if [ -f package-lock.json ]; then npm ci --no-audit --no-fund || true; elif [ -f package.json ]; then npm install --no-audit --no-fund || true; fi
+
+      - name: Build (if build script exists)
+        run: |
+          if npm run | grep -q 'build'; then
+            npm run build || true
+          else
+            echo 'No build script detected; skipping build step.'
+          fi
+
+      - name: Deploy to Vercel (CLI)
+        if: secrets.VERCEL_TOKEN != ''
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          # Install Vercel CLI and deploy. Requires VERCEL_TOKEN secret.
+          npm install -g vercel@28 || true
+          npx vercel --prod --token "$VERCEL_TOKEN" --confirm

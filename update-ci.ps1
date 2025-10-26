@@ -119,30 +119,23 @@ $deployci = @'
 # Integração Contínua e Deploy (CI)
 
 Este documento descreve o workflow adicionado:
-- .github/workflows/ci.yml — CI para instalar dependências, lint, testes e builds (monorepo-aware).
 
 Removidas integrações
-- As instruções e workflows relacionados a Firebase, Vercel e Neon foram removidos deste repositório por decisão de simplificação. Caso precise reintroduzir um desses provedores, reconfigure os workflows e as secrets adequadamente.
 
 Requisitos
-- Os pacotes devem expor scripts no package.json:
   - "build" para geração de artefatos de produção
   - "start" para execução em produção (quando necessário)
   - "test" (opcional)
   - "lint" (opcional)
 
 Como o CI funciona
-- O workflow tenta localizar package.json em vários caminhos comuns:
   - ./, ./optilog-app, ./frontend, ./packages/frontend, ./app, ./optilog-app/frontend, ./optilog-app/backend, ./backend
-- Para cada diretório com package.json:
   - instala dependências (npm ci quando houver package-lock.json)
   - executa lint (se existir)
   - executa testes (se existir) — falha o job se os testes falharem
   - executa build (se existir) e preserva artifacts para inspeção
 
-Se precisar de deploy automático (Render / Docker / outro)
-- Recomenda-se criar um workflow de deploy dedicado e secrets específicos do provedor (não commitá-los).
-- Posso ajudar a gerar um workflow para Render/Netlify/Docker/Cloud Run se quiser.
+'Se precisar de deploy automático (Vercel / Docker / outro)'
 '@
 
 $deployci | Out-File -FilePath docs\deploy-ci.md -Encoding utf8
@@ -151,13 +144,8 @@ $deployci | Out-File -FilePath docs\deploy-ci.md -Encoding utf8
 $readme = @'
 # Optilog.app (atualizado)
 
-- Frontend: Next.js, React, TypeScript, Tailwind CSS
-- Componentes: shadcn/ui
-- Backend: Node/Express
 
 Hospedagem e deploy
-- Este repositório foi limpo de integrações específicas de Firebase, Vercel e Neon. Para publicar este projeto use um provedor de sua escolha (Render, Netlify, Vercel, Docker, Kubernetes, Cloud Run etc).
-- Certifique-se de que os scripts "build" e "start" existam nos package.json relevantes.
 
 Como rodar localmente
 1. git clone <URL_DO_REPOSITORIO>
@@ -167,7 +155,6 @@ Como rodar localmente
 5. cd <backend-dir> && npm run dev
 
 Documentação de CI
-- Veja docs/deploy-ci.md para detalhes sobre o workflow de CI.
 '@
 
 $readme | Out-File -FilePath README.md -Encoding utf8
@@ -179,14 +166,10 @@ $apphosting = @'
 Observação: este documento foi simplificado e removido de referências específicas a Firebase, Vercel e Neon. Use o provedor de sua preferência para hospedar o frontend e o backend.
 
 Recomendações gerais:
-- Garanta que as variáveis de ambiente sensíveis (chaves, strings de conexão) estejam configuradas no painel do provedor como secrets/envvars — nunca as comite no repositório.
-- Configure NODE_VERSION compatível (ex.: 20.x) no serviço de build.
-- Healthchecks recomendados:
   - Frontend: GET /api/health
   - Backend: GET /health
-- Para deploy com Docker: criar Dockerfile e pipeline que publica imagem em um registry (ex.: GHCR, Docker Hub) e atualizar a plataforma alvo.
 
-Se quiser que eu gere um workflow de deploy para um serviço específico (Render / DigitalOcean Apps / Cloud Run), diga qual provedor prefere.
+Se quiser que eu gere um workflow de deploy para um serviço específico (Vercel / DigitalOcean Apps / Cloud Run), diga qual provedor prefere.
 '@
 
 $apphosting | Out-File -FilePath docs\apphosting-setup.md -Encoding utf8
