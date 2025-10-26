@@ -1,73 +1,59 @@
 "use client";
 import { useEffect, useState } from 'react';
-import { app, getDb, getAuthInstance } from '@/lib/firebaseClient';
+import { stackAuth } from '@/lib/stackAuth';
+import { neonClient } from '@/lib/neonClient';
 import { Paper, Typography, List, ListItem, ListItemText, Chip, Box, Stack } from '@mui/material';
 
 type Check = { name: string; ok: boolean; detail?: string };
 
 export default function StatusPage() {
   const [authChecks, setAuthChecks] = useState<Check[]>([]);
-  const [fsChecks, setFsChecks] = useState<Check[]>([]);
-  const [fnChecks, setFnChecks] = useState<Check[]>([]);
+  const [dbChecks, setDbChecks] = useState<Check[]>([]);
 
   useEffect(() => {
     const run = async () => {
       const checksAuth: Check[] = [];
-      const checksFs: Check[] = [];
-      const checksFn: Check[] = [];
+      const checksDb: Check[] = [];
 
-      // Config
-      const pid = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '—';
-      const domain = process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '—';
-
-      // Auth via SDK modular (carregado dinamicamente no client)
+      // Stack Auth
       try {
-        const hasApp = !!app;
-        checksAuth.push({ name: 'Firebase App', ok: hasApp, detail: hasApp ? `projectId=${pid}` : 'App não inicializado' });
-        if (hasApp) {
-          const auth = await getAuthInstance();
-          let currentUser = auth?.currentUser || null;
-          if (!currentUser && auth) {
-            await new Promise<void>(async (resolve) => {
-              const { onAuthStateChanged } = await import('firebase/auth');
-              const unsub = onAuthStateChanged(auth!, () => { unsub(); resolve(); });
-            });
-            currentUser = auth?.currentUser || null;
-          }
-          checksAuth.push({ name: 'Sessão', ok: !!currentUser, detail: currentUser ? (currentUser.email || 'logado') : 'não logado' });
-          checksAuth.push({ name: 'Domínio Auth', ok: !!domain, detail: domain });
-        }
+        const user = await stackAuth.getCurrentUser();
+        checksAuth.push({ 
+          name: 'Stack Auth', 
+          ok: !!user, 
+          detail: user ? `Usuário: ${user.email}` : 'Não autenticado' 
+        });
+        checksAuth.push({ 
+          name: 'Projeto', 
+          ok: !!process.env.NEXT_PUBLIC_STACK_AUTH_PROJECT_ID, 
+          detail: process.env.NEXT_PUBLIC_STACK_AUTH_PROJECT_ID || 'Não configurado' 
+        });
       } catch (e: any) {
         checksAuth.push({ name: 'Auth erro', ok: false, detail: e?.message || String(e) });
       }
 
-      // Firestore
+      // Neon Database
       try {
-        const db = await getDb();
-        const hasDb = !!db;
-        checksFs.push({ name: 'Firestore', ok: hasDb, detail: hasDb ? 'db inicializado' : 'db não inicializado' });
-        if (hasDb) {
-          const { collection, getDocs, limit, query, where } = await import('firebase/firestore');
-          const q = query(collection(db!, 'posts'), where('is_published', '==', true), limit(1));
-          const snap = await getDocs(q);
-          checksFs.push({ name: 'Leitura posts publicados', ok: true, detail: `docs=${snap.size}` });
-        }
+        const hasUrl = !!process.env.NEXT_PUBLIC_NEON_REST_URL || !!process.env.NEON_REST_URL;
+        checksDb.push({ 
+          name: 'Neon REST API', 
+          ok: hasUrl, 
+          detail: hasUrl ? 'Configurado' : 'URL não configurada' 
+        });
+        
+        // Testa conexão
+        const response = await neonClient.list('orders');
+        checksDb.push({ 
+          name: 'Conexão DB', 
+          ok: response.success, 
+          detail: response.success ? 'OK' : (response.error || 'Erro ao conectar') 
+        });
       } catch (e: any) {
-        checksFs.push({ name: 'Leitura posts erro', ok: false, detail: e?.message || String(e) });
-      }
-
-      // Functions: checagem via API server-side (evita dependências Node no client)
-      try {
-        const r = await fetch('/api/functions-status');
-        const j = await r.json();
-        checksFn.push({ name: 'Functions', ok: !!j.ok, detail: j.ok ? 'HTTP disponível' : (j.error || `status=${j.status}`) });
-      } catch (e: any) {
-        checksFn.push({ name: 'Functions', ok: false, detail: e?.message || String(e) });
+        checksDb.push({ name: 'Database erro', ok: false, detail: e?.message || String(e) });
       }
 
       setAuthChecks(checksAuth);
-      setFsChecks(checksFs);
-      setFnChecks(checksFn);
+      setDbChecks(checksDb);
     };
     run();
   }, []);
@@ -76,7 +62,7 @@ export default function StatusPage() {
     <Paper variant="outlined" sx={{ p: 2 }}>
       <Typography variant="h6" sx={{ mb: 1 }}>{title}</Typography>
       {items.length === 0 ? (
-        <Typography variant="body2" color="text.secondary">Sem dados no momento.</Typography>
+        <Typography variant="body2" color="text.secondary">Carregando...</Typography>
       ) : (
         <List dense>
           {items.map((c, i) => (
@@ -85,7 +71,7 @@ export default function StatusPage() {
                 primary={
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <span>{c.name}</span>
-                    <Chip size="small" color={c.ok ? 'success' : 'error'} label={c.ok ? 'OK' : (c.name === 'Sessão' ? 'NÃO LOGADO' : (c.name === 'Functions' ? 'N/A' : 'ERRO'))} />
+                    <Chip size="small" color={c.ok ? 'success' : 'warning'} label={c.ok ? 'OK' : 'AVISO'} />
                   </Box>
                 }
                 secondary={<Typography variant="caption" color="text.secondary">{c.detail}</Typography>}
@@ -101,21 +87,15 @@ export default function StatusPage() {
     <main className="container">
       <Stack spacing={2}>
         <Box>
-          <Typography variant="h5" sx={{ mb: 1 }}>Status do Backend</Typography>
+          <Typography variant="h5" sx={{ mb: 1 }}>Status do Sistema</Typography>
           <Paper variant="outlined" sx={{ p: 1 }}>
             <Typography variant="caption" sx={{ display: 'block' }}>
-              Projeto: {process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '—'} | Domínio Auth: {process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '—'}
+              Stack Auth + Neon Database + Vercel Deploy
             </Typography>
-            {!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && (
-              <Typography variant="caption" color="text.secondary">
-                Defina variáveis NEXT_PUBLIC_FIREBASE_* para dados completos.
-              </Typography>
-            )}
           </Paper>
         </Box>
-        <Section title="Auth" items={authChecks} />
-        <Section title="Firestore" items={fsChecks} />
-        <Section title="Functions" items={fnChecks} />
+        <Section title="Autenticação" items={authChecks} />
+        <Section title="Database" items={dbChecks} />
       </Stack>
     </main>
   );
