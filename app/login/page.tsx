@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { stackAuth, stackAuthConfig } from '@/lib/stackAuth';
+import { stackAuth } from '@/lib/stackAuth';
 import { Box, TextField, Button, Typography, Alert, Paper, CircularProgress, Container } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
@@ -16,17 +16,14 @@ export default function LoginPage() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    
-    if (!stackAuthConfig.isConfigured) {
-      setError('Autenticação não configurada. Configure as variáveis Stack Auth no .env.local');
-      return;
-    }
 
     setLoading(true);
     try {
-      await stackAuth.signIn(email, password);
+      const user = await stackAuth.signIn(email, password);
+      console.log('Login bem-sucedido:', user);
       router.push('/dashboard');
     } catch (err: any) {
+      console.error('Erro no login:', err);
       setError(err.message || 'Falha no login. Verifique suas credenciais.');
     } finally {
       setLoading(false);
