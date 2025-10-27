@@ -17,16 +17,21 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
 
+    console.log('🔐 Iniciando login para:', email);
     setLoading(true);
     try {
+      console.log('⏳ Chamando stackAuth.signIn...');
       const user = await stackAuth.signIn(email, password);
-      console.log('Login bem-sucedido:', user);
+      console.log('✅ Login bem-sucedido:', user);
+      console.log('🚀 Redirecionando para /dashboard...');
       router.push('/dashboard');
+      console.log('✅ router.push chamado');
     } catch (err: any) {
-      console.error('Erro no login:', err);
+      console.error('❌ Erro no login:', err);
       setError(err.message || 'Falha no login. Verifique suas credenciais.');
     } finally {
       setLoading(false);
+      console.log('🏁 Loading finalizado');
     }
   };
 
