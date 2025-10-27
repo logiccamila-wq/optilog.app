@@ -126,36 +126,3 @@ export default function LoginPage() {
     </Container>
   );
 }
-
-CREATE TABLE orders (
-  id SERIAL PRIMARY KEY,
-  customer_name TEXT NOT NULL,
-  status TEXT NOT NULL,
-  total DECIMAL(10,2) NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE TABLE vehicles (
-  id SERIAL PRIMARY KEY,
-  plate TEXT NOT NULL UNIQUE,
-  model TEXT NOT NULL,
-  status TEXT NOT NULL,
-  last_maintenance TIMESTAMPTZ NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE TABLE finance_entries (
-  id SERIAL PRIMARY KEY,
-  description TEXT NOT NULL,
-  amount DECIMAL(10,2) NOT NULL,
-  type TEXT NOT NULL,
-  date TIMESTAMPTZ NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-NEXT_PUBLIC_STACK_AUTH_PROJECT_ID=b0e4c9fa-4c2f-4870-a244-782996d4b593
-NEXT_PUBLIC_STACK_AUTH_JWKS_URL=https://api.stack-auth.com/api/v1/auth/jwks
-NEON_REST_URL=https://ep-small-shape-aclozfov.apirest.sa-east-1.aws.neon.tech/neondb/rest/v1

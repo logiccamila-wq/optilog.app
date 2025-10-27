@@ -30,11 +30,11 @@ fi
 
 # 1. Verificar conexão com internet
 echo "🌐 Verificando conexão..."
-if ! ping -c 1 google.com &> /dev/null; then
-    log_error "Sem conexão com a internet. Verifique sua rede."
-    exit 1
+if curl -s --max-time 5 https://www.google.com > /dev/null 2>&1 || wget -q --spider --timeout=5 https://www.google.com > /dev/null 2>&1; then
+    log_success "Conexão verificada"
+else
+    log_warning "Não foi possível verificar conexão (continuando...)"
 fi
-log_success "Conexão verificada"
 
 # 2. Atualizar repositório local
 echo "📥 Atualizando repositório local..."

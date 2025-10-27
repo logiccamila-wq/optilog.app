@@ -19,9 +19,20 @@ Objetivo: instruções práticas e exemplos para ser produtivo neste repositóri
 - Scripts: `start` (node app.js), `db:setup` e `db:setup-full` (scripts de DB em `backend/scripts`).
 - Use `npm run api` da raiz para ligar o backend quando for trabalhar no monorepo.
 
-### Deploy targets detectáveis
-- Vercel (há `vercel.json` com `framework: nextjs` e `buildCommand: npm run build`).
-- Também há referências a Firebase Hosting no `README.md`; confirme qual target antes de executar deploy.
+### Deploy (Vercel + Neon)
+- Alvo recomendado: Vercel (Next.js) + Neon (Postgres). `vercel.json` já define `framework: nextjs` e `buildCommand: npm run build`.
+- Variáveis obrigatórias no projeto Vercel:
+	- `DATABASE_URL` — string do Neon (use `sslmode=require`).
+	- `JWT_SECRET` — segredo para JWT nas rotas do backend.
+	- `NEXT_PUBLIC_API_URL` — base das rotas API se necessário (pode ser a própria URL do app).
+	- (Opcional) `DATABASE_URL_UNPOOLED` — conexão direta do Neon para migrações/DDL.
+	- (Opcional) `NEON_DATA_API_URL`, `NEON_AUTH_JWKS_URL`, `NEON_AUTH_ISSUER`, `NEON_AUTH_AUDIENCE` — apenas se usar a Data API com JWT.
+- Integração Vercel ↔ Neon:
+	- Use “Add Integration → Postgres (Neon)” no Vercel. Isso popula `DATABASE_URL` (pooler) e `DATABASE_URL_UNPOOLED` automaticamente.
+	- Código que consome: `backend/db.ts` usa `@neondatabase/serverless` lendo `process.env.DATABASE_URL`.
+- Deploy no Vercel:
+	- Push na `main` dispara build. Build local: `npm run build`. Start local prod: `npm run start:prod`.
+	- Verifique status no dashboard da Vercel e logs de build se necessário.
 
 ### Padrões e armadilhas frequentes
 - O `next.config.js` define `output: 'standalone'`. Production start espera `.next/standalone/server.js` (use `start:prod`).
@@ -31,7 +42,9 @@ Objetivo: instruções práticas e exemplos para ser produtivo neste repositóri
 
 ### Integrações importantes
 - OpenAI (pacote `openai`) é usado tanto no frontend quanto no backend: procure `openai.js`/`openai.ts` em `backend/` e na raiz.
-- Banco: `@neondatabase/serverless` presente nas dependências; backend também suporta `pg` e `sqlite3`.
+- Banco (Neon/Postgres):
+	- Driver serverless: `@neondatabase/serverless` (ver `backend/db.ts` e `backend/test-neon.mjs`).
+	- Envs: `DATABASE_URL` (pooler) e opcional `DATABASE_URL_UNPOOLED` (direto). Docs: `SETUP_DATABASE.md`, `docs/vercel-postgres.md`.
 - Sockets: `socket.io` no backend e `socket.io-client` no frontend — ver `ws-server.js` em `/backend`.
 
 ### Como validar alterações pequenas (workflow rápido)
@@ -41,8 +54,9 @@ Objetivo: instruções práticas e exemplos para ser produtivo neste repositóri
 
 ### Onde buscar exemplos e padrões
 - Entrypoints: `app/` (Next App Router), `backend/server.js`, `backend/app.js`.
+- Banco/Neon: `backend/db.ts`, `backend/test-neon.mjs`, `backend/scripts/db_setup*.mjs`.
 - Scaffolders: `scripts/scaffold.js` e `kits/` (ex.: `kits/frontend/next-module`).
-- Políticas de deploy/hosting: `vercel.json` e `README.md` (referências a Firebase).
+- Deploy/Hosting: `vercel.json`, `docs/vercel-deploy.md`, `docs/vercel-postgres.md` e `SETUP_DATABASE.md`.
 
 ### Regras específicas para agentes
 - Faça mudanças pequenas e testáveis primeiro (ex.: ajustar script, adicionar export, corrigir import).
