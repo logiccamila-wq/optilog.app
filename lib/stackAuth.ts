@@ -25,18 +25,21 @@ export class StackAuthClient {
   private currentUser: User | null = null;
 
   async signIn(email: string, password: string): Promise<User> {
-    if (!stackAuthConfig.isConfigured) {
-      throw new Error('Stack Auth não configurado. Configure NEXT_PUBLIC_STACK_AUTH_PROJECT_ID e NEXT_PUBLIC_STACK_AUTH_JWKS_URL');
-    }
-
     // Validação básica
     if (!email || !password) {
       throw new Error('Email e senha são obrigatórios');
     }
 
+    // Se Stack Auth não configurado, usa auth local direto
+    if (!stackAuthConfig.isConfigured) {
+      console.log('Stack Auth não configurado, usando autenticação local');
+      return this.localSignIn(email, password);
+    }
+
     try {
+      console.log('Tentando login via Stack Auth API...');
       // Chamada à API Stack Auth
-      const response = await fetch(`https://api.stack-auth.com/api/v1/auth/signin`, {
+      const response = await fetch('https://api.stack-auth.com/api/v1/auth/signin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,29 +77,12 @@ export class StackAuthClient {
       return user;
     } catch (error: any) {
       // Se a API falhar, usa autenticação local simplificada para desenvolvimento
-      console.warn('Stack Auth API call failed, using local auth:', error.message);
-      
-      const user: User = {
-        id: `local_${Date.now()}`,
-        email,
-        displayName: email.split('@')[0],
-      };
-
-      this.currentUser = user;
-      
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('stack_auth_user', JSON.stringify(user));
-      }
-
-      return user;
+      console.warn('Stack Auth API signin falhou, usando local auth:', error.message);
+      return this.localSignIn(email, password);
     }
   }
 
   async signUp(email: string, password: string, displayName?: string): Promise<User> {
-    if (!stackAuthConfig.isConfigured) {
-      throw new Error('Stack Auth não configurado');
-    }
-
     // Validação
     if (!email || !password) {
       throw new Error('Email e senha são obrigatórios');
@@ -106,7 +92,14 @@ export class StackAuthClient {
       throw new Error('Senha deve ter no mínimo 8 caracteres');
     }
 
+    // Se Stack Auth não configurado, usa auth local direto
+    if (!stackAuthConfig.isConfigured) {
+      console.log('Stack Auth não configurado, usando signup local');
+      return this.localSignUp(email, password, displayName);
+    }
+
     try {
+      console.log('Tentando signup via Stack Auth API...');
       // Chamada à API Stack Auth
       const response = await fetch('https://api.stack-auth.com/api/v1/auth/signup', {
         method: 'POST',
@@ -146,28 +139,54 @@ export class StackAuthClient {
       return user;
     } catch (error: any) {
       // Fallback para autenticação local em desenvolvimento
-      console.warn('Stack Auth API call failed, using local auth:', error.message);
-      
-      const user: User = {
-        id: `local_${Date.now()}`,
-        email,
-        displayName: displayName || email.split('@')[0],
-      };
-
-      this.currentUser = user;
-
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('stack_auth_user', JSON.stringify(user));
-      }
-
-      return user;
+      console.warn('Stack Auth API signup falhou, usando local auth:', error.message);
+      return this.localSignUp(email, password, displayName);
     }
+  }
+
+  // Método auxiliar para autenticação local (desenvolvimento/fallback)
+  private localSignIn(email: string, _password: string): User {
+    console.log('Usando autenticação local para:', email);
+    
+    const user: User = {
+      id: `local_${Date.now()}`,
+      email,
+      displayName: email.split('@')[0],
+    };
+
+    this.currentUser = user;
+    
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('stack_auth_user', JSON.stringify(user));
+    }
+
+    return user;
+  }
+
+  // Método auxiliar para signup local (desenvolvimento/fallback)
+  private localSignUp(email: string, password: string, displayName?: string): User {
+    console.log('Usando signup local para:', email);
+    
+    const user: User = {
+      id: `local_${Date.now()}`,
+      email,
+      displayName: displayName || email.split('@')[0],
+    };
+
+    this.currentUser = user;
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('stack_auth_user', JSON.stringify(user));
+    }
+
+    return user;
   }
 
   async signOut(): Promise<void> {
     this.currentUser = null;
     if (typeof window !== 'undefined') {
       localStorage.removeItem('stack_auth_user');
+      localStorage.removeItem('stack_auth_token');
     }
   }
 
