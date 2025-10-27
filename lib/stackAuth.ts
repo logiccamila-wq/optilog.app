@@ -1,6 +1,8 @@
 // Stack Auth client configuration
 // Substitui Firebase Auth para autenticação moderna
 
+import { validateCredentials, checkUserPermissions, type UserPermissions } from './permissions';
+
 export const stackAuthConfig = {
   projectId: process.env.NEXT_PUBLIC_STACK_AUTH_PROJECT_ID || '',
   jwksUrl: process.env.NEXT_PUBLIC_STACK_AUTH_JWKS_URL || '',
@@ -12,6 +14,8 @@ export interface User {
   email: string;
   displayName?: string;
   photoURL?: string;
+  role?: string;
+  permissions?: UserPermissions;
 }
 
 export interface AuthState {
@@ -145,13 +149,29 @@ export class StackAuthClient {
   }
 
   // Método auxiliar para autenticação local (desenvolvimento/fallback)
-  private localSignIn(email: string, _password: string): User {
+  private localSignIn(email: string, password: string): User {
     console.log('Usando autenticação local para:', email);
     
+    // Valida credenciais contra lista de usuários autorizados
+    if (!validateCredentials(email, password)) {
+      throw new Error('Email ou senha incorretos');
+    }
+    
+    const permissions = checkUserPermissions(email);
+    if (!permissions) {
+      throw new Error('Usuário não autorizado');
+    }
+    
+    if (!permissions.active) {
+      throw new Error('Conta desativada. Entre em contato com o administrador.');
+    }
+    
     const user: User = {
-      id: `local_${Date.now()}`,
-      email,
+      id: `user_${Date.now()}`,
+      email: permissions.email,
       displayName: email.split('@')[0],
+      role: permissions.role,
+      permissions,
     };
 
     this.currentUser = user;
@@ -167,19 +187,38 @@ export class StackAuthClient {
   private localSignUp(email: string, password: string, displayName?: string): User {
     console.log('Usando signup local para:', email);
     
-    const user: User = {
-      id: `local_${Date.now()}`,
-      email,
-      displayName: displayName || email.split('@')[0],
-    };
+    // Verifica se o email já está na lista de autorizados
+    const existingPermissions = checkUserPermissions(email);
+    
+    // Se já existe, precisa validar a senha
+    if (existingPermissions) {
+      if (!validateCredentials(email, password)) {
+        throw new Error('Email já cadastrado com senha diferente');
+      }
+      
+      if (!existingPermissions.active) {
+        throw new Error('Conta desativada. Entre em contato com o administrador.');
+      }
+      
+      const user: User = {
+        id: `user_${Date.now()}`,
+        email: existingPermissions.email,
+        displayName: displayName || email.split('@')[0],
+        role: existingPermissions.role,
+        permissions: existingPermissions,
+      };
 
-    this.currentUser = user;
+      this.currentUser = user;
 
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('stack_auth_user', JSON.stringify(user));
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('stack_auth_user', JSON.stringify(user));
+      }
+
+      return user;
     }
-
-    return user;
+    
+    // Novo usuário - cadastro bloqueado, apenas usuários autorizados
+    throw new Error('Cadastro restrito. Entre em contato com o administrador para solicitar acesso.');
   }
 
   async signOut(): Promise<void> {
