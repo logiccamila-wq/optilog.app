@@ -45,12 +45,11 @@ export default function SignupPage() {
     }
 
     setLoading(true);
-    const response = await stackAuth.signUp(formData.email, formData.password);
-
-    if (response.success) {
+    try {
+      await stackAuth.signUp(formData.email, formData.password, formData.name);
       router.push('/dashboard');
-    } else {
-      setError(response.error || 'Erro ao criar conta');
+    } catch (err: any) {
+      setError(err.message || 'Erro ao criar conta');
       setLoading(false);
     }
   };
