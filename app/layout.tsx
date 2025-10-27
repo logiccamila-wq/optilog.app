@@ -6,6 +6,10 @@ import { ThemeProvider } from '@/app/providers/ThemeProvider';
 import ServiceWorkerRegister from '@/app/providers/ServiceWorker';
 import SWUpdateSnackbar from '@/components/pwa/SWUpdateSnackbar';
 
+// Configurações para server-side rendering e edge runtime
+export const runtime = 'edge';
+export const preferredRegion = ['gru1', 'iad1']; // São Paulo e Virginia
+
 export const metadata = {
   metadataBase: new URL('https://studio-4793785332-8ea02.web.app'),
   title: {

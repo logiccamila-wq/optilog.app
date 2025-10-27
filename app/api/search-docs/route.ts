@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
+import docsIndex from './docs-index.json';
 
 export async function GET(req: Request) {
   try {
@@ -8,21 +7,10 @@ export async function GET(req: Request) {
     const qRaw = (searchParams.get('q') || '').trim();
     const q = qRaw.toLowerCase();
     const topN = Math.max(1, Math.min(10, parseInt(searchParams.get('topN') || '3', 10)));
-    const docsDir = path.join(process.cwd(), 'docs');
-    const files = await fs.readdir(docsDir);
-    const mdFiles = files.filter((f) => f.endsWith('.md') || f.endsWith('.mdx'));
 
     // Lista simples quando sem consulta
     if (!q) {
-      const items = await Promise.all(
-        mdFiles.map(async (f) => {
-          const fullPath = path.join(docsDir, f);
-          const content = await fs.readFile(fullPath, 'utf-8');
-          const titleMatch = content.match(/^#\s+(.*)$/m);
-          const title = titleMatch ? titleMatch[1].trim() : f;
-          return { id: f.replace(/\.(md|mdx)$/, ''), title, file: f };
-        })
-      );
+      const items = docsIndex.items.map(({ id, title, file }) => ({ id, title, file }));
       return NextResponse.json({ items, q: qRaw });
     }
 
@@ -30,19 +18,16 @@ export async function GET(req: Request) {
 
     // Pré-calcular IDF por termo
     const termDocCount: Record<string, number> = {};
-    const fileContents: Record<string, string> = {};
-    for (const f of mdFiles) {
-      const fullPath = path.join(docsDir, f);
-      const content = await fs.readFile(fullPath, 'utf-8');
-      fileContents[f] = content;
-      const lower = content.toLowerCase();
+    const N = docsIndex.items.length;
+    
+    for (const item of docsIndex.items) {
+      const content = (item.content + ' ' + item.title + ' ' + item.keywords.join(' ')).toLowerCase();
       const hits = new Set<string>();
       for (const t of terms) {
-        if (lower.includes(t)) hits.add(t);
+        if (content.includes(t)) hits.add(t);
       }
       for (const h of hits) termDocCount[h] = (termDocCount[h] || 0) + 1;
     }
-    const N = mdFiles.length || 1;
     const idf: Record<string, number> = {};
     for (const t of terms) {
       const df = termDocCount[t] || 0.5; // evitar zero
@@ -57,11 +42,9 @@ export async function GET(req: Request) {
       score: number;
     }>;
 
-    for (const f of mdFiles) {
-      const content = fileContents[f];
-      const titleMatch = content.match(/^#\s+(.*)$/m);
-      const title = titleMatch ? titleMatch[1].trim() : f;
-      const lower = content.toLowerCase();
+    for (const item of docsIndex.items) {
+      const content = item.content;
+      const lower = (content + ' ' + item.title + ' ' + item.keywords.join(' ')).toLowerCase();
 
       // TF simples por termo
       let score = 0;
@@ -79,11 +62,11 @@ export async function GET(req: Request) {
       // Snippets: coletar até topN janelas ao redor das primeiras ocorrências
       const positions: number[] = [];
       for (const t of terms) {
-        let idx = lower.indexOf(t);
+        let idx = content.toLowerCase().indexOf(t);
         while (idx >= 0) {
           positions.push(idx);
           if (positions.length >= topN) break;
-          idx = lower.indexOf(t, idx + t.length);
+          idx = content.toLowerCase().indexOf(t, idx + t.length);
         }
         if (positions.length >= topN) break;
       }
@@ -95,7 +78,7 @@ export async function GET(req: Request) {
         return content.slice(start, end).replace(/\n/g, ' ').trim();
       });
 
-      items.push({ id: f.replace(/\.(md|mdx)$/, ''), title, snippets, file: f, score });
+      items.push({ id: item.id, title: item.title, snippets, file: item.file, score });
     }
 
     items.sort((a, b) => b.score - a.score);

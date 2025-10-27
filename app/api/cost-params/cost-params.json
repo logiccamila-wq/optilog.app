@@ -1,0 +1,8 @@
+{
+  "depreciation_per_km": 0.5,
+  "capital_remuneration_per_month": 1000,
+  "insurance_per_km": 0.2,
+  "licenses_fixed_per_month": 500,
+  "fuel_consumption_l_per_km": 0.12,
+  "fuel_price_per_l": 5.5
+}

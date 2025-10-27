@@ -1,0 +1,25 @@
+{
+  "items": [
+    {
+      "id": "ai-gemini-setup",
+      "title": "Configuração do Gemini AI",
+      "file": "ai-gemini-setup.md",
+      "content": "# Configuração do Gemini AI\n\nGuia de configuração e integração do Gemini AI.",
+      "keywords": ["gemini", "ai", "configuração", "integração"]
+    },
+    {
+      "id": "apphosting-setup",
+      "title": "Configuração do App Hosting",
+      "file": "apphosting-setup.md",
+      "content": "# Configuração do App Hosting\n\nGuia de configuração do ambiente de hospedagem.",
+      "keywords": ["hosting", "app", "configuração", "ambiente"]
+    },
+    {
+      "id": "architecture",
+      "title": "Arquitetura",
+      "file": "architecture.md",
+      "content": "# Arquitetura\n\nVisão geral da arquitetura do sistema.",
+      "keywords": ["arquitetura", "sistema", "visão geral"]
+    }
+  ]
+}
