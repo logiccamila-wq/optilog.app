@@ -149,7 +149,7 @@ export class StackAuthClient {
   }
 
   // Método auxiliar para autenticação local (desenvolvimento/fallback)
-  private localSignIn(email: string, password: string): User {
+  private async localSignIn(email: string, password: string): Promise<User> {
     console.log('Usando autenticação local para:', email);
     
     // Valida credenciais contra lista de usuários autorizados
@@ -178,9 +178,30 @@ export class StackAuthClient {
     
     if (typeof window !== 'undefined') {
       localStorage.setItem('stack_auth_user', JSON.stringify(user));
+      
+      // Cria e salva token JWT nos cookies para o middleware
+      await this.setAuthCookie(user);
     }
 
     return user;
+  }
+
+  // Cria token JWT e salva nos cookies
+  private async setAuthCookie(user: User): Promise<void> {
+    try {
+      // Chama API route para criar cookie com token JWT
+      await fetch('/api/auth/set-cookie', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: user.email,
+          role: user.role,
+          roles: user.role === 'admin' ? ['super_gestor', 'administrador'] : ['usuario'],
+        }),
+      });
+    } catch (error) {
+      console.warn('Não foi possível criar cookie de autenticação:', error);
+    }
   }
 
   // Método auxiliar para signup local (desenvolvimento/fallback)
