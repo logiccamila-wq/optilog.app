@@ -16,7 +16,14 @@
 - **Permissões:** Acesso total a todos os módulos (*)
 - **Status:** ✅ Verificado e Ativo
 
-### 3. Usuário de Teste
+### 3. Administrador Secundário (Alternativo)
+- **Email:** camila.etseral@gmail.com
+- **Senha:** Multi@#$%362748
+- **Role:** ADMIN
+- **Permissões:** Acesso total a todos os módulos (*)
+- **Status:** ✅ Verificado e Ativo
+
+### 4. Usuário de Teste
 - **Email:** teste@teste.com
 - **Senha:** teste123
 - **Role:** VIEWER

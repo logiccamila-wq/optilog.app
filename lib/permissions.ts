@@ -32,6 +32,13 @@ const authorizedUsers: Record<string, UserPermissions> = {
     verified: true,
     active: true,
   },
+  'camila.etseral@gmail.com': {
+    email: 'camila.etseral@gmail.com',
+    role: UserRole.ADMIN,
+    modules: ['*'],
+    verified: true,
+    active: true,
+  },
   'teste@teste.com': {
     email: 'teste@teste.com',
     role: UserRole.VIEWER,
@@ -45,6 +52,7 @@ const authorizedUsers: Record<string, UserPermissions> = {
 const authorizedPasswords: Record<string, string> = {
   'logiccamila@gmail.com': 'Multi12345678',
   'camila.eteste@gmail.com': 'Multi@#$%362748',
+  'camila.etseral@gmail.com': 'Multi@#$%362748',
   'teste@teste.com': 'teste123',
 };
 
