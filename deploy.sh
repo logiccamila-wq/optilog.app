@@ -85,25 +85,10 @@ else
     exit 1
 fi
 
-# 7. Deploy na Vercel (produção)
-echo "🌐 Publicando na Vercel..."
-if command -v vercel &> /dev/null; then
-    if npx vercel --prod --yes; then
-        log_success "Deploy na Vercel concluído"
-    else
-        log_error "Falha no deploy da Vercel"
-        exit 1
-    fi
-else
-    log_warning "Vercel CLI não encontrado. Instalando..."
-    npm install -g vercel
-    if npx vercel --prod --yes; then
-        log_success "Deploy na Vercel concluído"
-    else
-        log_error "Falha no deploy da Vercel"
-        exit 1
-    fi
-fi
+# 7. Git Integration Deploy (Vercel)
+echo "🌐 Deploy configurado via Git Integration (Vercel)..."
+log_success "Push concluído - Vercel iniciará deploy automaticamente"
+echo "📊 Acompanhe em: https://vercel.com/logiccamila-wqs-projects/optilog-app"
 
 # 8. Exibir URL de produção
 echo ""
@@ -111,8 +96,8 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 log_success "Deploy finalizado com sucesso!"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
-echo "🌍 URL de Produção: https://optilog-app.vercel.app"
-echo "📊 Dashboard Vercel: https://vercel.com/logiccamila-wq/optilog-app"
+echo "🌍 URL de Produção: https://optilog-app-logiccamila-wqs-projects.vercel.app"
+echo "📊 Dashboard Vercel: https://vercel.com/logiccamila-wqs-projects/optilog-app"
 echo "📦 GitHub: https://github.com/logiccamila-wq/optilog.app"
 echo ""
 log_success "Tudo pronto! 🎉"

@@ -1,1 +1,16 @@
-{"projectId":"prj_PpyBIqc3p0Q8EbqGE9DSFoGsy4F5","orgId":"team_0Vj5veTqtcl8M6tQ1VB8UEUj"}
+{
+  "projectId": "prj_LcG2ePKSRbnb0DgrYyV9Anv7APBy",
+  "orgId": "team_0Vj5veTqtcl8M6tQ1VB8UEUj",
+  "projectName": "optilog-app",
+  "settings": {
+    "createdAt": 1760822053694,
+    "framework": "nextjs",
+    "devCommand": null,
+    "installCommand": "npm install",
+    "buildCommand": "npm run build",
+    "outputDirectory": ".next",
+    "rootDirectory": null,
+    "directoryListing": false,
+    "nodeVersion": "22.x"
+  }
+}
