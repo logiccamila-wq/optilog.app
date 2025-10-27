@@ -1,40 +1,31 @@
-# node / build
+# Dependencies
 node_modules/
+
+# Next.js build output
 .next/
+out/
 dist/
 build/
 
-# firebase artifacts
-.firebase/
-.firebaserc
-firebase-debug*.log
-firebase.json
+# Vercel
+.vercel
 
-# OS / tooling
+# Environment Variables
+.env*.local
+.env
+
+# OS files
 .DS_Store
+
+# IDE
 .vscode/settings.json
 .idea/
 
-# logs
-*.log
-
-# generated
-_ci_build_artifacts/
-
-# Dependencies
-node_modules
-
-# Next.js build output
-.next
-out
-
-# Local Environment Variables
-.env*.local
-
-# Misc
-.DS_Store
-
 # Logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Build artifacts
+_ci_build_artifacts/
