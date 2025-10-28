@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { Settings, TrendingUp, Users, FileText } from 'lucide-react';
+import { Settings } from 'lucide-react';
 
 export default function ErpPage() {
   const modules = [

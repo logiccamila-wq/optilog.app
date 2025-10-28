@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Boxes, Package, Truck, ShoppingCart, Users, DollarSign } from 'lucide-react';
+import { Boxes, Package, Truck, ShoppingCart, Users, DollarSign, Wrench, Settings } from 'lucide-react';
 
 export default function ModulesHome() {
   const groups = [
@@ -61,7 +61,7 @@ export default function ModulesHome() {
     {
       key: 'erp',
       title: 'ERP • Enterprise Resource Planning',
-      icon: Package,
+      icon: Settings,
       color: '#d2c1ff',
       items: ['Financeiro e contabilidade', 'Produção', 'RH', 'Relatórios e gestão de ativos'],
     },
@@ -72,6 +72,31 @@ export default function ModulesHome() {
       color: '#90ee90',
       items: ['FPA - Fluxo de Pagamentos', 'Análise de Risco', 'DRE e Contabilidade', 'Contas a Pagar/Receber'],
     },
+    {
+      key: 'maintenance',
+      title: 'Maintenance • Manutenção de Frota',
+      icon: Wrench,
+      color: '#ffa07a',
+      items: ['Ordens de Serviço', 'Manutenção Preventiva', 'Gestão de Pneus', 'Histórico de Veículos'],
+    },
+  ];
+
+  const specializedModules = [
+    { key: 'analise-tributaria', title: 'Análise Tributária', emoji: '📊' },
+    { key: 'projecao-economia-tributaria', title: 'Projeção Economia Tributária', emoji: '💰' },
+    { key: 'performance-total', title: 'Performance Total', emoji: '📈' },
+    { key: 'tabela-frete', title: 'Tabela de Frete', emoji: '🚛' },
+    { key: 'custos-operacionais', title: 'Custos Operacionais', emoji: '💵' },
+    { key: 'seguros', title: 'Seguros', emoji: '🛡️' },
+    { key: 'copiloto-rota', title: 'Copiloto de Rota', emoji: '🗺️' },
+    { key: 'precificacao-dinamica', title: 'Precificação Dinâmica', emoji: '💲' },
+    { key: 'pops', title: 'POPs - Procedimentos', emoji: '📋' },
+    { key: 'consultoria-financeira-ia', title: 'Consultoria Financeira IA', emoji: '🤖' },
+    { key: 'auditoria', title: 'Auditoria', emoji: '🔍' },
+    { key: 'super-app-motorista', title: 'Super App Motorista', emoji: '📱' },
+    { key: 'roadmap', title: 'Roadmap', emoji: '🗓️' },
+    { key: 'importar-motoristas', title: 'Importar Motoristas', emoji: '👥' },
+    { key: 'analise-contabil-completa', title: 'Análise Contábil Completa', emoji: '📊' },
   ];
 
   return (
@@ -80,6 +105,9 @@ export default function ModulesHome() {
       <p style={{ color: '#9aa3b0' }}>
         Organização com coluna à esquerda e agrupamentos por domínio. Escolha um módulo para abrir.
       </p>
+      
+      {/* Main Modules */}
+      <h2 style={{ fontSize: 20, color: '#a6d3ff', marginTop: 32, marginBottom: 16 }}>Módulos Principais</h2>
       <div
         style={{
           display: 'grid',
@@ -113,6 +141,44 @@ export default function ModulesHome() {
             </Link>
           );
         })}
+      </div>
+
+      {/* Specialized Modules */}
+      <h2 style={{ fontSize: 20, color: '#a6d3ff', marginTop: 40, marginBottom: 16 }}>Módulos Especializados</h2>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+          gap: 12,
+        }}
+      >
+        {specializedModules.map((mod) => (
+          <Link key={mod.key} href={`/modules/${mod.key}`} style={{ textDecoration: 'none' }}>
+            <div
+              style={{
+                border: '1px solid rgba(166, 211, 255, 0.2)',
+                borderRadius: 8,
+                padding: 12,
+                background: 'rgba(255,255,255,0.02)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(166, 211, 255, 0.05)';
+                e.currentTarget.style.borderColor = 'rgba(166, 211, 255, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
+                e.currentTarget.style.borderColor = 'rgba(166, 211, 255, 0.2)';
+              }}
+            >
+              <span style={{ fontSize: 24 }}>{mod.emoji}</span>
+              <span style={{ color: '#e5e7eb', fontSize: 14 }}>{mod.title}</span>
+            </div>
+          </Link>
+        ))}
       </div>
     </div>
   );

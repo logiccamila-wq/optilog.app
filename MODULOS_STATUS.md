@@ -254,3 +254,43 @@ export default function ModulePage() {
 - Paper com borderRadius: 3
 - Container maxWidth="xl"
 - Typography variant="h4" com fontWeight: 700
+
+---
+
+## 🌟 Módulos Especializados (Novo!)
+
+Além dos 24 módulos principais, foram implementados **15 módulos especializados** em `/app/modules/`:
+
+### Gestão Core (8 módulos) ✅
+- ✅ `/modules/wms` - Warehouse Management System
+- ✅ `/modules/tms` - Transport Management System
+- ✅ `/modules/oms` - Order Management System
+- ✅ `/modules/scm` - Supply Chain Management
+- ✅ `/modules/crm` - Customer Relationship Management
+- ✅ `/modules/erp` - Enterprise Resource Planning
+- ✅ `/modules/finance` - Gestão Financeira Avançada
+- ✅ `/modules/maintenance` - Manutenção de Frota
+
+### Análise & Inteligência (7 módulos) ✅
+- ✅ `/modules/analise-tributaria` - Análise Tributária
+- ✅ `/modules/projecao-economia-tributaria` - Projeção de Economia
+- ✅ `/modules/performance-total` - Performance Total
+- ✅ `/modules/consultoria-financeira-ia` - Consultoria IA
+- ✅ `/modules/auditoria` - Sistema de Auditoria
+- ✅ `/modules/analise-contabil-completa` - Análise Contábil
+- ✅ `/modules/roadmap` - Planejamento Estratégico
+
+### Operacional & Mobilidade (5 módulos) ✅
+- ✅ `/modules/tabela-frete` - Tabela de Frete
+- ✅ `/modules/custos-operacionais` - Custos Operacionais
+- ✅ `/modules/seguros` - Gestão de Seguros
+- ✅ `/modules/copiloto-rota` - Copiloto de Rota IA
+- ✅ `/modules/super-app-motorista` - App do Motorista
+
+### Processos & Configuração (3 módulos) ✅
+- ✅ `/modules/pops` - Procedimentos Operacionais
+- ✅ `/modules/precificacao-dinamica` - Precificação Dinâmica
+- ✅ `/modules/importar-motoristas` - Importação de Dados
+
+### Total: **24 principais + 15 especializados = 39 módulos completos!** 🎉
+
