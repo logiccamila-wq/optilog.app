@@ -153,7 +153,9 @@ const menuItems: MenuItem[] = [
     icon: <Assessment />,
     children: [
       { label: '🎯 KPIs e Metas', path: '/admin/kpis-metas', icon: <Assessment /> },
-      { label: '🛡️ Apólices de Seguro', path: '/modules/seguros', icon: <AdminPanelSettings /> }
+      { label: '🛡️ Apólices de Seguro', path: '/modules/seguros', icon: <AdminPanelSettings /> },
+      { label: '✅ Auditoria SASSMAQ/ISO', path: '/modules/auditoria', icon: <AdminPanelSettings /> },
+      { label: '📋 Monitoramento POPs', path: '/modules/pops', icon: <Article /> }
     ]
   },
   {
