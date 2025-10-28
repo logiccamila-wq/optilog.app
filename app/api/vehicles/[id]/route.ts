@@ -140,10 +140,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       return NextResponse.json({ ok: true, vehicle: mockVehicles[idx], _mock: true }, { status: 200 });
     }
 
-    const sql = getSql();
-    await ensureSchema(sql);
-
     try {
+      const sql = getSql();
+      await ensureSchema(sql);
+
       const rows = await sql`update vehicles
                               set plate = ${plate},
                                   model = ${model || null},
@@ -177,10 +177,40 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       });
       return NextResponse.json({ ok: true, vehicle }, { status: 200 });
     } catch (e: any) {
+      // Se DB falhar, atualiza entrada mock
       if (e?.code === '23505') {
         return NextResponse.json({ error: 'Placa já cadastrada' }, { status: 409 });
       }
-      throw e;
+      const idx = mockVehicles.findIndex((v) => v.id === id);
+      if (idx === -1) {
+        return NextResponse.json({ error: 'Veículo não encontrado' }, { status: 404 });
+      }
+      mockVehicles[idx] = {
+        ...mockVehicles[idx],
+        plate,
+        model: model || null,
+        brand: brand || null,
+        year,
+        odometer,
+        chassis,
+        renavam,
+        color,
+        cost_center,
+        goal,
+        axles_count,
+        axle_config_name,
+        axle_weights,
+        gross_weight_estimated,
+        tire_type,
+        tire_dimensions,
+        purchase_value,
+        ownership,
+        updated_at: new Date().toISOString(),
+      };
+      return new NextResponse(
+        JSON.stringify({ ok: true, vehicle: mockVehicles[idx], _mock: true }),
+        { status: 200, headers: { 'Content-Type': 'application/json', 'X-Mock-Fallback': 'true' } }
+      );
     }
   } catch (err: any) {
     return NextResponse.json({ error: err?.message || 'Erro interno' }, { status: 500 });
@@ -203,18 +233,31 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
       return NextResponse.json({ ok: true, _mock: true }, { status: 200 });
     }
 
-    const sql = getSql();
-    await ensureSchema(sql);
+    try {
+      const sql = getSql();
+      await ensureSchema(sql);
 
-    const rows = await sql`delete from vehicles where id = ${id} returning id`;
-    const deleted = Array.isArray(rows) ? rows[0] : rows?.[0];
-    if (!deleted) {
-      return NextResponse.json({ error: 'Veículo não encontrado' }, { status: 404 });
+      const rows = await sql`delete from vehicles where id = ${id} returning id`;
+      const deleted = Array.isArray(rows) ? rows[0] : rows?.[0];
+      if (!deleted) {
+        return NextResponse.json({ error: 'Veículo não encontrado' }, { status: 404 });
+      }
+      publishEvent({ entity: 'vehicle', action: 'delete', data: { id } }).catch(() => {
+        // ignore integration errors
+      });
+      return NextResponse.json({ ok: true }, { status: 200 });
+    } catch (_e: any) {
+      // Fallback para mock
+      const idx = mockVehicles.findIndex((v) => v.id === id);
+      if (idx === -1) {
+        return NextResponse.json({ error: 'Veículo não encontrado' }, { status: 404 });
+      }
+      mockVehicles.splice(idx, 1);
+      return new NextResponse(JSON.stringify({ ok: true, _mock: true }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json', 'X-Mock-Fallback': 'true' },
+      });
     }
-    publishEvent({ entity: 'vehicle', action: 'delete', data: { id } }).catch(() => {
-      // ignore integration errors
-    });
-    return NextResponse.json({ ok: true }, { status: 200 });
   } catch (err: any) {
     return NextResponse.json({ error: err?.message || 'Erro interno' }, { status: 500 });
   }

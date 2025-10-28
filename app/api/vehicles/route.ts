@@ -106,9 +106,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true, vehicle: newVehicle, _mock: true }, { status: 201 });
     }
 
-    const sql = getSql();
-    // Schema mínimo para veículos
-    await sql`create table if not exists vehicles (
+    try {
+      const sql = getSql();
+      // Schema mínimo para veículos
+      await sql`create table if not exists vehicles (
       id bigserial primary key,
       plate text not null,
       model text,
@@ -131,9 +132,8 @@ export async function POST(req: NextRequest) {
       created_at timestamptz default now(),
       updated_at timestamptz default now()
     )`;
-    await sql`create unique index if not exists idx_vehicles_plate_unique on vehicles (plate)`;
+      await sql`create unique index if not exists idx_vehicles_plate_unique on vehicles (plate)`;
 
-    try {
       const rows = await sql`insert into vehicles (
           plate, model, brand, year, odometer, chassis, renavam, color, cost_center, goal,
           axles_count, axle_config_name, axle_weights, gross_weight_estimated,
@@ -151,10 +151,38 @@ export async function POST(req: NextRequest) {
       });
       return NextResponse.json({ ok: true, vehicle }, { status: 201 });
     } catch (e: any) {
+      // Se houver qualquer falha de DB, faz fallback para mock para manter UX
       if (e?.code === '23505') {
         return NextResponse.json({ error: 'Placa já cadastrada' }, { status: 409 });
       }
-      throw e;
+      const newVehicle = {
+        id: mockVehicles.length + 1,
+        plate,
+        model: model || null,
+        brand: brand || null,
+        year,
+        odometer,
+        chassis,
+        renavam,
+        color,
+        cost_center,
+        goal,
+        axles_count,
+        axle_config_name,
+        axle_weights,
+        gross_weight_estimated,
+        tire_type,
+        tire_dimensions,
+        purchase_value,
+        ownership,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      mockVehicles.unshift(newVehicle);
+      return new NextResponse(JSON.stringify({ ok: true, vehicle: newVehicle, _mock: true }), {
+        status: 201,
+        headers: { 'Content-Type': 'application/json', 'X-Mock-Fallback': 'true' },
+      });
     }
   } catch (err: any) {
     return NextResponse.json({ error: err?.message || 'Erro interno' }, { status: 500 });
@@ -193,8 +221,9 @@ export async function GET(req: NextRequest) {
       return resp;
     }
 
-    const sql = getSql();
-    await sql`create table if not exists vehicles (
+    try {
+      const sql = getSql();
+      await sql`create table if not exists vehicles (
       id bigserial primary key,
       plate text not null,
       model text,
@@ -218,13 +247,13 @@ export async function GET(req: NextRequest) {
       updated_at timestamptz default now()
     )`;
 
-    const where = q
+      const where = q
       ? sql`WHERE plate ILIKE ${'%' + q + '%'} OR model ILIKE ${'%' + q + '%'} OR brand ILIKE ${'%' + q + '%'}`
       : sql``;
-    const totalRows = await sql`SELECT count(*)::int as total FROM vehicles ${where}`;
-    const total = Array.isArray(totalRows) ? totalRows[0]?.total ?? 0 : totalRows?.[0]?.total ?? 0;
+      const totalRows = await sql`SELECT count(*)::int as total FROM vehicles ${where}`;
+      const total = Array.isArray(totalRows) ? totalRows[0]?.total ?? 0 : totalRows?.[0]?.total ?? 0;
 
-    const rows = q
+      const rows = q
       ? await sql`SELECT id, plate, model, brand, year, odometer, chassis, renavam, color, cost_center, goal,
                     axles_count, axle_config_name, axle_weights, gross_weight_estimated, tire_type, tire_dimensions, purchase_value, ownership,
                     created_at, updated_at
@@ -239,11 +268,35 @@ export async function GET(req: NextRequest) {
                   ORDER BY created_at DESC
                   LIMIT ${pageSize} OFFSET ${offset}`;
 
-    const resp = new NextResponse(JSON.stringify(rows), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json', 'X-Total-Count': String(total) },
-    });
-    return resp;
+      const resp = new NextResponse(JSON.stringify(rows), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json', 'X-Total-Count': String(total) },
+      });
+      return resp;
+    } catch (e: any) {
+      // Fallback para mock se DB falhar (ex.: credenciais ausentes/invalidas)
+      let filtered = mockVehicles;
+      if (q) {
+        const lower = q.toLowerCase();
+        filtered = mockVehicles.filter(
+          (v) =>
+            String(v.plate || '').toLowerCase().includes(lower) ||
+            String(v.model || '').toLowerCase().includes(lower) ||
+            String(v.brand || '').toLowerCase().includes(lower)
+        );
+      }
+      const total = filtered.length;
+      const paginated = filtered.slice(offset, offset + pageSize);
+      const resp = new NextResponse(JSON.stringify(paginated), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Total-Count': String(total),
+          'X-Mock-Fallback': 'true',
+        },
+      });
+      return resp;
+    }
   } catch (err: any) {
     return NextResponse.json({ error: err?.message || 'Erro interno' }, { status: 500 });
   }
