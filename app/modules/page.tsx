@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Boxes, Package, Truck, ShoppingCart, Users } from 'lucide-react';
+import { Boxes, Package, Truck, ShoppingCart, Users, DollarSign } from 'lucide-react';
 
 export default function ModulesHome() {
   const groups = [
@@ -64,6 +64,13 @@ export default function ModulesHome() {
       icon: Package,
       color: '#d2c1ff',
       items: ['Financeiro e contabilidade', 'Produção', 'RH', 'Relatórios e gestão de ativos'],
+    },
+    {
+      key: 'finance',
+      title: 'Finance • Gestão Financeira',
+      icon: DollarSign,
+      color: '#90ee90',
+      items: ['FPA - Fluxo de Pagamentos', 'Análise de Risco', 'DRE e Contabilidade', 'Contas a Pagar/Receber'],
     },
   ];
 
