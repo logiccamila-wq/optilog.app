@@ -11,34 +11,70 @@ export async function GET(request: NextRequest) {
     const vehicle_id = searchParams.get('vehicle_id');
     const mechanic_id = searchParams.get('mechanic_id');
 
-    let query = `
-      SELECT 
-        id, number, vehicle_id, mechanic_id, supervisor_id,
-        type, priority, status, description,
-        created_at, scheduled_date, started_at, finished_at,
-        total_cost, labor_hours, labor_cost, parts_cost
-      FROM service_orders
-      WHERE 1=1
-    `;
-    const params: any[] = [];
-    let paramIndex = 1;
-
-    if (status) {
-      query += ` AND status = $${paramIndex++}`;
-      params.push(status);
+    let orders;
+    
+    // Build query with filters using template literals
+    if (status && vehicle_id && mechanic_id) {
+      orders = await sql`
+        SELECT id, number, vehicle_id, mechanic_id, supervisor_id,
+               type, priority, status, description,
+               created_at, scheduled_date, started_at, finished_at,
+               total_cost, labor_hours, labor_cost, parts_cost
+        FROM service_orders
+        WHERE status = ${status} AND vehicle_id = ${parseInt(vehicle_id)} AND mechanic_id = ${parseInt(mechanic_id)}
+        ORDER BY created_at DESC
+      `;
+    } else if (status && vehicle_id) {
+      orders = await sql`
+        SELECT id, number, vehicle_id, mechanic_id, supervisor_id,
+               type, priority, status, description,
+               created_at, scheduled_date, started_at, finished_at,
+               total_cost, labor_hours, labor_cost, parts_cost
+        FROM service_orders
+        WHERE status = ${status} AND vehicle_id = ${parseInt(vehicle_id)}
+        ORDER BY created_at DESC
+      `;
+    } else if (status) {
+      orders = await sql`
+        SELECT id, number, vehicle_id, mechanic_id, supervisor_id,
+               type, priority, status, description,
+               created_at, scheduled_date, started_at, finished_at,
+               total_cost, labor_hours, labor_cost, parts_cost
+        FROM service_orders
+        WHERE status = ${status}
+        ORDER BY created_at DESC
+      `;
+    } else if (vehicle_id) {
+      orders = await sql`
+        SELECT id, number, vehicle_id, mechanic_id, supervisor_id,
+               type, priority, status, description,
+               created_at, scheduled_date, started_at, finished_at,
+               total_cost, labor_hours, labor_cost, parts_cost
+        FROM service_orders
+        WHERE vehicle_id = ${parseInt(vehicle_id)}
+        ORDER BY created_at DESC
+      `;
+    } else if (mechanic_id) {
+      orders = await sql`
+        SELECT id, number, vehicle_id, mechanic_id, supervisor_id,
+               type, priority, status, description,
+               created_at, scheduled_date, started_at, finished_at,
+               total_cost, labor_hours, labor_cost, parts_cost
+        FROM service_orders
+        WHERE mechanic_id = ${parseInt(mechanic_id)}
+        ORDER BY created_at DESC
+      `;
+    } else {
+      orders = await sql`
+        SELECT id, number, vehicle_id, mechanic_id, supervisor_id,
+               type, priority, status, description,
+               created_at, scheduled_date, started_at, finished_at,
+               total_cost, labor_hours, labor_cost, parts_cost
+        FROM service_orders
+        ORDER BY created_at DESC
+      `;
     }
-    if (vehicle_id) {
-      query += ` AND vehicle_id = $${paramIndex++}`;
-      params.push(parseInt(vehicle_id));
-    }
-    if (mechanic_id) {
-      query += ` AND mechanic_id = $${paramIndex++}`;
-      params.push(parseInt(mechanic_id));
-    }
 
-    query += ` ORDER BY created_at DESC`;
-
-    const orders = await sql(query, params);
     return NextResponse.json(orders);
   } catch (error: any) {
     console.error('Erro ao buscar ordens de serviço:', error);

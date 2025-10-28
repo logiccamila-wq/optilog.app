@@ -11,6 +11,15 @@ const publicRoutes = [
   '/_next',
   '/favicon.ico',
   '/api/auth',
+  '/api/service-orders', // Temporário para testes
+  '/api/cte',
+  '/api/customers',
+  '/api/export',
+  '/api/fuel-supplies',
+  '/api/maintenances',
+  '/api/vehicle-alerts',
+  '/api/vehicles',
+  '/api/trips', // App Motorista
 ];
 
 // Mapeamento de rotas para roles permitidos

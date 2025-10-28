@@ -18,7 +18,7 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  IconButton,
+
   List,
   ListItem,
   ListItemText,
@@ -32,8 +32,6 @@ import {
   CheckCircle,
   Warning,
   Schedule,
-  Cancel,
-  AttachFile,
 } from '@mui/icons-material';
 
 interface ServiceOrder {
@@ -68,7 +66,7 @@ export default function ServiceOrdersPage() {
 
   useEffect(() => {
     loadOrders();
-  }, [filterStatus]);
+  }, [filterStatus]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadOrders = async () => {
     try {
@@ -299,6 +297,25 @@ export default function ServiceOrdersPage() {
                       <Typography variant="body2" sx={{ fontWeight: 700 }}>
                         R$ {order.total_cost.toFixed(2)}
                       </Typography>
+                    )}
+                  </Box>
+
+                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, gap: 1 }}>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => window.location.href = `/service-orders/${order.id}`}
+                    >
+                      Ver Detalhes
+                    </Button>
+                    {order.status === 'aberta' && (
+                      <Button
+                        size="small"
+                        variant="contained"
+                        color="primary"
+                      >
+                        Aprovar
+                      </Button>
                     )}
                   </Box>
                 </CardContent>

@@ -107,6 +107,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trigger_set_os_number ON service_orders;
 CREATE TRIGGER trigger_set_os_number
 BEFORE INSERT ON service_orders
 FOR EACH ROW

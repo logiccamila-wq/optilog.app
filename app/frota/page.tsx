@@ -1,11 +1,235 @@
 'use client';
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTheme } from '@/app/providers/ThemeProvider';
 import { useI18n } from '@/app/providers/I18nProvider';
+import {
+  Container,
+  Typography,
+  Box,
+  Card,
+  CardContent,
+  Grid,
+  Tabs,
+  Tab,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Chip,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  MenuItem,
+  LinearProgress,
+  IconButton
+} from '@mui/material';
+import {
+  LocalGasStation,
+  Build,
+  Warning,
+  AttachMoney,
+  Add,
+  CheckCircle,
+  PlayArrow
+} from '@mui/icons-material';
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+  return (
+    <div role="tabpanel" hidden={value !== index} {...other}>
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+    </div>
+  );
+}
 
 export default function FrotaPage() {
   const { colors, spacing, typography } = useTheme();
   const { t } = useI18n();
+  
+  const [tab, setTab] = useState(0);
+  const [vehicles, setVehicles] = useState<any[]>([]);
+  const [fuelSupplies, setFuelSupplies] = useState<any[]>([]);
+  const [maintenances, setMaintenances] = useState<any[]>([]);
+  const [alerts, setAlerts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  
+  // Dialogs
+  const [fuelDialog, setFuelDialog] = useState(false);
+  const [maintenanceDialog, setMaintenanceDialog] = useState(false);
+  const [alertDialog, setAlertDialog] = useState(false);
+  
+  // Forms
+  const [fuelForm, setFuelForm] = useState({
+    vehicle_id: '',
+    odometer: '',
+    liters: '',
+    unit_price: '',
+    fuel_type: 'diesel',
+    station_name: '',
+    payment_method: 'cash'
+  });
+  
+  const [maintenanceForm, setMaintenanceForm] = useState({
+    vehicle_id: '',
+    maintenance_type: 'preventive',
+    description: '',
+    scheduled_date: '',
+    priority: 'medium'
+  });
+
+  const [alertForm, setAlertForm] = useState({
+    vehicle_id: '',
+    alert_type: 'ipva',
+    description: '',
+    due_date: '',
+    document_number: '',
+    cost: ''
+  });
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const [vehiclesRes, fuelRes, maintRes, alertsRes] = await Promise.all([
+        fetch('/api/vehicles'),
+        fetch('/api/fuel-supplies'),
+        fetch('/api/maintenances?status=scheduled'),
+        fetch('/api/vehicle-alerts?status=pending')
+      ]);
+
+      if (vehiclesRes.ok) setVehicles(await vehiclesRes.json());
+      if (fuelRes.ok) setFuelSupplies(await fuelRes.json());
+      if (maintRes.ok) setMaintenances(await maintRes.json());
+      if (alertsRes.ok) setAlerts(await alertsRes.json());
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddFuel = async () => {
+    try {
+      const res = await fetch('/api/fuel-supplies', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fuelForm)
+      });
+
+      if (res.ok) {
+        setFuelDialog(false);
+        loadData();
+        setFuelForm({
+          vehicle_id: '',
+          odometer: '',
+          liters: '',
+          unit_price: '',
+          fuel_type: 'diesel',
+          station_name: '',
+          payment_method: 'cash'
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao registrar abastecimento:', error);
+    }
+  };
+
+  const handleAddMaintenance = async () => {
+    try {
+      const res = await fetch('/api/maintenances', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(maintenanceForm)
+      });
+
+      if (res.ok) {
+        setMaintenanceDialog(false);
+        loadData();
+        setMaintenanceForm({
+          vehicle_id: '',
+          maintenance_type: 'preventive',
+          description: '',
+          scheduled_date: '',
+          priority: 'medium'
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao agendar manutenção:', error);
+    }
+  };
+
+  const handleAddAlert = async () => {
+    try {
+      const res = await fetch('/api/vehicle-alerts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(alertForm)
+      });
+
+      if (res.ok) {
+        setAlertDialog(false);
+        loadData();
+        setAlertForm({
+          vehicle_id: '',
+          alert_type: 'ipva',
+          description: '',
+          due_date: '',
+          document_number: '',
+          cost: ''
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao criar alerta:', error);
+    }
+  };
+
+  const handleStartMaintenance = async (id: number) => {
+    try {
+      const res = await fetch(`/api/maintenances/${id}/start`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          technician_name: 'Mecânico',
+          workshop_name: 'Oficina Principal'
+        })
+      });
+
+      if (res.ok) loadData();
+    } catch (error) {
+      console.error('Erro ao iniciar manutenção:', error);
+    }
+  };
+
+  const handleResolveAlert = async (id: number) => {
+    try {
+      const res = await fetch(`/api/vehicle-alerts/${id}/resolve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resolved_notes: 'Resolvido' })
+      });
+
+      if (res.ok) loadData();
+    } catch (error) {
+      console.error('Erro ao resolver alerta:', error);
+    }
+  };
 
   const items = [
     {
