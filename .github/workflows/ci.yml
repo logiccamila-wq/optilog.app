@@ -27,10 +27,11 @@ jobs:
           node-version: '20.x'
           cache: 'npm'
 
-      - name: Detect packages and install + build
+      - name: Detect packages and install + build (focus root + backend)
         run: |
           set -euo pipefail
-          WORKDIRS="./ ./optilog-app ./frontend ./packages/frontend ./app ./optilog-app/frontend ./optilog-app/backend ./backend"
+          # Foco apenas no app raiz (Next.js) e backend; evita pastas legadas/duplicadas
+          WORKDIRS="./ ./backend"
           ARTIFACTS_DIR="$GITHUB_WORKSPACE/_ci_build_artifacts"
           mkdir -p "$ARTIFACTS_DIR"
           any_built=false
