@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const q = searchParams.get('q');
     const status = searchParams.get('status');
-    let query = `SELECT * FROM tools WHERE 1=1`;
+    let query = 'SELECT * FROM tools WHERE 1=1';
     const params: any[] = [];
 
     if (q) {

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { createContext, useContext, useMemo, useState } from 'react';
 import { ThemeProvider, createTheme, CssBaseline, Snackbar, Alert } from '@mui/material';
 

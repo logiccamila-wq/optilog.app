@@ -22,7 +22,7 @@ router.post('/', authMiddleware, (req, res) => {
   }
   const created_at = new Date().toISOString();
   db.run(
-    `INSERT INTO orders (customer_id, product_id, quantity, created_at) VALUES (?, ?, ?, ?)`,
+    'INSERT INTO orders (customer_id, product_id, quantity, created_at) VALUES (?, ?, ?, ?)',
     [customer_id, product_id, quantity, created_at],
     function (err) {
       if (err) return res.status(500).json({ error: 'Erro no banco' });
@@ -33,7 +33,7 @@ router.post('/', authMiddleware, (req, res) => {
 
 router.delete('/:id', authMiddleware, (req, res) => {
   const { id } = req.params;
-  db.run(`DELETE FROM orders WHERE id = ?`, [id], function (err) {
+  db.run('DELETE FROM orders WHERE id = ?', [id], function (err) {
     if (err) return res.status(500).json({ error: 'Erro no banco' });
     res.json({ deleted: this.changes });
   });

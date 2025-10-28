@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React from 'react';
 import { Post } from '@/utils/posts';
 import { useTheme } from '@/app/providers/ThemeProvider';

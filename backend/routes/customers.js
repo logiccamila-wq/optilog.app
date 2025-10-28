@@ -15,7 +15,7 @@ router.post('/', authMiddleware, (req, res) => {
   if (!name) return res.status(400).json({ error: 'name é obrigatório' });
   const created_at = new Date().toISOString();
   db.run(
-    `INSERT INTO customers (name, email, phone, created_at) VALUES (?, ?, ?, ?)`,
+    'INSERT INTO customers (name, email, phone, created_at) VALUES (?, ?, ?, ?)',
     [name, email, phone, created_at],
     function (err) {
       if (err) return res.status(500).json({ error: 'Erro no banco' });
@@ -28,7 +28,7 @@ router.put('/:id', authMiddleware, (req, res) => {
   const { id } = req.params;
   const { name, email, phone } = req.body || {};
   db.run(
-    `UPDATE customers SET name = ?, email = ?, phone = ? WHERE id = ?`,
+    'UPDATE customers SET name = ?, email = ?, phone = ? WHERE id = ?',
     [name, email, phone, id],
     function (err) {
       if (err) return res.status(500).json({ error: 'Erro no banco' });
@@ -39,7 +39,7 @@ router.put('/:id', authMiddleware, (req, res) => {
 
 router.delete('/:id', authMiddleware, (req, res) => {
   const { id } = req.params;
-  db.run(`DELETE FROM customers WHERE id = ?`, [id], function (err) {
+  db.run('DELETE FROM customers WHERE id = ?', [id], function (err) {
     if (err) return res.status(500).json({ error: 'Erro no banco' });
     res.json({ deleted: this.changes });
   });

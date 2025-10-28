@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
     const dataLines = lines.slice(1);
     
     let imported = 0;
-    let errors: string[] = [];
+    const errors: string[] = [];
 
     for (let i = 0; i < dataLines.length; i++) {
       try {

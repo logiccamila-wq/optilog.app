@@ -12,7 +12,7 @@ router.post('/register', (req, res) => {
     return res.status(400).json({ error: 'email e password são obrigatórios' });
   const hash = bcrypt.hashSync(password, 10);
   const created_at = new Date().toISOString();
-  const stmt = db.prepare(`INSERT INTO users (email, password_hash, created_at) VALUES (?, ?, ?)`);
+  const stmt = db.prepare('INSERT INTO users (email, password_hash, created_at) VALUES (?, ?, ?)');
   stmt.run([email, hash, created_at], function (err) {
     if (err) {
       if (err.message && err.message.includes('UNIQUE')) {
@@ -28,7 +28,7 @@ router.post('/login', (req, res) => {
   const { email, password } = req.body || {};
   if (!email || !password)
     return res.status(400).json({ error: 'email e password são obrigatórios' });
-  db.get(`SELECT * FROM users WHERE email = ?`, [email], (err, user) => {
+  db.get('SELECT * FROM users WHERE email = ?', [email], (err, user) => {
     if (err) return res.status(500).json({ error: 'Erro no banco' });
     if (!user) return res.status(404).json({ error: 'Usuário não encontrado' });
     const ok = bcrypt.compareSync(password, user.password_hash);

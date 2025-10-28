@@ -1,5 +1,5 @@
-import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 // Helper function to decode JWT and get user ID
 function getUserIdFromJwt(token: string): string | null {
@@ -9,7 +9,7 @@ function getUserIdFromJwt(token: string): string | null {
     const jwtPayload = JSON.parse(decoded);
     return jwtPayload.sub; // 'sub' claim is the user ID in Supabase JWTs
   } catch (e) {
-    console.error("Error decoding JWT:", e);
+    console.error('Error decoding JWT:', e);
     return null;
   }
 }
@@ -52,7 +52,7 @@ serve(async (req: Request) => {
       .single();
 
     if (error) throw error;
-    if (!data) throw new Error("Post not found or user is not authorized to edit this post.");
+    if (!data) throw new Error('Post not found or user is not authorized to edit this post.');
 
     return new Response(JSON.stringify(data), {
       status: 200,

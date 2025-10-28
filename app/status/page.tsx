@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { useEffect, useState } from 'react';
 import { stackAuth } from '@/lib/stackAuth';
 import { neonClient } from '@/lib/neonClient';

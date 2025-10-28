@@ -1,28 +1,28 @@
-"use client";
-import { useState } from "react";
+'use client';
+import { useState } from 'react';
 import { Box, Typography, TextField, Button, Paper, Alert, CircularProgress } from '@mui/material';
 
 export default function AIPage() {
   const [prompt, setPrompt] = useState(
-    "Explique rapidamente WMS e TMS (conceitos, diferenças e como se integram) e sugira 3 melhorias logísticas práticas para e-commerce no Brasil, considerando last-mile e níveis de serviço."
+    'Explique rapidamente WMS e TMS (conceitos, diferenças e como se integram) e sugira 3 melhorias logísticas práticas para e-commerce no Brasil, considerando last-mile e níveis de serviço.'
   );
   const [loading, setLoading] = useState(false);
   const [resp, setResp] = useState<any>(null);
 
   const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-  const region = "us-central1";
-  const functionName = "openaiProxy";
+  const region = 'us-central1';
+  const functionName = 'openaiProxy';
   const url = projectId
     ? `https://${region}-${projectId}.cloudfunctions.net/${functionName}`
-    : "";
+    : '';
 
   async function send() {
     setLoading(true);
     setResp(null);
     try {
       const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt }),
       });
       const data = await res.json();
@@ -39,7 +39,7 @@ export default function AIPage() {
       <Typography variant="h5" sx={{ mb: 2 }}>Teste IA via openaiProxy</Typography>
       <Paper variant="outlined" sx={{ p: 2, mb: 2 }}>
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-          URL: {url || "defina NEXT_PUBLIC_FIREBASE_PROJECT_ID"}
+          URL: {url || 'defina NEXT_PUBLIC_FIREBASE_PROJECT_ID'}
         </Typography>
       </Paper>
 

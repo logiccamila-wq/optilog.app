@@ -3,6 +3,10 @@ import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { neon } from '@neondatabase/serverless';
 
+// Force Node.js runtime instead of Edge
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 const sql = neon(process.env.DATABASE_URL!);
 
 // POST /api/service-orders/[id]/attachments - Upload de arquivos (fotos, documentos)
