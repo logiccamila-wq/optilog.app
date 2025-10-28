@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+export const runtime = 'nodejs';
+
 export async function POST() {
   // Limpa o cookie de autenticação (token)
   const response = NextResponse.json({ success: true });
