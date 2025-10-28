@@ -16,10 +16,14 @@ import {
   CircularProgress,
   MenuItem,
   Chip,
+  Tabs,
+  Tab,
 } from '@mui/material';
 import Card from '@/components/ui/card';
 
 export default function CadastroVeiculosPage() {
+  const [activeTab, setActiveTab] = useState(0);
+  
   const [plate, setPlate] = useState('');
   const [model, setModel] = useState('');
   const [year, setYear] = useState<number | ''>('');
@@ -35,6 +39,19 @@ export default function CadastroVeiculosPage() {
   const [tireDimensions, setTireDimensions] = useState('');
   const [purchaseValue, setPurchaseValue] = useState<number | ''>('');
   const [ownership, setOwnership] = useState('');
+
+  // NOVOS CAMPOS DE FINANCIAMENTO
+  const [financingType, setFinancingType] = useState(''); // 'vista', 'financiado', 'leasing', 'consorcio'
+  const [downPayment, setDownPayment] = useState<number | ''>(''); // Entrada
+  const [financedAmount, setFinancedAmount] = useState<number | ''>(''); // Valor financiado
+  const [installments, setInstallments] = useState<number | ''>(''); // Quantidade de parcelas
+  const [interestRate, setInterestRate] = useState<number | ''>(''); // Taxa de juros mensal %
+  const [monthlyPayment, setMonthlyPayment] = useState<number | ''>(''); // Parcela mensal
+  const [insuranceCost, setInsuranceCost] = useState<number | ''>(''); // Seguro anual
+  const [trackerCost, setTrackerCost] = useState<number | ''>(''); // Rastreador mensal
+  const [ipvaCost, setIpvaCost] = useState<number | ''>(''); // IPVA anual
+  const [licensingCost, setLicensingCost] = useState<number | ''>(''); // Licenciamento anual
+  const [expectedMonthlyRevenue, setExpectedMonthlyRevenue] = useState<number | ''>(''); // Receita esperada mensal
 
   // Presets de configuração de eixos (Lei da Balança)
   const [axleConfigSuggested, setAxleConfigSuggested] = useState('');
