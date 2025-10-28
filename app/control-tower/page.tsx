@@ -5,15 +5,15 @@ import dynamic from 'next/dynamic';
 import { useControlTowerWebSocket } from '@/hooks/useWebSocket';
 
 // Importação dinâmica do mapa para evitar problemas de SSR
-const MapContainer = dynamic(() => import('react-leaflet').then((mod) => mod.MapContainer), {
+const MapContainer: any = dynamic(() => import('react-leaflet').then((mod) => mod.MapContainer), {
   ssr: false,
 });
-const TileLayer = dynamic(() => import('react-leaflet').then((mod) => mod.TileLayer), {
+const TileLayer: any = dynamic(() => import('react-leaflet').then((mod) => mod.TileLayer), {
   ssr: false,
 });
-const Marker = dynamic(() => import('react-leaflet').then((mod) => mod.Marker), { ssr: false });
-const Popup = dynamic(() => import('react-leaflet').then((mod) => mod.Popup), { ssr: false });
-const Polyline = dynamic(() => import('react-leaflet').then((mod) => mod.Polyline), { ssr: false });
+const Marker: any = dynamic(() => import('react-leaflet').then((mod) => mod.Marker), { ssr: false });
+const Popup: any = dynamic(() => import('react-leaflet').then((mod) => mod.Popup), { ssr: false });
+const Polyline: any = dynamic(() => import('react-leaflet').then((mod) => mod.Polyline), { ssr: false });
 
 interface Vehicle {
   id: string;
@@ -186,7 +186,7 @@ export default function ControlTower() {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [routes] = useState(MOCK_ROUTES);
   const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('todos');
   const [searchTerm] = useState('');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [loading, setLoading] = useState(false);
@@ -588,9 +588,11 @@ export default function ControlTower() {
                         <Polyline
                           key={route.id}
                           positions={route.waypoints.map((wp) => [wp.lat, wp.lng])}
-                          color={statusColors[vehicle.status as keyof typeof statusColors]}
-                          weight={3}
-                          opacity={0.7}
+                          pathOptions={{
+                            color: statusColors[vehicle.status as keyof typeof statusColors],
+                            weight: 3,
+                            opacity: 0.7,
+                          }}
                         />
                       );
                     })}

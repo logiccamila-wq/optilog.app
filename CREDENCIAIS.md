@@ -4,28 +4,28 @@
 
 ### 1. Administrador Principal
 - **Email:** logiccamila@gmail.com
-- **Senha:** Multi12345678
+- **Senha:** [redigida – defina via painel/ENV]
 - **Role:** ADMIN
 - **Permissões:** Acesso total a todos os módulos (*)
 - **Status:** ✅ Verificado e Ativo
 
 ### 2. Administrador Secundário
 - **Email:** camila.eteste@gmail.com
-- **Senha:** Multi@#$%362748
+- **Senha:** [redigida – defina via painel/ENV]
 - **Role:** ADMIN
 - **Permissões:** Acesso total a todos os módulos (*)
 - **Status:** ✅ Verificado e Ativo
 
 ### 3. Administrador Secundário (Alternativo)
 - **Email:** camila.etseral@gmail.com
-- **Senha:** Multi@#$%362748
+- **Senha:** [redigida – defina via painel/ENV]
 - **Role:** ADMIN
 - **Permissões:** Acesso total a todos os módulos (*)
 - **Status:** ✅ Verificado e Ativo
 
 ### 4. Usuário de Teste
 - **Email:** teste@teste.com
-- **Senha:** teste123
+- **Senha:** [redigida – defina via painel/ENV]
 - **Role:** VIEWER
 - **Permissões:** dashboard, relatorios
 - **Status:** ✅ Verificado e Ativo
@@ -125,9 +125,9 @@ E a senha em:
 6. Rate limiting em login
 
 ### Arquivo Atual:
-- Senhas em texto plano em `lib/permissions.ts`
-- **NÃO COMMITAR SENHAS REAIS NO GIT**
-- Usar variáveis de ambiente para produção
+- Senhas eram registradas em texto plano em `lib/permissions.ts` (removidas nesta revisão)
+- **NÃO COMMITAR SENHAS REAIS NO GIT** — use variáveis de ambiente e hash (bcrypt)
+- Para ambientes de teste, defina credenciais via painel de admin seguro ou seeds controlados
 
 ---
 

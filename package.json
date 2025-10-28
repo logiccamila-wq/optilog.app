@@ -9,7 +9,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "node scripts/start.js",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:migrate": "node backend/scripts/apply_sql_files.mjs backend/scripts/create_os_tables.sql backend/scripts/create_tools_tables.sql"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -22,7 +23,6 @@
     "chartjs-adapter-date-fns": "^3.0.0",
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
-    "firebase": "^10.7.0",
     "jose": "^6.1.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.548.0",

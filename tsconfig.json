@@ -43,6 +43,7 @@
     "node_modules",
     "functions/**",
     "supabase/**",
-    "index.ts"
+    "index.ts",
+    "optilog.app/**"
   ]
 }

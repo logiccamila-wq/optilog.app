@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node app.js",
     "db:setup": "node scripts/db_setup.mjs",
-    "db:setup-full": "node scripts/db_setup_full.mjs"
+    "db:setup-full": "node scripts/db_setup_full.mjs",
+    "db:migrate": "node scripts/apply_sql_files.mjs scripts/create_os_tables.sql scripts/create_tools_tables.sql"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

@@ -13,6 +13,8 @@ build/
 # Environment Variables
 .env*.local
 .env
+.envrc
+.npmrc
 
 # OS files
 .DS_Store
@@ -20,6 +22,17 @@ build/
 # IDE
 .vscode/settings.json
 .idea/
+
+# Test/coverage outputs
+coverage/
+playwright-report/
+test-results/
+
+# Turborepo/monorepo caches
+.turbo/
+
+# Ignore nested snapshot folder (legacy duplicate)
+optilog.app/
 
 # Logs
 *.log
