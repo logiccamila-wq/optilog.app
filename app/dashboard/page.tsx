@@ -1,41 +1,96 @@
-"use client";
-import Link from 'next/link';
-import AuthStatus from '@/app/AuthStatus';
-import { useTheme } from '@/app/providers/ThemeProvider';
+'use client';
 
-const modules = [
-  { key: 'visao-geral', title: 'Visão Geral', desc: 'KPIs e status operacional em tempo real.' },
-  { key: 'pedidos', title: 'Pedidos', desc: 'Gestão de pedidos, tracking e SLA.' },
-  { key: 'logistica', title: 'Logística', desc: 'Rotas, last-mile e custos.' },
-  { key: 'estoque', title: 'Estoque', desc: 'Níveis, reposição e rupturas.' },
-  { key: 'financeiro', title: 'Financeiro', desc: 'Faturamento, custos e conciliações.' },
-  { key: 'analise', title: 'Análise', desc: 'Relatórios e insights preditivos.' },
-];
+import React from 'react';
+import { Box, Grid, Card, CardContent, Typography, Button } from '@mui/material';
+import {
+  LocalShipping,
+  DirectionsCar,
+  AttachMoney,
+  Assessment,
+  TrendingUp,
+  Build
+} from '@mui/icons-material';
+import { useRouter } from 'next/navigation';
 
 export default function DashboardPage() {
-  const { colors, spacing, typography } = useTheme();
+  const router = useRouter();
+
+  const stats = [
+    { label: 'Viagens Ativas', value: '12', icon: <LocalShipping />, color: '#1976d2', path: '/motorista' },
+    { label: 'Veículos Ativos', value: '45', icon: <DirectionsCar />, color: '#2e7d32', path: '/frota' },
+    { label: 'Receita Mês', value: 'R$ 245k', icon: <AttachMoney />, color: '#ed6c02', path: '/dashboard/financeiro' },
+    { label: 'OS Pendentes', value: '8', icon: <Build />, color: '#9c27b0', path: '/service-orders' },
+    { label: 'Eficiência', value: '94%', icon: <TrendingUp />, color: '#0288d1', path: '/bi' },
+    { label: 'Manutenções', value: '5', icon: <Build />, color: '#d32f2f', path: '/frota/manutencoes' }
+  ];
+
+  const quickActions = [
+    { label: 'Nova Viagem', path: '/motorista', icon: <LocalShipping /> },
+    { label: 'Nova OS', path: '/service-orders', icon: <Build /> },
+    { label: 'Torre de Controle', path: '/control-tower', icon: <Assessment /> },
+    { label: 'Relatórios', path: '/relatorios/capacidade', icon: <Assessment /> }
+  ];
 
   return (
-    <div style={{ maxWidth: 1000, margin: '2rem auto', padding: spacing.medium }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.medium }}>
-        <h1 style={{ fontSize: typography.h1, margin: 0 }}>Dashboard EJG</h1>
-        <AuthStatus />
-      </div>
+    <Box>
+      <Typography variant="h4" fontWeight="bold" gutterBottom>
+        Dashboard
+      </Typography>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+        Visão geral do sistema OptiLog TMS
+      </Typography>
 
-      <p style={{ color: colors.muted, fontSize: typography.subtitle, marginBottom: spacing.medium }}>
-        Explore os módulos abaixo. Para acessar dados reais, faça <Link href="/login">login</Link> ou <Link href="/signup">cadastro</Link>.
-      </p>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: spacing.medium }}>
-        {modules.map((m) => (
-          <Link key={m.key} href={`/dashboard/${m.key}`} style={{ textDecoration: 'none' }}>
-            <div style={{ border: `1px solid ${colors.border}`, borderRadius: 8, padding: spacing.medium, backgroundColor: colors.surface }}>
-              <h2 style={{ fontSize: typography.h2, marginTop: 0 }}>{m.title}</h2>
-              <p style={{ color: colors.muted, marginBottom: 0 }}>{m.desc}</p>
-            </div>
-          </Link>
+      {/* Stats Grid */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        {stats.map((stat) => (
+          <Grid item xs={12} sm={6} md={4} key={stat.label}>
+            <Card 
+              sx={{ 
+                cursor: 'pointer',
+                transition: 'transform 0.2s',
+                '&:hover': { transform: 'translateY(-4px)', boxShadow: 3 }
+              }}
+              onClick={() => router.push(stat.path)}
+            >
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                      {stat.label}
+                    </Typography>
+                    <Typography variant="h4" fontWeight="bold">
+                      {stat.value}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ bgcolor: `${stat.color}20`, p: 1.5, borderRadius: 2 }}>
+                    {React.cloneElement(stat.icon, { sx: { fontSize: 32, color: stat.color } })}
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
         ))}
-      </div>
-    </div>
+      </Grid>
+
+      {/* Quick Actions */}
+      <Typography variant="h6" fontWeight="bold" gutterBottom>
+        Ações Rápidas
+      </Typography>
+      <Grid container spacing={2}>
+        {quickActions.map((action) => (
+          <Grid item xs={12} sm={6} md={3} key={action.label}>
+            <Button
+              variant="outlined"
+              fullWidth
+              startIcon={action.icon}
+              onClick={() => router.push(action.path)}
+              sx={{ py: 2 }}
+            >
+              {action.label}
+            </Button>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
   );
 }
