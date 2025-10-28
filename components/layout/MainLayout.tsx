@@ -76,6 +76,7 @@ const menuItems: MenuItem[] = [
       { label: 'Fornecedores', path: '/cadastro/fornecedores', icon: <Business /> },
       { label: 'Veículos', path: '/cadastro/veiculos', icon: <DirectionsCar /> },
       { label: 'Motoristas', path: '/cadastro/motoristas', icon: <Person /> },
+      { label: 'Importar Motoristas', path: '/modules/importar-motoristas', icon: <Person /> },
       { label: 'Importação/Exportação', path: '/cadastro/importacao', icon: <Article /> }
     ]
   },
