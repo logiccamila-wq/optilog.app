@@ -92,6 +92,83 @@ export default function SuperGestorPage() {
       <p style={{ color: '#bbb', marginTop: 8 }}>
         Este módulo contém informações estratégicas e confidenciais da empresa.
       </p>
+
+      {/* Grid de Assistentes IA */}
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+        gap: 16, 
+        marginTop: 32 
+      }}>
+        <a href="/supergestor/ai/cfo" style={{ textDecoration: 'none' }}>
+          <div style={{ 
+            padding: 20, 
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+            borderRadius: 12,
+            color: 'white',
+            cursor: 'pointer',
+            transition: 'transform 0.2s'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          >
+            <h3 style={{ margin: 0, marginBottom: 8 }}>💰 CFO Virtual</h3>
+            <p style={{ margin: 0, opacity: 0.9, fontSize: 14 }}>Assistente Financeiro com IA</p>
+          </div>
+        </a>
+
+        <a href="/supergestor/ai/economista" style={{ textDecoration: 'none' }}>
+          <div style={{ 
+            padding: 20, 
+            background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', 
+            borderRadius: 12,
+            color: 'white',
+            cursor: 'pointer',
+            transition: 'transform 0.2s'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          >
+            <h3 style={{ margin: 0, marginBottom: 8 }}>📊 Economista Virtual</h3>
+            <p style={{ margin: 0, opacity: 0.9, fontSize: 14 }}>Análise Econômica e Preditiva</p>
+          </div>
+        </a>
+
+        <a href="/supergestor/ai/consultor" style={{ textDecoration: 'none' }}>
+          <div style={{ 
+            padding: 20, 
+            background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', 
+            borderRadius: 12,
+            color: 'white',
+            cursor: 'pointer',
+            transition: 'transform 0.2s'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          >
+            <h3 style={{ margin: 0, marginBottom: 8 }}>💼 Consultor Virtual</h3>
+            <p style={{ margin: 0, opacity: 0.9, fontSize: 14 }}>Consultoria Empresarial</p>
+          </div>
+        </a>
+
+        <a href="/supergestor/ai/advogado" style={{ textDecoration: 'none' }}>
+          <div style={{ 
+            padding: 20, 
+            background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)', 
+            borderRadius: 12,
+            color: 'white',
+            cursor: 'pointer',
+            transition: 'transform 0.2s'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          >
+            <h3 style={{ margin: 0, marginBottom: 8 }}>⚖️ Advogado Virtual</h3>
+            <p style={{ margin: 0, opacity: 0.9, fontSize: 14 }}>Assistência Jurídica com IA</p>
+          </div>
+        </a>
+      </div>
+
       <div style={{ marginTop: 24, padding: 16, background: '#1a1f3a', borderRadius: 8, border: '1px solid #334155' }}>
         <h3 style={{ color: '#a6d3ff', marginBottom: 12 }}>Configuração Externa</h3>
         <p style={{ color: '#999', fontSize: 14 }}>
