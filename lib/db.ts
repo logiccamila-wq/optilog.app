@@ -15,3 +15,7 @@ export function getSql(): any {
   }
   return cachedSql;
 }
+
+export function isDatabaseConfigured(): boolean {
+  return !!process.env.DATABASE_URL;
+}

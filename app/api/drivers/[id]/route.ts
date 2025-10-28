@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSql } from '@/lib/db';
+import { getSql, isDatabaseConfigured } from '@/lib/db';
 import { publishEvent } from '@/lib/integration';
 
 export const runtime = 'nodejs';
+
+// Mock data (mesma lista da rota principal)
+const mockDrivers = [
+  { id: 1, name: 'João Silva', cnh: '12345678901', phone: '11987654321', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: 2, name: 'Maria Santos', cnh: '98765432109', phone: '11912345678', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: 3, name: 'Carlos Oliveira', cnh: '11122233344', phone: '11965432100', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+];
 
 async function ensureSchema(sql: any) {
   await sql`create table if not exists drivers (
@@ -46,6 +53,22 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       return NextResponse.json({ error: 'Telefone inválido' }, { status: 400 });
     }
 
+    // Fallback sem DB
+    if (!isDatabaseConfigured()) {
+      const idx = mockDrivers.findIndex((d) => d.id === id);
+      if (idx === -1) {
+        return NextResponse.json({ error: 'Motorista não encontrado' }, { status: 404 });
+      }
+      mockDrivers[idx] = {
+        ...mockDrivers[idx],
+        name,
+        cnh: cnhDigits,
+        phone: phoneDigits || null,
+        updated_at: new Date().toISOString(),
+      };
+      return NextResponse.json({ ok: true, driver: mockDrivers[idx], _mock: true }, { status: 200 });
+    }
+
     const sql = getSql();
     await ensureSchema(sql);
 
@@ -80,6 +103,16 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
     const id = parseInt(params.id, 10);
     if (!Number.isFinite(id) || id <= 0) {
       return NextResponse.json({ error: 'id inválido' }, { status: 400 });
+    }
+
+    // Fallback sem DB
+    if (!isDatabaseConfigured()) {
+      const idx = mockDrivers.findIndex((d) => d.id === id);
+      if (idx === -1) {
+        return NextResponse.json({ error: 'Motorista não encontrado' }, { status: 404 });
+      }
+      mockDrivers.splice(idx, 1);
+      return NextResponse.json({ ok: true, _mock: true }, { status: 200 });
     }
 
     const sql = getSql();
