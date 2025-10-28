@@ -109,6 +109,7 @@ const menuItems: MenuItem[] = [
     label: 'Financeiro',
     icon: <AttachMoney />,
     children: [
+      { label: 'Tabela de Frete', path: '/modules/tabela-frete', icon: <Assessment /> },
       { label: 'Contas a Pagar', path: '/dashboard/financeiro/contas-a-pagar', icon: <AttachMoney /> },
       { label: 'Contas a Receber', path: '/dashboard/financeiro/contas-a-receber', icon: <AttachMoney /> },
       { label: 'Impostos', path: '/dashboard/financeiro/impostos', icon: <Article /> },
