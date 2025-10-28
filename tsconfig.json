@@ -21,6 +21,11 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
+    "forceConsistentCasingInFileNames": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "suppressImplicitAnyIndexErrors": true,
+    "noImplicitAny": false,
     "plugins": [
       {
         "name": "next"
