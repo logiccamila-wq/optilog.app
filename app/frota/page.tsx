@@ -65,6 +65,14 @@ export default function FrotaPage() {
       color: '#8b5cf6',
     },
     {
+      key: 'ferramentas',
+      title: 'Ferramentas',
+      desc: 'Inventário, empréstimos e manutenção',
+      href: '/frota/ferramentas',
+      icon: '🛠️',
+      color: '#0ea5e9',
+    },
+    {
       key: 'pedidos',
       title: 'Pedidos/Compras',
       desc: 'Requisições, cotações e pedidos',
