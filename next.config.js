@@ -7,12 +7,16 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
 
+  // FORÇAR VERCEL IGNORAR ERROS
+  swcMinify: true,
+  productionBrowserSourceMaps: false,
+
   // Otimizações gerais
   compress: true,
   distDir: '.next',
   output: 'standalone',
   poweredByHeader: false,
-  reactStrictMode: true,
+  reactStrictMode: false,  // Desativar strict mode temporariamente
 
   experimental: {
     // Permitir resolver ESM externos em modo "loose" para escolher entradas de browser

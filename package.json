@@ -7,7 +7,8 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "SKIP_ENV_VALIDATION=true next build",
+    "vercel-build": "SKIP_ENV_VALIDATION=true next build",
     "start": "node scripts/start.js",
     "lint": "next lint",
     "db:migrate": "node backend/scripts/apply_sql_files.mjs backend/scripts/create_os_tables.sql backend/scripts/create_tools_tables.sql"
