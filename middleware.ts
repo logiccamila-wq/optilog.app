@@ -20,6 +20,11 @@ const publicRoutes = [
   '/api/vehicle-alerts',
   '/api/vehicles',
   '/api/trips', // App Motorista
+  '/motorista', // App Motorista PWA
+  '/manifest.json',
+  '/service-worker.js',
+  '/offline.html',
+  '/icons',
 ];
 
 // Mapeamento de rotas para roles permitidos

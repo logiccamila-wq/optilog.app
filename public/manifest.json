@@ -12,5 +12,22 @@
     { "src": "/icons/icon-384.png", "sizes": "384x384", "type": "image/png" },
     { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
     { "src": "/icons/ejg-app-icon.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any maskable" }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "App Motorista",
+      "short_name": "Motorista",
+      "description": "Acessar app do motorista",
+      "url": "/motorista",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Minhas Viagens",
+      "short_name": "Viagens",
+      "description": "Ver viagens ativas",
+      "url": "/motorista",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "categories": ["business", "productivity", "utilities"]
 }
