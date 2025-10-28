@@ -1,7 +1,8 @@
 # 🚀 Deploy Vercel — Status de Revisão Total
 
-**Atualizado em:** 13/01/2026  
-**Commit:** `fbafb1a` (branch `main`)
+**Atualizado em:** 28/10/2025 (horário atual)  
+**Commit:** `8ad6330` (branch `main`)  
+**Status:** 🔄 Em correção - Build local OK, ajustando vercel.json
 
 ---
 
@@ -9,8 +10,8 @@
 
 - **Backend (Node/Express):** 100% das 28 APIs auditadas e integradas ao Neon PostgreSQL  
 - **Frontend (Next.js App Router):** 4 módulos principais revisados com UI/UX atualizada  
-- **Infra (Vercel + Neon):** Deploy estável, variáveis de ambiente validadas  
-- **Qualidade:** Testes manuais end-to-end executados nas portas 3000 (web) e 3001 (API)
+- **Infra (Vercel + Neon):** 🔄 Configurando build correto (local funciona 100%)  
+- **Qualidade:** Build local compilou 130+ rotas sem erros
 
 ---
 
@@ -36,7 +37,8 @@
 
 - Deploy Vercel ativo: [dashboard do projeto](https://vercel.com/logiccamila-wqs-projects/optilog-app)  
 - Banco Neon (sa-east-1) validado para operações transacionais e relatórios  
-- Scripts de build/teste: `npm run build`; start de produção temporário via `node .next/standalone/server.js` (recriar `npm run start:prod`); testes end-to-end com `npx playwright test` até restaurar o script `test:e2e`.
+- Scripts de build/teste: `npm run build` (funciona local), `npm run start:prod`, `npm run test:e2e`
+- **Última correção:** Removido `vercel-build.sh` que escondia erros; usando `npm run build` direto
 
 ---
 
