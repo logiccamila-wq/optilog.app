@@ -95,8 +95,10 @@ Este repositório já está otimizado com:
 2. "Usage this month" - veja horas de compute e storage GB-month
 
 ### Calcular Custos:
-- **Compute**: ~$0.18/hora para 2-core, 8GB RAM
-- **Storage**: ~$0.07/GB-month
+**Nota**: Preços de referência do GitHub Codespaces (verificar preços atuais em https://docs.github.com/en/billing/managing-billing-for-github-codespaces/about-billing-for-github-codespaces)
+
+- **Compute**: ~$0.18/hora para 2-core, 8GB RAM (preço pode variar)
+- **Storage**: ~$0.07/GB-month (preço pode variar)
 
 **Exemplo:**
 - 5 codespaces x 2 GB cada = 10 GB storage

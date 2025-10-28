@@ -81,12 +81,14 @@ A: Configure auto-delete (passo 2 acima) e use apenas 1-2 codespaces por vez.
 
 ## 💰 Entendendo os Custos
 
+**Nota**: Preços baseados em GitHub Codespaces pricing (verificar preços atuais em https://docs.github.com/en/billing/managing-billing-for-github-codespaces/about-billing-for-github-codespaces)
+
 ### Storage
-- **Custo**: ~$0.07 por GB-month
+- **Custo**: ~$0.07 por GB-month (preço de referência, pode variar)
 - **Exemplo**: 10 GB = ~$0.70/mês
 
 ### Compute
-- **Custo**: ~$0.18/hora para 2-core, 8GB RAM
+- **Custo**: ~$0.18/hora para 2-core, 8GB RAM (preço de referência, pode variar)
 - **Dica**: Pare codespaces quando não estiver usando!
 
 ### Como Parar um Codespace
