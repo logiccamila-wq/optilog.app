@@ -15,5 +15,17 @@
     "vscode": {
       "extensions": ["esbenp.prettier-vscode", "ms-vscode.js-debug", "ms-playwright.playwright"]
     }
-  }
+  },
+  "remoteEnv": {
+    "SKIP_ENV_VALIDATION": "true",
+    "SKIP_LINT": "true"
+  },
+  "features": {},
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "8gb",
+    "storage": "32gb"
+  },
+  "onCreateCommand": "echo 'Codespace created. See CODESPACES_MANAGEMENT.md for optimization tips.'",
+  "waitFor": "postCreateCommand"
 }

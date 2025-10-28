@@ -42,3 +42,28 @@ yarn-error.log*
 
 # Build artifacts
 _ci_build_artifacts/
+
+# Temporary files
+*.swp
+*.swo
+*~
+.tmp/
+tmp/
+
+# Cache directories
+.cache/
+.npm/
+.eslintcache
+.next/cache/
+
+# TypeScript
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# Playwright
+.playwright/
+
+# Misc
+.DS_Store
+Thumbs.db
+
