@@ -1,6 +1,5 @@
-"use client";
+'use client';
 import { useEffect, useState } from 'react';
-import { getAuthInstance } from '@/lib/firebaseClient';
 import { Typography, Alert, Paper, CircularProgress, Box } from '@mui/material';
 
 export default function LogoutPage() {
@@ -10,16 +9,20 @@ export default function LogoutPage() {
   useEffect(() => {
     const run = async () => {
       try {
-        const auth = await getAuthInstance();
-        if (auth) {
-          const { signOut } = await import('firebase/auth');
-          await signOut(auth);
+        // Chama API para limpar o cookie JWT
+        await fetch('/api/auth/logout', { method: 'POST' });
+        // Limpa qualquer estado local remanescente
+        try {
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
+        } catch {
+          // ignore localStorage errors (e.g., SSR or disabled storage)
         }
       } catch (e: any) {
         setError(e?.message || 'Falha ao sair');
       } finally {
         setProcessing(false);
-        window.location.href = '/';
+        window.location.href = '/login';
       }
     };
     run();

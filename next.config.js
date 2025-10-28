@@ -1,32 +1,64 @@
 const nextConfig = {
+  // Qualidade e tolerância a warnings/TS no CI
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Temporarily ignore TypeScript errors during CI builds (e.g., Vercel)
-  // to prevent non-critical type issues from blocking deployments.
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Optimize for containerized/App Hosting deployments
+
+  // Otimizações gerais
+  compress: true,
+  distDir: '.next',
   output: 'standalone',
+  poweredByHeader: false,
+  reactStrictMode: true,
+
   experimental: {
     // Permitir resolver ESM externos em modo "loose" para escolher entradas de browser
     esmExternals: 'loose',
+    // Otimizações para MUI
+    optimizePackageImports: ['@mui/material', '@mui/icons-material'],
   },
-  // Transpile node_modules that ship modern syntax so Webpack can parse
-  transpilePackages: ['undici'],
-  // Ensure certain ESM packages are handled correctly
-  // (removido transpilePackages específico para firebase para evitar conflitos de export)
-  webpack: (config, { isServer, webpack }) => {
-    // Skip customizations when building on Firebase App Hosting (buildpack sets FIREBASE_APP_HOSTING=1)
+
+  // Transpile node_modules que usam sintaxe moderna
+  transpilePackages: ['undici', '@mui/material', '@mui/icons-material'],
+
+  images: {
+    domains: ['localhost'],
+    remotePatterns: [
+      { protocol: 'https', hostname: '**.vercel.app' },
+    ],
+  },
+
+  // Webpack custom
+  webpack: (config, { isServer, webpack, dev }) => {
+    // Skip customizations quando em Firebase App Hosting
     if (process.env.FIREBASE_APP_HOSTING) {
       return config;
     }
+
+    // Otimizações de dev
+    if (dev) {
+      config.cache = { type: 'memory' };
+    }
+
+    // Preferir condições de browser ao resolver exports
+    config.resolve = config.resolve || {};
+    config.resolve.conditionNames = ['browser', 'import', 'module', 'default'];
+    config.resolve.fallback = {
+      ...(config.resolve.fallback || {}),
+      fs: false,
+      net: false,
+      tls: false,
+    };
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      '@': '.',
+    };
+
     if (!isServer) {
-      // Prefer browser conditions when resolving package exports
-      config.resolve = config.resolve || {};
-      config.resolve.conditionNames = ['browser', 'import', 'module', 'default'];
-      // Hard-block undici from client bundles (alias to stub/false)
+      // Bloquear undici no client (alias para stub) e evitar parsing de código Node-only
       config.resolve.alias = {
         ...(config.resolve.alias || {}),
         undici: require.resolve('./lib/undici-stub.js'),
@@ -35,10 +67,10 @@ const nextConfig = {
         'undici/lib/web/fetch/util.js': require.resolve('./lib/undici-stub.js'),
         'undici/lib/web/fetch': require.resolve('./lib/undici-stub.js'),
         'undici/lib': require.resolve('./lib/undici-stub.js'),
-        // Force Firebase Auth to use browser build and avoid node-esm variant
+        // Forçar Firebase Auth a usar build de browser (evitar node-esm)
         '@firebase/auth/dist/node-esm/index.js': require.resolve('./lib/empty.js'),
       };
-      // Ignore undici and @undici imports to avoid parsing Node-only code in client
+
       config.plugins = config.plugins || [];
       config.plugins.push(
         new webpack.IgnorePlugin({ resourceRegExp: /^undici(\\|\/|$)/ })
@@ -46,8 +78,8 @@ const nextConfig = {
       config.plugins.push(
         new webpack.IgnorePlugin({ resourceRegExp: /^@undici\// })
       );
-      // Keep default package export resolution; avoid forcing specific Firebase variants here
     }
+
     return config;
   },
 };

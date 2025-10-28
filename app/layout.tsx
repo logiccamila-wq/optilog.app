@@ -1,10 +1,13 @@
 import './globals.css';
 import { ReactNode } from 'react';
-import Header from './Header';
-import ToastProvider from '@/components/ui/ToastProvider';
+import dynamic from 'next/dynamic';
 import { ThemeProvider } from '@/app/providers/ThemeProvider';
-import ServiceWorkerRegister from '@/app/providers/ServiceWorker';
-import SWUpdateSnackbar from '@/components/pwa/SWUpdateSnackbar';
+
+// Carregar componentes de UI (MUI/Emotion) apenas no cliente para evitar SSR de Emotion no _not-found
+const Header = dynamic(() => import('./Header'), { ssr: false });
+const ToastProvider = dynamic(() => import('@/components/ui/ToastProvider'), { ssr: false });
+const ServiceWorkerRegister = dynamic(() => import('@/app/providers/ServiceWorker'), { ssr: false });
+const SWUpdateSnackbar = dynamic(() => import('@/components/pwa/SWUpdateSnackbar'), { ssr: false });
 
 // Configurações para server-side rendering e edge runtime
 export const runtime = 'edge';
