@@ -58,6 +58,11 @@ const menuItems: MenuItem[] = [
     icon: <Dashboard />
   },
   {
+    label: '🔐 SuperGestor',
+    path: '/supergestor',
+    icon: <AdminPanelSettings />
+  },
+  {
     label: 'Cadastros',
     icon: <Business />,
     children: [
@@ -147,7 +152,6 @@ const menuItems: MenuItem[] = [
     label: 'Administração',
     icon: <AdminPanelSettings />,
     children: [
-      { label: 'Super Gestor', path: '/supergestor', icon: <AdminPanelSettings /> },
       { label: 'Admin', path: '/admin', icon: <Settings /> },
       { label: 'Usuários', path: '/usuarios', icon: <Person /> },
       { label: 'Dev Tools', path: '/dev', icon: <Settings /> }
