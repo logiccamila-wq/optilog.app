@@ -53,14 +53,20 @@ interface MenuItem {
 
 const menuItems: MenuItem[] = [
   {
-    label: 'Dashboard',
-    path: '/dashboard',
-    icon: <Dashboard />
-  },
-  {
     label: '🔐 SuperGestor',
-    path: '/supergestor',
-    icon: <AdminPanelSettings />
+    icon: <AdminPanelSettings />,
+    children: [
+      { label: 'Dashboard Executivo', path: '/dashboard', icon: <Dashboard /> },
+      { label: 'Torre de Controle', path: '/control-tower', icon: <Map /> },
+      { label: 'BI Analytics', path: '/bi', icon: <Assessment /> },
+      { label: 'Financeiro DRE', path: '/dashboard/financeiro/dre', icon: <Assessment /> },
+      { label: 'Centros de Custo', path: '/dashboard/financeiro/centros-de-custo', icon: <Business /> },
+      { label: 'Contabilidade', path: '/dashboard/financeiro/contabilidade', icon: <Assessment /> },
+      { label: 'CFO Virtual', path: '/supergestor/ai/cfo', icon: <AttachMoney /> },
+      { label: 'Economista Virtual', path: '/supergestor/ai/economista', icon: <Assessment /> },
+      { label: 'Consultor Virtual', path: '/supergestor/ai/consultor', icon: <SmartToy /> },
+      { label: 'Advogado Virtual', path: '/supergestor/ai/advogado', icon: <AdminPanelSettings /> }
+    ]
   },
   {
     label: 'Cadastros',
@@ -77,7 +83,6 @@ const menuItems: MenuItem[] = [
     label: 'Operacional',
     icon: <LocalShipping />,
     children: [
-      { label: 'Torre de Controle', path: '/control-tower', icon: <Map /> },
       { label: 'Viagens', path: '/motorista', icon: <LocalShipping /> },
       { label: 'Ordens de Serviço', path: '/service-orders', icon: <Build /> },
       { label: 'POP - Procedimentos', path: '/operacoes/pop', icon: <Article /> },
@@ -104,16 +109,10 @@ const menuItems: MenuItem[] = [
     label: 'Financeiro',
     icon: <AttachMoney />,
     children: [
-      { label: 'Visão Geral', path: '/dashboard/financeiro', icon: <Dashboard /> },
       { label: 'Contas a Pagar', path: '/dashboard/financeiro/contas-a-pagar', icon: <AttachMoney /> },
       { label: 'Contas a Receber', path: '/dashboard/financeiro/contas-a-receber', icon: <AttachMoney /> },
-      { label: 'DRE', path: '/dashboard/financeiro/dre', icon: <Assessment /> },
-      { label: 'Centros de Custo', path: '/dashboard/financeiro/centros-de-custo', icon: <Business /> },
       { label: 'Impostos', path: '/dashboard/financeiro/impostos', icon: <Article /> },
-      { label: 'Conciliação Bancária', path: '/dashboard/financeiro/conciliacao', icon: <AttachMoney /> },
-      { label: 'Contabilidade', path: '/dashboard/financeiro/contabilidade', icon: <Assessment /> },
-      { label: 'FPA - Forecast', path: '/finance/fpa', icon: <Assessment /> },
-      { label: 'Risk Score', path: '/finance/risk', icon: <Assessment /> }
+      { label: 'Conciliação Bancária', path: '/dashboard/financeiro/conciliacao', icon: <AttachMoney /> }
     ]
   },
   {
@@ -121,18 +120,7 @@ const menuItems: MenuItem[] = [
     icon: <Assessment />,
     children: [
       { label: 'Capacidade', path: '/relatorios/capacidade', icon: <Assessment /> },
-      { label: 'Frete', path: '/relatorios/frete', icon: <Assessment /> },
-      { label: 'BI Analytics', path: '/bi', icon: <Assessment /> }
-    ]
-  },
-  {
-    label: 'IA & Automação',
-    icon: <SmartToy />,
-    children: [
-      { label: 'Assistentes IA', path: '/ai', icon: <SmartToy /> },
-      { label: 'CFO Virtual', path: '/ai/cfo', icon: <AttachMoney /> },
-      { label: 'Economista Virtual', path: '/ai/economista', icon: <Assessment /> },
-      { label: 'Chat', path: '/chat', icon: <Chat /> }
+      { label: 'Frete', path: '/relatorios/frete', icon: <Assessment /> }
     ]
   },
   {
