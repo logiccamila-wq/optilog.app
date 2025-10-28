@@ -124,6 +124,15 @@ const menuItems: MenuItem[] = [
     ]
   },
   {
+    label: '🚀 Inovação',
+    icon: <SmartToy />,
+    children: [
+      { label: '🤖 Copiloto de Rota IA', path: '/modules/copiloto-rota', icon: <Map /> },
+      { label: '💰 Precificação Dinâmica', path: '/modules/precificacao-dinamica', icon: <AttachMoney /> },
+      { label: '📱 Super App Motorista', path: '/modules/super-app-motorista', icon: <Person /> }
+    ]
+  },
+  {
     label: 'Módulos',
     icon: <Settings />,
     children: [
