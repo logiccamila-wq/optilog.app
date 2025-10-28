@@ -13,8 +13,10 @@ const SWUpdateSnackbar = dynamic(() => import('@/components/pwa/SWUpdateSnackbar
 export const runtime = 'edge';
 export const preferredRegion = ['gru1', 'iad1']; // São Paulo e Virginia
 
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://optilog-app-logiccamila-wqs-projects.vercel.app';
+
 export const metadata = {
-  metadataBase: new URL('https://studio-4793785332-8ea02.web.app'),
+  metadataBase: new URL(appUrl),
   title: {
     default: 'OptiLog • Plataforma de Insights',
     template: '%s • OptiLog',
@@ -34,10 +36,10 @@ export const metadata = {
   openGraph: {
     title: 'OptiLog • Plataforma de Insights',
     description: 'UI escura inspirada no Copilot, com destaque azul.',
-    url: '/',
+    url: appUrl,
     siteName: 'OptiLog',
     images: [
-      { url: '/logo-xyz.svg', width: 512, height: 512, alt: 'OptiLog' },
+      { url: `${appUrl}/logo-xyz.svg`, width: 512, height: 512, alt: 'OptiLog' },
     ],
     locale: 'pt_BR',
     type: 'website',
@@ -46,7 +48,7 @@ export const metadata = {
     card: 'summary',
     title: 'OptiLog',
     description: 'UI escura com MUI e integração com IA.',
-    images: ['/logo-xyz.svg'],
+    images: [`${appUrl}/logo-xyz.svg`],
   },
 };
 

@@ -1,0 +1,40 @@
+name: Neon DB Migrate (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      run:
+        description: "Run migrations against DATABASE_URL"
+        required: true
+        default: "yes"
+
+permissions:
+  contents: read
+
+jobs:
+  migrate:
+    name: Apply SQL migrations to Neon
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.run == 'yes' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then npm ci --no-audit --no-fund; else npm install --no-audit --no-fund; fi
+
+      - name: Run migrations
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::DATABASE_URL secret is not set. Configure it in repo or org secrets."
+            exit 1
+          fi
+          npm run db:migrate
