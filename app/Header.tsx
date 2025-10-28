@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { MouseEvent, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -24,6 +24,10 @@ export default function Header() {
     { name: 'Logística (TMS)', href: '/modules/tms' },
     { name: 'Análise (BI)', href: '/modules/bi' },
     { name: 'Estoque (WMS)', href: '/modules/wms' },
+  ];
+  const cadastros = [
+    { name: 'Motoristas', href: '/cadastro/motoristas' },
+    { name: 'Veículos', href: '/cadastro/veiculos' },
   ];
 
   return (
@@ -79,6 +83,29 @@ export default function Header() {
                 </MenuItem>
               ))}
             </Menu>
+            <Button
+              id="cadastros-button"
+              color="inherit"
+              onClick={handleClick}
+              aria-controls={open ? 'cadastros-menu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={open ? 'true' : undefined}
+            >
+              Cadastros
+            </Button>
+            <Menu
+              id="cadastros-menu"
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              MenuListProps={{ 'aria-labelledby': 'cadastros-button' }}
+            >
+              {cadastros.map((mod) => (
+                <MenuItem key={mod.name} onClick={handleClose} component={Link} href={mod.href}>
+                  {mod.name}
+                </MenuItem>
+              ))}
+            </Menu>
             <Button component={Link} href="/status" color="inherit">Status</Button>
             <Button component={Link} href="/driver" color="inherit">Motorista</Button>
             <Button
@@ -114,6 +141,12 @@ export default function Header() {
             >
               <MenuItem component={Link} href="/" onClick={handleClose}>Início</MenuItem>
               {modules.map((mod) => (
+                <MenuItem key={mod.name} onClick={handleClose} component={Link} href={mod.href}>
+                  {mod.name}
+                </MenuItem>
+              ))}
+              <MenuItem disabled>Cadastros</MenuItem>
+              {cadastros.map((mod) => (
                 <MenuItem key={mod.name} onClick={handleClose} component={Link} href={mod.href}>
                   {mod.name}
                 </MenuItem>
