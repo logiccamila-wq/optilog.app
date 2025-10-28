@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768 1024" width="384" height="512">
+  <!-- Background -->
+  <rect width="768" height="1024" fill="#F5E6D3"/>
+  
+  <!-- Head -->
+  <ellipse cx="384" cy="180" rx="120" ry="140" fill="#D4A574"/>
+  
+  <!-- Hair -->
+  <path d="M 264 100 Q 264 50 320 40 Q 384 30 448 40 Q 504 50 504 100 Q 504 140 490 160 L 480 140 Q 470 120 450 110 Q 420 95 384 95 Q 348 95 318 110 Q 298 120 288 140 L 278 160 Q 264 140 264 100 Z" fill="#4A3428"/>
+  
+  <!-- Ears -->
+  <ellipse cx="264" cy="200" rx="25" ry="35" fill="#D4A574"/>
+  <ellipse cx="504" cy="200" rx="25" ry="35" fill="#D4A574"/>
+  
+  <!-- Glasses Frame -->
+  <rect x="280" y="165" width="90" height="70" rx="15" fill="none" stroke="#2C1810" stroke-width="6"/>
+  <rect x="398" y="165" width="90" height="70" rx="15" fill="none" stroke="#2C1810" stroke-width="6"/>
+  <line x1="370" y1="200" x2="398" y2="200" stroke="#2C1810" stroke-width="6"/>
+  
+  <!-- Eyes -->
+  <circle cx="315" cy="200" r="18" fill="white"/>
+  <circle cx="315" cy="200" r="12" fill="#4A3428"/>
+  <circle cx="443" cy="200" r="18" fill="white"/>
+  <circle cx="443" cy="200" r="12" fill="#4A3428"/>
+  
+  <!-- Eyebrows -->
+  <path d="M 290 160 Q 315 155 340 160" fill="none" stroke="#2C1810" stroke-width="5" stroke-linecap="round"/>
+  <path d="M 428 160 Q 453 155 478 160" fill="none" stroke="#2C1810" stroke-width="5" stroke-linecap="round"/>
+  
+  <!-- Nose -->
+  <path d="M 384 200 L 384 240 Q 384 248 390 248 Q 396 248 396 240" fill="none" stroke="#B88A5E" stroke-width="3"/>
+  
+  <!-- Beard -->
+  <ellipse cx="384" cy="280" rx="80" ry="60" fill="#4A3428"/>
+  <path d="M 304 250 Q 304 280 320 300 Q 340 320 384 325 Q 428 320 448 300 Q 464 280 464 250" fill="#4A3428"/>
+  
+  <!-- Smile -->
+  <path d="M 340 270 Q 384 285 428 270" fill="none" stroke="white" stroke-width="4" stroke-linecap="round"/>
+  <rect x="340" y="265" width="88" height="8" fill="white" rx="4"/>
+  
+  <!-- Shirt - Grey -->
+  <rect x="234" y="330" width="300" height="450" fill="#5A5A5A"/>
+  
+  <!-- Collar - Red -->
+  <polygon points="284,330 334,380 284,400" fill="#C41E3A"/>
+  <polygon points="484,330 434,380 484,400" fill="#C41E3A"/>
+  <path d="M 334 380 L 384 420 L 434 380" fill="#C41E3A"/>
+  
+  <!-- Buttons -->
+  <circle cx="384" cy="450" r="6" fill="#2C1810"/>
+  <circle cx="384" cy="520" r="6" fill="#2C1810"/>
+  <circle cx="384" cy="590" r="6" fill="#2C1810"/>
+  <circle cx="384" cy="660" r="6" fill="#2C1810"/>
+  
+  <!-- EJG Logo on Shirt -->
+  <text x="430" y="540" font-family="Arial Black, sans-serif" font-size="50" font-weight="bold" fill="#C41E3A">EJG</text>
+  <text x="410" y="580" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#C41E3A">EVOLUÇÃO EM</text>
+  <text x="415" y="600" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#C41E3A">TRANSPORTE</text>
+  
+  <!-- Red stripe detail -->
+  <line x1="334" y1="380" x2="334" y2="780" stroke="#C41E3A" stroke-width="4"/>
+</svg>
