@@ -1,8 +1,8 @@
 # 🚀 Guia Completo de Deploy na Vercel com Neon (Português)
 
-> **Stack do Projeto:** Vercel (hosting) + Neon (PostgreSQL) + Next.js 14
+> **Stack do Projeto:** Vercel (hosting) + Neon (PostgreSQL) + Stack Auth + Next.js 14
 
-Este documento explica, passo a passo, como publicar o projeto na Vercel usando integração com GitHub e CLI local. Inclui configuração de variáveis de ambiente e integração com Neon PostgreSQL.
+Este documento explica, passo a passo, como publicar o projeto na Vercel usando integração com GitHub e CLI local. Inclui configuração de variáveis de ambiente, integração com Neon PostgreSQL e Stack Auth.
 
 ---
 
@@ -11,7 +11,7 @@ Este documento explica, passo a passo, como publicar o projeto na Vercel usando 
 - **Framework:** Next.js 14 (App Router)
 - **Hosting:** Vercel (serverless)
 - **Banco de Dados:** Neon PostgreSQL
-- **Autenticação:** Implementada via banco de dados (sem Firebase/Supabase)
+- **Autenticação:** Stack Auth (OAuth: GitHub, Google)
 
 ### Rotas Relevantes
 - `app/(auth)/first-login/page.tsx`
@@ -27,6 +27,7 @@ Este documento explica, passo a passo, como publicar o projeto na Vercel usando 
 - [ ] Node.js >= 18 instalado localmente
 - [ ] Conta Vercel (https://vercel.com)
 - [ ] Conta Neon (https://neon.tech)
+- [ ] Stack Auth configurado (https://stack-auth.com)
 - [ ] Repositório GitHub com o código
 
 ---
@@ -119,15 +120,22 @@ DATABASE_URL=postgresql://[user]:[password]@[host].neon.tech/[dbname]?sslmode=re
 DATABASE_URL_UNPOOLED=postgresql://[user]:[password]@[host]-pooler.neon.tech/[dbname]?sslmode=require
 ```
 
-#### Variáveis de Autenticação
+#### Variáveis de Autenticação (Stack Auth)
 
 ```bash
-# Secret para JWT (gere uma chave aleatória segura)
-JWT_SECRET=sua_chave_secreta_minimo_32_caracteres_aqui
+# Stack Auth Project ID
+STACK_AUTH_PROJECT_ID=b0e4c9fa-4c2f-4870-a244-782996d4b593
 
-# Secret para NextAuth (se usar)
-NEXTAUTH_SECRET=outra_chave_secreta_32_chars
-NEXTAUTH_URL=https://seu-projeto.vercel.app
+# JWKS URL para validação de tokens
+STACK_AUTH_JWKS_URL=https://api.stack-auth.com/api/v1/projects/b0e4c9fa-4c2f-4870-a244-782996d4b593/.well-known/jwks.json
+
+# OAuth GitHub (se configurado)
+STACK_AUTH_OAUTH_GITHUB_CLIENT_ID=seu_github_client_id
+STACK_AUTH_OAUTH_GITHUB_CLIENT_SECRET=seu_github_client_secret
+
+# OAuth Google (se configurado)
+STACK_AUTH_OAUTH_GOOGLE_CLIENT_ID=seu_google_client_id
+STACK_AUTH_OAUTH_GOOGLE_CLIENT_SECRET=seu_google_client_secret
 ```
 
 #### Variáveis Públicas (Frontend)
@@ -222,98 +230,112 @@ vercel --prod
 
 ---
 
-## 🔧 Passo 4: Integração de Autenticação com Neon
+## 🔧 Passo 4: Integração de Autenticação com Stack Auth
 
 ### 4.1 Estrutura do Banco de Dados
 
-Certifique-se de ter as tabelas:
+O Neon é usado para dados da aplicação. Stack Auth gerencia usuários e autenticação.
+
+Tabelas da aplicação (exemplo):
 
 ```sql
-CREATE TABLE users (
+CREATE TABLE user_profiles (
   id SERIAL PRIMARY KEY,
-  email VARCHAR(255) UNIQUE NOT NULL,
-  password_hash VARCHAR(255) NOT NULL,
-  email_verified BOOLEAN DEFAULT FALSE,
+  stack_auth_user_id VARCHAR(255) UNIQUE NOT NULL,
+  email VARCHAR(255) NOT NULL,
   terms_accepted BOOLEAN DEFAULT FALSE,
+  email_verified BOOLEAN DEFAULT FALSE,
   must_change_password BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE TABLE user_sessions (
+CREATE TABLE user_sessions_metadata (
   id SERIAL PRIMARY KEY,
-  user_id INTEGER REFERENCES users(id),
-  token VARCHAR(255) UNIQUE NOT NULL,
-  expires_at TIMESTAMP NOT NULL,
-  created_at TIMESTAMP DEFAULT NOW()
+  stack_auth_user_id VARCHAR(255) NOT NULL,
+  last_login TIMESTAMP DEFAULT NOW(),
+  login_count INTEGER DEFAULT 0
 );
 ```
 
-### 4.2 Implementar Rotas de API
+### 4.2 Stack Auth - Configuração
 
-**`app/api/auth/send-verification/route.ts`**
+Stack Auth já está configurado com:
+- **Project ID:** `b0e4c9fa-4c2f-4870-a244-782996d4b593`
+- **OAuth Providers:** GitHub, Google
+- **Email Server:** noreply@stackframe.co
+
+### 4.3 Validar Token JWT
+
+**`app/api/auth/verify/route.ts`**
+
+```typescript
+import { NextResponse } from 'next/server';
+import { jwtVerify, createRemoteJWKSet } from 'jose';
+
+const JWKS = createRemoteJWKSet(
+  new URL(process.env.STACK_AUTH_JWKS_URL!)
+);
+
+export async function POST(request: Request) {
+  const { token } = await request.json();
+  
+  try {
+    const { payload } = await jwtVerify(token, JWKS, {
+      issuer: 'stack-auth',
+      audience: process.env.STACK_AUTH_PROJECT_ID
+    });
+    
+    return NextResponse.json({ 
+      valid: true, 
+      user: payload 
+    });
+  } catch (error) {
+    return NextResponse.json({ 
+      valid: false 
+    }, { status: 401 });
+  }
+}
+```
+
+### 4.4 Sincronizar com Neon
+
+**`app/api/auth/sync-user/route.ts`**
 
 ```typescript
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 
 export async function POST(request: Request) {
-  const { email } = await request.json();
+  const { stackAuthUserId, email } = await request.json();
   
   const sql = neon(process.env.DATABASE_URL!);
   
-  // Gerar token de verificação
-  const token = crypto.randomUUID();
-  
-  // Salvar token no banco
+  // Criar ou atualizar perfil do usuário
   await sql`
-    UPDATE users 
-    SET verification_token = ${token}
-    WHERE email = ${email}
-  `;
-  
-  // Enviar e-mail (implemente aqui)
-  // await sendEmail(email, token);
-  
-  return NextResponse.json({ success: true });
-}
-```
-
-**`app/api/auth/change-password/route.ts`**
-
-```typescript
-import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
-import bcrypt from 'bcryptjs';
-
-export async function POST(request: Request) {
-  const { email, password } = await request.json();
-  
-  const sql = neon(process.env.DATABASE_URL!);
-  
-  // Hash da senha
-  const passwordHash = await bcrypt.hash(password, 10);
-  
-  // Atualizar no banco
-  await sql`
-    UPDATE users 
-    SET password_hash = ${passwordHash},
-        must_change_password = FALSE
-    WHERE email = ${email}
+    INSERT INTO user_profiles (stack_auth_user_id, email)
+    VALUES (${stackAuthUserId}, ${email})
+    ON CONFLICT (stack_auth_user_id) 
+    DO UPDATE SET email = ${email}
   `;
   
   return NextResponse.json({ success: true });
 }
 ```
 
-### 4.3 Middleware de Proteção
+### 4.5 Middleware de Proteção
 
 **`middleware.ts`** (raiz do projeto)
 
 ```typescript
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { jwtVerify, createRemoteJWKSet } from 'jose';
 import { neon } from '@neondatabase/serverless';
+
+const JWKS = createRemoteJWKSet(
+  new URL(process.env.STACK_AUTH_JWKS_URL!)
+);
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -322,38 +344,43 @@ export async function middleware(request: NextRequest) {
   const protectedRoutes = ['/dashboard', '/admin'];
   
   if (protectedRoutes.some(route => pathname.startsWith(route))) {
-    // Verificar sessão/token
-    const token = request.cookies.get('session')?.value;
+    // Verificar token Stack Auth
+    const token = request.cookies.get('stack-auth-token')?.value;
     
     if (!token) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
     
-    // Verificar no banco
-    const sql = neon(process.env.DATABASE_URL!);
-    const user = await sql`
-      SELECT u.*, s.expires_at
-      FROM users u
-      JOIN user_sessions s ON u.id = s.user_id
-      WHERE s.token = ${token}
-      AND s.expires_at > NOW()
-    `;
-    
-    if (!user[0]) {
+    try {
+      // Validar JWT com Stack Auth
+      const { payload } = await jwtVerify(token, JWKS, {
+        issuer: 'stack-auth',
+        audience: process.env.STACK_AUTH_PROJECT_ID
+      });
+      
+      // Verificar fluxo de primeiro acesso no Neon
+      const sql = neon(process.env.DATABASE_URL!);
+      const profile = await sql`
+        SELECT * FROM user_profiles
+        WHERE stack_auth_user_id = ${payload.sub}
+      `;
+      
+      if (profile[0]) {
+        // Validar fluxo de primeiro acesso
+        if (!profile[0].terms_accepted) {
+          return NextResponse.redirect(new URL('/first-login', request.url));
+        }
+        
+        if (!profile[0].email_verified) {
+          return NextResponse.redirect(new URL('/verify-email', request.url));
+        }
+        
+        if (profile[0].must_change_password) {
+          return NextResponse.redirect(new URL('/force-password', request.url));
+        }
+      }
+    } catch (error) {
       return NextResponse.redirect(new URL('/login', request.url));
-    }
-    
-    // Validar fluxo de primeiro acesso
-    if (!user[0].terms_accepted) {
-      return NextResponse.redirect(new URL('/first-login', request.url));
-    }
-    
-    if (!user[0].email_verified) {
-      return NextResponse.redirect(new URL('/verify-email', request.url));
-    }
-    
-    if (user[0].must_change_password) {
-      return NextResponse.redirect(new URL('/force-password', request.url));
     }
   }
   
@@ -509,7 +536,8 @@ Neon Dashboard → Monitoring
 ```bash
 # Usar .env.local (já no .gitignore)
 DATABASE_URL=postgresql://...
-JWT_SECRET=...
+STACK_AUTH_PROJECT_ID=...
+STACK_AUTH_OAUTH_GITHUB_CLIENT_SECRET=...
 ```
 
 ✅ **Usar variáveis de ambiente**
@@ -533,6 +561,7 @@ const dbUrl = "postgresql://user:pass@...";
 
 - [Documentação Vercel](https://vercel.com/docs)
 - [Documentação Neon](https://neon.tech/docs)
+- [Documentação Stack Auth](https://docs.stack-auth.com)
 - [Next.js Deployment](https://nextjs.org/docs/deployment)
 - [EXPLICACAO_VERCEL.md](./EXPLICACAO_VERCEL.md) - Explicação detalhada
 - [VERCEL_REFERENCIA_RAPIDA.md](./VERCEL_REFERENCIA_RAPIDA.md) - Referência rápida
@@ -543,10 +572,11 @@ const dbUrl = "postgresql://user:pass@...";
 
 - Vercel: https://vercel.com/support
 - Neon: https://neon.tech/docs/introduction/support
+- Stack Auth: https://docs.stack-auth.com
 - Documentação do projeto: Este arquivo e links acima
 
 ---
 
-**Stack Confirmada:** Vercel + Neon (PostgreSQL) - SEM Firebase/Supabase ✅
+**Stack Confirmada:** Vercel + Neon (PostgreSQL) + Stack Auth ✅
 
 *Última atualização: 29/10/2025*
