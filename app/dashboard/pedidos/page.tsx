@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Container,
   Typography,
@@ -60,11 +60,7 @@ export default function OrdersPage() {
     total: 0,
   });
 
-  useEffect(() => {
-    loadOrders();
-  }, []);
-
-  const loadOrders = async () => {
+  const loadOrders = useCallback(async () => {
     setLoading(true);
     setError(null);
     const response = await neonClient.list<Order>('orders');
@@ -94,7 +90,11 @@ export default function OrdersPage() {
         },
       ]);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadOrders();
+  }, [loadOrders]);
 
   const handleCreate = async () => {
     const response = await neonClient.create<Order>('orders', formData);
@@ -167,11 +167,11 @@ export default function OrdersPage() {
     setDialogOpen(true);
   };
 
-  const handleCloseDialog = () => {
+  const handleCloseDialog = useCallback(() => {
     setDialogOpen(false);
     setEditingOrder(null);
     setError(null);
-  };
+  }, []);
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
