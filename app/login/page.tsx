@@ -23,8 +23,17 @@ export default function LoginPage() {
       console.log('⏳ Chamando stackAuth.signIn...');
       const user = await stackAuth.signIn(email, password);
       console.log('✅ Login bem-sucedido:', user);
-      console.log('🚀 Redirecionando para /dashboard...');
-      router.push('/dashboard');
+      
+      // Check if this is a first login
+      const firstLoginCompleted = localStorage.getItem('first_login_completed');
+      
+      if (!firstLoginCompleted) {
+        console.log('🆕 Primeiro acesso detectado, redirecionando para /first-login...');
+        router.push('/first-login');
+      } else {
+        console.log('🚀 Redirecionando para /dashboard...');
+        router.push('/dashboard');
+      }
       console.log('✅ router.push chamado');
     } catch (err: any) {
       console.error('❌ Erro no login:', err);

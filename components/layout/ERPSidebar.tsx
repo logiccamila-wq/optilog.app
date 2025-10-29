@@ -1,7 +1,7 @@
 import React from 'react';
 import { Drawer, List, ListItem, ListItemText, Collapse, Divider } from '@mui/material';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
-import { BRANDING } from 'path-to-branding-constants'; // Adjust the import path as necessary
+import { BRANDING } from '@/config/branding';
 
 const ERPSidebar = () => {
   const [openFinanceiro, setOpenFinanceiro] = React.useState(false);
