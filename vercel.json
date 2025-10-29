@@ -4,8 +4,6 @@
   "installCommand": "npm install",
   "env": {
     "SKIP_ENV_VALIDATION": "true",
-    "SKIP_LINT": "true",
-    "TSC_COMPILE_ON_ERROR": "true",
     "NEXT_TELEMETRY_DISABLED": "1",
     "NODE_OPTIONS": "--max-old-space-size=4096"
   }
