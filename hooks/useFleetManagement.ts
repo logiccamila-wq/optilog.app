@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useWebSocket } from './useWebSocket';
 import type {
   VehicleStatus,
@@ -51,47 +51,46 @@ export const useFleetManagement = (vehicleId: string) => {
   const [vehicleStatus, setVehicleStatus] = useState<VehicleStatus | null>(null);
   const [maintenanceIssues, setMaintenanceIssues] = useState<MaintenanceIssue[]>([]);
   const [tireData, setTireData] = useState<TireManagement[]>([]);
-  const [predictiveMaintenance, setPredictiveMaintenance] = useState<PredictiveMaintenance | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const { isConnected, subscribe, lastMessage } = useWebSocket();
 
+  // Optimized: Memoize fetch functions to avoid recreation on every render
+  const fetchVehicleData = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/vehicles/${vehicleId}`);
+      const data = await response.json();
+      setVehicleStatus(data);
+    } catch (e) {
+      setError('Erro ao carregar dados do veículo');
+      console.error(e);
+    }
+  }, [vehicleId]);
+
+  const fetchMaintenanceData = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/maintenance/${vehicleId}`);
+      const data = await response.json();
+      setMaintenanceIssues(data);
+    } catch (e) {
+      setError('Erro ao carregar dados de manutenção');
+      console.error(e);
+    }
+  }, [vehicleId]);
+
+  const fetchTireData = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/tires/${vehicleId}`);
+      const data = await response.json();
+      setTireData(data);
+    } catch (e) {
+      setError('Erro ao carregar dados dos pneus');
+      console.error(e);
+    }
+  }, [vehicleId]);
+
   useEffect(() => {
-    const fetchVehicleData = async () => {
-      try {
-        // Simular chamada à API
-        const response = await fetch(`/api/vehicles/${vehicleId}`);
-        const data = await response.json();
-        setVehicleStatus(data);
-      } catch (e) {
-        setError('Erro ao carregar dados do veículo');
-        console.error(e);
-      }
-    };
-
-    const fetchMaintenanceData = async () => {
-      try {
-        const response = await fetch(`/api/maintenance/${vehicleId}`);
-        const data = await response.json();
-        setMaintenanceIssues(data);
-      } catch (e) {
-        setError('Erro ao carregar dados de manutenção');
-        console.error(e);
-      }
-    };
-
-    const fetchTireData = async () => {
-      try {
-        const response = await fetch(`/api/tires/${vehicleId}`);
-        const data = await response.json();
-        setTireData(data);
-      } catch (e) {
-        setError('Erro ao carregar dados dos pneus');
-        console.error(e);
-      }
-    };
-
     Promise.all([
       fetchVehicleData(),
       fetchMaintenanceData(),
@@ -99,14 +98,14 @@ export const useFleetManagement = (vehicleId: string) => {
     ]).finally(() => {
       setLoading(false);
     });
-  }, [vehicleId]);
+  }, [fetchVehicleData, fetchMaintenanceData, fetchTireData]);
 
-  // Atualizar previsões quando os dados mudarem
-  useEffect(() => {
+  // Optimized: Use useMemo to avoid recalculating predictions on every render
+  const predictiveMaintenance = useMemo(() => {
     if (vehicleStatus && tireData.length > 0) {
-      const predictions = predictMaintenanceIssues(vehicleStatus, tireData);
-      setPredictiveMaintenance(predictions);
+      return predictMaintenanceIssues(vehicleStatus, tireData);
     }
+    return null;
   }, [vehicleStatus, tireData]);
 
   // Inscrever-se em atualizações em tempo real
@@ -140,7 +139,8 @@ export const useFleetManagement = (vehicleId: string) => {
     };
   }, [isConnected, vehicleId, subscribe]);
 
-  const createMaintenanceIssue = async (issue: Partial<MaintenanceIssue>) => {
+  // Optimized: Use useCallback to memoize these functions
+  const createMaintenanceIssue = useCallback(async (issue: Partial<MaintenanceIssue>) => {
     try {
       const response = await fetch('/api/maintenance', {
         method: 'POST',
@@ -161,9 +161,9 @@ export const useFleetManagement = (vehicleId: string) => {
       setError('Erro ao criar ordem de serviço');
       throw e;
     }
-  };
+  }, [vehicleId]);
 
-  const updateMaintenanceStatus = async (issueId: string, status: MaintenanceIssue['status']) => {
+  const updateMaintenanceStatus = useCallback(async (issueId: string, status: MaintenanceIssue['status']) => {
     try {
       const response = await fetch(`/api/maintenance/${issueId}`, {
         method: 'PATCH',
@@ -181,7 +181,7 @@ export const useFleetManagement = (vehicleId: string) => {
       setError('Erro ao atualizar ordem de serviço');
       throw e;
     }
-  };
+  }, []);
 
   return {
     vehicleStatus,
