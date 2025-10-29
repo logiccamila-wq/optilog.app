@@ -23,6 +23,7 @@ const payablesRouter = require('./routes/payables');
 const alertsRouter = require('./routes/alerts');
 const checklistRouter = require('./routes/checklist');
 const inventoryRouter = require('./routes/inventory');
+const documentsRouter = require('./routes/documents');
 
 const app = express();
 const PORT = process.env.PORT || 3001; // evita conflito com Next dev em 3000
@@ -102,6 +103,7 @@ app.use('/payables', payablesRouter);
 app.use('/alerts', alertsRouter);
 app.use('/checklist', checklistRouter);
 app.use('/inventory', inventoryRouter);
+app.use('/api/documents', documentsRouter);
 
 // iniciar DB e servidor
 initDb(() => {
