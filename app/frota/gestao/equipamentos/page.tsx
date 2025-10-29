@@ -118,6 +118,26 @@ export default function EquipamentosPage() {
     }
   };
 
+  const handleEdit = (eq: Equipamento) => {
+    setForm({
+      tipo: eq.tipo,
+      placa: eq.placa,
+      chassi: eq.chassi,
+      ano_fabricacao: eq.ano_fabricacao,
+      fabricante: eq.fabricante,
+      modelo: eq.modelo,
+      capacidade_carga: eq.capacidade_carga.toString(),
+      eixos: eq.eixos,
+      proprietario: eq.proprietario,
+      status: eq.status,
+      localizado_em: eq.localizado_em,
+      crlv_vencimento: '',
+      seguro_vencimento: ''
+    });
+    setEditingId(eq.id);
+    setDialogOpen(true);
+  };
+
   const handleDelete = async (id: number) => {
     if (!confirm('Tem certeza?')) return;
     try {
@@ -263,9 +283,4 @@ export default function EquipamentosPage() {
       </Dialog>
     </Container>
   );
-}
-
-function handleEdit(eq: Equipamento) {
-  // Implement edit logic
-  console.log('Edit:', eq);
 }
