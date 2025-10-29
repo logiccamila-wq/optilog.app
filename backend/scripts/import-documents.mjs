@@ -8,10 +8,10 @@ import { Pool } from 'pg';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import pdfParse from 'pdf-parse';
-import jsQR from 'jsqr';
-import sharp from 'sharp';
-import { PNG } from 'pngjs';
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
+const pdfParse = require('pdf-parse');
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -126,7 +126,7 @@ function extractCNHData(text, filePath) {
   const patterns = {
     renach: /RENACH[:\s]*(\d{11})/i,
     cpf: /CPF[:\s]*(\d{11})/i,
-    nome: /NOME[:\s]*([A-Z\s]+)/i,
+    nome: /NOME[:\s]*([A-ZÀ-ÿ\s]+?)(?:\n|DATA|CPF|CATEGORIA)/i,
     data_nascimento: /DATA\s+NASCIMENTO[:\s]*(\d{2}\/\d{2}\/\d{4})/i,
     categoria: /CATEGORIA[:\s]*([A-E]{1,2})/i,
     validade: /VALIDADE[:\s]*(\d{2}\/\d{2}\/\d{4})/i,
