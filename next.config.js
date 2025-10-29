@@ -8,15 +8,14 @@ const nextConfig = {
   },
 
   // FORÇAR VERCEL IGNORAR ERROS
-  swcMinify: false,  // Desabilitar minify que pode causar erros
+  swcMinify: true,  // Habilitar minify (padrão Vercel)
   productionBrowserSourceMaps: false,
 
   // Otimizações gerais
   compress: true,
   distDir: '.next',
-  output: 'standalone',
   poweredByHeader: false,
-  reactStrictMode: false,  // Desativar strict mode temporariamente
+  reactStrictMode: true,  // Habilitar strict mode
 
   experimental: {
     // Permitir resolver ESM externos em modo "loose" para escolher entradas de browser
