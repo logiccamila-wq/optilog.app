@@ -49,6 +49,17 @@ const nextConfig = {
       config.cache = { type: 'memory' };
     }
 
+    // Remove console.log in production builds
+    if (!dev) {
+      config.optimization = config.optimization || {};
+      config.optimization.minimize = true;
+      
+      // Use Terser to remove console.log in production
+      if (!config.optimization.minimizer) {
+        config.optimization.minimizer = [];
+      }
+    }
+
     // Preferir condições de browser ao resolver exports
     config.resolve = config.resolve || {};
     config.resolve.conditionNames = ['browser', 'import', 'module', 'default'];

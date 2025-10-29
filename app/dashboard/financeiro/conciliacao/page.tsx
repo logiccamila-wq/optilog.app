@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   Container,
   Typography,
@@ -38,9 +38,17 @@ export default function ConciliacaoBancariaPage() {
     { id: 4, date: '2025-10-12', description: 'Depósito', bankValue: 8000, systemValue: 8000, status: 'pending' },
   ]);
 
-  const matched = transactions.filter(t => t.status === 'matched').length;
-  const unmatched = transactions.filter(t => t.status === 'unmatched').length;
-  const pending = transactions.filter(t => t.status === 'pending').length;
+  // Optimize: Single pass to count all statuses instead of multiple filter operations
+  const statusCounts = useMemo(() => {
+    return transactions.reduce((acc, t) => {
+      acc[t.status] = (acc[t.status] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+  }, [transactions]);
+
+  const matched = statusCounts.matched || 0;
+  const unmatched = statusCounts.unmatched || 0;
+  const pending = statusCounts.pending || 0;
 
   const getStatusColor = (status: string) => {
     switch (status) {

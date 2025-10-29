@@ -42,3 +42,5 @@ yarn-error.log*
 
 # Build artifacts
 _ci_build_artifacts/
+.bak
+*.broken
