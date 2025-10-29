@@ -42,3 +42,11 @@ yarn-error.log*
 
 # Build artifacts
 _ci_build_artifacts/
+
+# Uploads and backups (sensitive data)
+backend/uploads/*.pdf
+backend/backups/*.sql
+backend/uploads/*
+backend/backups/*
+!backend/uploads/.gitkeep
+!backend/backups/.gitkeep

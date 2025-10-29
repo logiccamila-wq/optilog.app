@@ -126,7 +126,7 @@ function extractCNHData(text, filePath) {
   const patterns = {
     renach: /RENACH[:\s]*(\d{11})/i,
     cpf: /CPF[:\s]*(\d{11})/i,
-    nome: /NOME[:\s]*([A-ZÀ-ÿ\s]+?)(?:\n|DATA|CPF|CATEGORIA)/i,
+    nome: /NOME[:\s]*([\p{L}\s]+?)(?:\n|DATA|CPF|CATEGORIA)/iu,
     data_nascimento: /DATA\s+NASCIMENTO[:\s]*(\d{2}\/\d{2}\/\d{4})/i,
     categoria: /CATEGORIA[:\s]*([A-E]{1,2})/i,
     validade: /VALIDADE[:\s]*(\d{2}\/\d{2}\/\d{4})/i,
