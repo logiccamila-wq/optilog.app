@@ -15,7 +15,8 @@
     "lint": "next lint --max-warnings=1000",
     "lint:fix": "next lint --fix --max-warnings=1000",
     "db:migrate": "node backend/scripts/apply_sql_files.mjs backend/scripts/create_os_tables.sql backend/scripts/create_tools_tables.sql",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "check:sync": "node scripts/check-sync.mjs"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
