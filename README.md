@@ -75,7 +75,7 @@ Aplicação web completa para gestão de operações logísticas, construída co
 
 1. Clone o repositório:
 ```bash
-git clone https://github.com/logiccamila-wq/optilog.app.git
+git clone <URL_DO_SEU_REPOSITORIO>
 cd optilog.app
 ```
 
