@@ -127,7 +127,8 @@ export default function ImpostosPage() {
     return totais.calculado + totais.pago + totais.pendente + totais.vencido;
   }, [totais]);
 
-  const hoje = useMemo(() => new Date('2025-10-28'), []);
+  // Use current date for accurate calculations
+  const hoje = useMemo(() => new Date(), []);
   
   // Optimized: Use useMemo to cache critical tax calculations
   const impostosCriticos = useMemo(() => {

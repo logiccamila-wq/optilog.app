@@ -51,9 +51,16 @@ CREATE INDEX IF NOT EXISTS idx_customers_name ON customers(name);
 CREATE INDEX IF NOT EXISTS idx_drivers_name ON drivers(name);
 CREATE INDEX IF NOT EXISTS idx_vehicles_plate ON vehicles(plate);
 
--- CTEs indexes
-CREATE INDEX IF NOT EXISTS idx_ctes_status ON ctes(status) WHERE EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'ctes');
-CREATE INDEX IF NOT EXISTS idx_ctes_issue_date ON ctes(issue_date DESC) WHERE EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'ctes');
+-- CTEs indexes (only if table exists - checked in application logic)
+-- These will fail silently if tables don't exist, which is expected
+-- Use DO block for conditional creation
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'ctes') THEN
+        CREATE INDEX IF NOT EXISTS idx_ctes_status ON ctes(status);
+        CREATE INDEX IF NOT EXISTS idx_ctes_issue_date ON ctes(issue_date DESC);
+    END IF;
+END $$;
 
 COMMENT ON INDEX idx_trips_status IS 'Optimizes filtering trips by status';
 COMMENT ON INDEX idx_trips_created_at IS 'Optimizes ordering trips by creation date';

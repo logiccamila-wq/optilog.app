@@ -12,41 +12,58 @@ export async function GET(request: NextRequest) {
     const driver_name = searchParams.get('driver_name');
     const limit = parseInt(searchParams.get('limit') || '50');
 
-    // Optimized: Select only needed columns instead of SELECT *
-    const columns = `
-      id, trip_number, customer_name, vehicle_plate, driver_name,
-      origin_city, origin_state, destination_city, destination_state,
-      cargo_description, cargo_weight, status, departure_date,
-      estimated_arrival, actual_arrival, distance_km, freight_value,
-      driver_payment, created_at, updated_at
-    `;
-
     let trips;
 
+    // Optimized: Select only needed columns instead of SELECT *
+    // Using multiple sql fragments to avoid sql.unsafe()
     if (status && driver_name) {
       trips = await sql`
-        SELECT ${sql.unsafe(columns)} FROM trips
+        SELECT 
+          id, trip_number, customer_name, vehicle_plate, driver_name,
+          origin_city, origin_state, destination_city, destination_state,
+          cargo_description, cargo_weight, status, departure_date,
+          estimated_arrival, actual_arrival, distance_km, freight_value,
+          driver_payment, created_at, updated_at
+        FROM trips
         WHERE status = ${status} AND driver_name = ${driver_name}
         ORDER BY created_at DESC
         LIMIT ${limit}
       `;
     } else if (status) {
       trips = await sql`
-        SELECT ${sql.unsafe(columns)} FROM trips
+        SELECT 
+          id, trip_number, customer_name, vehicle_plate, driver_name,
+          origin_city, origin_state, destination_city, destination_state,
+          cargo_description, cargo_weight, status, departure_date,
+          estimated_arrival, actual_arrival, distance_km, freight_value,
+          driver_payment, created_at, updated_at
+        FROM trips
         WHERE status = ${status}
         ORDER BY created_at DESC
         LIMIT ${limit}
       `;
     } else if (driver_name) {
       trips = await sql`
-        SELECT ${sql.unsafe(columns)} FROM trips
+        SELECT 
+          id, trip_number, customer_name, vehicle_plate, driver_name,
+          origin_city, origin_state, destination_city, destination_state,
+          cargo_description, cargo_weight, status, departure_date,
+          estimated_arrival, actual_arrival, distance_km, freight_value,
+          driver_payment, created_at, updated_at
+        FROM trips
         WHERE driver_name = ${driver_name}
         ORDER BY created_at DESC
         LIMIT ${limit}
       `;
     } else {
       trips = await sql`
-        SELECT ${sql.unsafe(columns)} FROM trips
+        SELECT 
+          id, trip_number, customer_name, vehicle_plate, driver_name,
+          origin_city, origin_state, destination_city, destination_state,
+          cargo_description, cargo_weight, status, departure_date,
+          estimated_arrival, actual_arrival, distance_km, freight_value,
+          driver_payment, created_at, updated_at
+        FROM trips
         ORDER BY created_at DESC
         LIMIT ${limit}
       `;
