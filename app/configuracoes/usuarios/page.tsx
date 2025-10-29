@@ -100,7 +100,7 @@ export default function UsuariosPage() {
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           O OptiLog utiliza controle de acesso baseado em funções (RBAC):
         </Typography>
-        <ul style={{ marginLeft: 20 }}>
+        <Box component="ul" sx={{ ml: 2.5, mt: 1 }}>
           <li>
             <Typography variant="body2">
               <strong>Administrador:</strong> Acesso total ao sistema
@@ -121,7 +121,7 @@ export default function UsuariosPage() {
               <strong>Visualizador:</strong> Apenas visualização de dados
             </Typography>
           </li>
-        </ul>
+        </Box>
       </Paper>
     </Container>
   );

@@ -1,7 +1,7 @@
 'use client';
 
 import { Container, Typography, Grid, Paper, Box } from '@mui/material';
-import { Package, FileText, DollarSign, Truck } from 'lucide-react';
+import { Package, FileText, DollarSign } from 'lucide-react';
 
 export default function OMSPage() {
   const modules = [
