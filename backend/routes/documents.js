@@ -1,4 +1,5 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const router = express.Router();
 const path = require('path');
 const fs = require('fs');
@@ -6,6 +7,25 @@ const { Pool } = require('pg');
 
 const DATABASE_URL = process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/optilog';
 const pool = new Pool({ connectionString: DATABASE_URL });
+
+// Rate limiter: 100 requests per 15 minutes per IP
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
+// Stricter rate limiter for destructive operations: 10 requests per hour
+const strictLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10,
+  message: 'Too many clean requests from this IP, please try again later.',
+});
+
+// Apply rate limiter to all routes in this router
+router.use(limiter);
 
 /**
  * GET /api/documents/status
@@ -100,7 +120,7 @@ router.get('/import-logs', async (req, res) => {
  * POST /api/documents/clean
  * Limpa dados hipotéticos do banco
  */
-router.post('/clean', async (req, res) => {
+router.post('/clean', strictLimiter, async (req, res) => {
   try {
     const { dryRun = true } = req.body;
 
