@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 
-const sql = neon(process.env.DATABASE_URL!);
+function getDb() {
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL is not configured');
+  }
+  return neon(process.env.DATABASE_URL);
+}
 
 // GET /api/customers - Lista clientes
 export async function GET(request: NextRequest) {
+
   try {
+
+    const sql = getDb();
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search');
 
@@ -35,7 +43,10 @@ export async function GET(request: NextRequest) {
 
 // POST /api/customers - Criar cliente
 export async function POST(request: NextRequest) {
+
   try {
+
+    const sql = getDb();
     const body = await request.json();
     const { name, email, phone } = body;
 
@@ -61,7 +72,10 @@ export async function POST(request: NextRequest) {
 
 // PUT /api/customers/:id - Atualizar cliente
 export async function PUT(request: NextRequest) {
+
   try {
+
+    const sql = getDb();
     const body = await request.json();
     const { id, name, email, phone } = body;
 
@@ -95,7 +109,10 @@ export async function PUT(request: NextRequest) {
 
 // DELETE /api/customers/:id - Deletar cliente
 export async function DELETE(request: NextRequest) {
+
   try {
+
+    const sql = getDb();
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 

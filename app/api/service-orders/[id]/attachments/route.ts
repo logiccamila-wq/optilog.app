@@ -7,7 +7,12 @@ import { neon } from '@neondatabase/serverless';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const sql = neon(process.env.DATABASE_URL!);
+function getDb() {
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL is not configured');
+  }
+  return neon(process.env.DATABASE_URL);
+}
 
 // POST /api/service-orders/[id]/attachments - Upload de arquivos (fotos, documentos)
 export async function POST(

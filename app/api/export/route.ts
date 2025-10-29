@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 
-const sql = neon(process.env.DATABASE_URL!);
+function getDb() {
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL is not configured');
+  }
+  return neon(process.env.DATABASE_URL);
+}
 
 // GET /api/export - Exporta dados em CSV
 export async function GET(request: NextRequest) {
+
   try {
+
+    const sql = getDb();
     const { searchParams } = new URL(request.url);
     const entity = searchParams.get('entity'); // 'customers', 'drivers', 'vehicles', 'service_orders'
 
@@ -78,7 +86,10 @@ export async function GET(request: NextRequest) {
 
 // POST /api/export - Importa dados de CSV
 export async function POST(request: NextRequest) {
+
   try {
+
+    const sql = getDb();
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const entity = formData.get('entity') as string;
