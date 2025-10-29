@@ -1,5 +1,9 @@
 # 📘 Explicação Completa: O que é Vercel e Como Funciona
 
+> **⚡ Quer algo mais rápido?** Veja [VERCEL_REFERENCIA_RAPIDA.md](./VERCEL_REFERENCIA_RAPIDA.md) para um guia resumido.
+
+---
+
 ## 🤔 O que é Vercel?
 
 **Vercel** é uma plataforma de hospedagem (cloud hosting) especializada em aplicações web modernas, especialmente aquelas construídas com **Next.js**, React, Vue, Angular e outros frameworks JavaScript.
