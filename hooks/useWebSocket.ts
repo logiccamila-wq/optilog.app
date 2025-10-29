@@ -28,10 +28,11 @@ export const useWebSocket = () => {
 
     connect();
 
-    // Check connection status periodically
+    // Optimized: Reduced polling frequency from 1s to 5s to reduce CPU usage
+    // WebSocket connection state changes are rare and don't need frequent checking
     const statusInterval = setInterval(() => {
       setIsConnected(currentWsService.isConnected());
-    }, 1000);
+    }, 5000); // Changed from 1000ms to 5000ms
 
     // Subscribe to all message types
     const handleMessage = (message: WebSocketMessage) => {
@@ -106,6 +107,10 @@ export const useDriverWebSocket = (driverId: string, vehicleId: string) => {
       console.log('Driver registered successfully');
     });
 
+    // Optimized: Throttle location updates to avoid excessive network traffic
+    let lastUpdateTime = 0;
+    const UPDATE_THROTTLE_MS = 5000; // Send updates max every 5 seconds
+
     const watchId = navigator.geolocation.watchPosition(
       (position) => {
         const location: LocationUpdate = {
@@ -119,7 +124,13 @@ export const useDriverWebSocket = (driverId: string, vehicleId: string) => {
         };
 
         setCurrentLocation(location);
-        sendLocationUpdate(driverId, vehicleId, location);
+
+        // Throttle updates: Only send if enough time has passed since last update
+        const now = Date.now();
+        if (now - lastUpdateTime >= UPDATE_THROTTLE_MS) {
+          sendLocationUpdate(driverId, vehicleId, location);
+          lastUpdateTime = now;
+        }
       },
       (error) => {
         console.error('Geolocation error:', error);

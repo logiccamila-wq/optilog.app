@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { DollarSign, AlertTriangle, Download } from 'lucide-react';
 
 interface Imposto {
@@ -101,27 +101,42 @@ export default function ImpostosPage() {
     }
   ];
 
-  const filtrados = impostos.filter(imp => {
-    if (filtroStatus !== 'todos' && imp.status !== filtroStatus) return false;
-    if (filtroMes !== 'todos' && imp.periodo !== filtroMes) return false;
-    return true;
-  });
+  // Optimized: Use useMemo to cache filtered results
+  const filtrados = useMemo(() => {
+    return impostos.filter(imp => {
+      if (filtroStatus !== 'todos' && imp.status !== filtroStatus) return false;
+      if (filtroMes !== 'todos' && imp.periodo !== filtroMes) return false;
+      return true;
+    });
+  }, [impostos, filtroStatus, filtroMes]);
 
-  const totais = {
-    calculado: impostos.filter(i => i.status === 'calculado').reduce((acc, i) => acc + i.valor, 0),
-    pago: impostos.filter(i => i.status === 'pago').reduce((acc, i) => acc + i.valor, 0),
-    pendente: impostos.filter(i => i.status === 'pendente').reduce((acc, i) => acc + i.valor, 0),
-    vencido: impostos.filter(i => i.status === 'vencido').reduce((acc, i) => acc + i.valor, 0)
-  };
+  // Optimized: Calculate totals in a single pass instead of 4 separate filter+reduce operations
+  const totais = useMemo(() => {
+    return impostos.reduce((acc, imposto) => {
+      acc[imposto.status] = (acc[imposto.status] || 0) + imposto.valor;
+      return acc;
+    }, {
+      calculado: 0,
+      pago: 0,
+      pendente: 0,
+      vencido: 0
+    } as Record<string, number>);
+  }, [impostos]);
 
-  const totalGeral = totais.calculado + totais.pago + totais.pendente + totais.vencido;
+  const totalGeral = useMemo(() => {
+    return totais.calculado + totais.pago + totais.pendente + totais.vencido;
+  }, [totais]);
 
-  const hoje = new Date('2025-10-28');
-  const impostosCriticos = impostos.filter(imp => {
-    const venc = new Date(imp.vencimento.split('/').reverse().join('-'));
-    const diasRestantes = Math.ceil((venc.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
-    return diasRestantes <= 7 && imp.status !== 'pago';
-  });
+  const hoje = useMemo(() => new Date('2025-10-28'), []);
+  
+  // Optimized: Use useMemo to cache critical tax calculations
+  const impostosCriticos = useMemo(() => {
+    return impostos.filter(imp => {
+      const venc = new Date(imp.vencimento.split('/').reverse().join('-'));
+      const diasRestantes = Math.ceil((venc.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
+      return diasRestantes <= 7 && imp.status !== 'pago';
+    });
+  }, [impostos, hoje]);
 
   const statusConfig: Record<string, { label: string; bg: string; color: string }> = {
     calculado: { label: 'Calculado', bg: 'rgba(59, 130, 246, 0.2)', color: '#3b82f6' },

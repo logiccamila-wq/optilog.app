@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
+import { getSql } from '@/lib/db';
 
-const sql = neon(process.env.DATABASE_URL!);
+// Optimized: Use centralized database connection instead of creating new connection per request
+const sql = getSql();
 
 // GET /api/trips - Listar viagens
 export async function GET(request: NextRequest) {
@@ -11,32 +12,41 @@ export async function GET(request: NextRequest) {
     const driver_name = searchParams.get('driver_name');
     const limit = parseInt(searchParams.get('limit') || '50');
 
+    // Optimized: Select only needed columns instead of SELECT *
+    const columns = `
+      id, trip_number, customer_name, vehicle_plate, driver_name,
+      origin_city, origin_state, destination_city, destination_state,
+      cargo_description, cargo_weight, status, departure_date,
+      estimated_arrival, actual_arrival, distance_km, freight_value,
+      driver_payment, created_at, updated_at
+    `;
+
     let trips;
 
     if (status && driver_name) {
       trips = await sql`
-        SELECT * FROM trips
+        SELECT ${sql.unsafe(columns)} FROM trips
         WHERE status = ${status} AND driver_name = ${driver_name}
         ORDER BY created_at DESC
         LIMIT ${limit}
       `;
     } else if (status) {
       trips = await sql`
-        SELECT * FROM trips
+        SELECT ${sql.unsafe(columns)} FROM trips
         WHERE status = ${status}
         ORDER BY created_at DESC
         LIMIT ${limit}
       `;
     } else if (driver_name) {
       trips = await sql`
-        SELECT * FROM trips
+        SELECT ${sql.unsafe(columns)} FROM trips
         WHERE driver_name = ${driver_name}
         ORDER BY created_at DESC
         LIMIT ${limit}
       `;
     } else {
       trips = await sql`
-        SELECT * FROM trips
+        SELECT ${sql.unsafe(columns)} FROM trips
         ORDER BY created_at DESC
         LIMIT ${limit}
       `;
