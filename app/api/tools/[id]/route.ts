@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 
-const sql = neon(process.env.DATABASE_URL!);
+function getDb() {
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL is not configured');
+  }
+  return neon(process.env.DATABASE_URL);
+}
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
+
+
   try {
+
+
+    const sql = getDb();
     const id = parseInt(params.id);
     const [row] = await sql`SELECT * FROM tools WHERE id = ${id}`;
     if (!row) return NextResponse.json({ error: 'not found' }, { status: 404 });
@@ -16,7 +26,12 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
 }
 
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+
+
   try {
+
+
+    const sql = getDb();
     const id = parseInt(params.id);
     const body = await request.json();
     const fields = [
@@ -48,7 +63,12 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+
+
   try {
+
+
+    const sql = getDb();
     const id = parseInt(params.id);
     await sql`DELETE FROM tools WHERE id = ${id}`;
     return NextResponse.json({ success: true });

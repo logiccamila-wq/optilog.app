@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 
-const sql = neon(process.env.DATABASE_URL!);
+function getDb() {
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL is not configured');
+  }
+  return neon(process.env.DATABASE_URL);
+}
 
 // GET /api/fuel-supplies - Lista abastecimentos
 export async function GET(request: NextRequest) {
+
   try {
+
+    const sql = getDb();
     const { searchParams } = new URL(request.url);
     const vehicle_id = searchParams.get('vehicle_id');
     const limit = parseInt(searchParams.get('limit') || '50');
@@ -48,7 +56,10 @@ export async function GET(request: NextRequest) {
 
 // POST /api/fuel-supplies - Registrar abastecimento
 export async function POST(request: NextRequest) {
+
   try {
+
+    const sql = getDb();
     const body = await request.json();
     const {
       vehicle_id,

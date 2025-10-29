@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 
-const sql = neon(process.env.DATABASE_URL!);
+function getDb() {
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL is not configured');
+  }
+  return neon(process.env.DATABASE_URL);
+}
 
 // GET /api/fiscal-documents - Lista documentos fiscais
 export async function GET(request: NextRequest) {
+
   try {
+
+    const sql = getDb();
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type');
     const status = searchParams.get('status');
@@ -49,7 +57,10 @@ export async function GET(request: NextRequest) {
 
 // POST /api/fiscal-documents - Upload de documento fiscal
 export async function POST(request: NextRequest) {
+
   try {
+
+    const sql = getDb();
     const body = await request.json();
     const {
       document_type,

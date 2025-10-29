@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 
-const sql = neon(process.env.DATABASE_URL!);
+function getDb() {
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL is not configured');
+  }
+  return neon(process.env.DATABASE_URL);
+}
 
 // GET /api/trips - Listar viagens
 export async function GET(request: NextRequest) {
+
   try {
+
+    const sql = getDb();
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
     const driver_name = searchParams.get('driver_name');
@@ -51,7 +59,10 @@ export async function GET(request: NextRequest) {
 
 // POST /api/trips - Criar viagem
 export async function POST(request: NextRequest) {
+
   try {
+
+    const sql = getDb();
     const body = await request.json();
     const {
       trip_number,

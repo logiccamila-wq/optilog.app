@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 
-const sql = neon(process.env.DATABASE_URL!);
+function getDb() {
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL is not configured');
+  }
+  return neon(process.env.DATABASE_URL);
+}
 
 // GET /api/service-orders - Lista todas as ordens de serviço
 export async function GET(request: NextRequest) {
+
   try {
+
+    const sql = getDb();
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
     const vehicle_id = searchParams.get('vehicle_id');
@@ -84,7 +92,10 @@ export async function GET(request: NextRequest) {
 
 // POST /api/service-orders - Cria nova ordem de serviço
 export async function POST(request: NextRequest) {
+
   try {
+
+    const sql = getDb();
     const body = await request.json();
     const {
       vehicle_id,
