@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Box, Typography, Button, TextField, Table, TableHead, TableRow, TableCell, TableBody, Chip, Switch } from '@mui/material';
 import Card from '@/components/ui/card';
-import { CheckCircle2Icon, AlertCircleIcon, SyncIcon } from 'lucide-react';
+import { CheckCircle2Icon, AlertCircleIcon, RefreshCw } from 'lucide-react';
 
 export default function NotionIntegrationPage() {
   const [connected, setConnected] = useState(false);
@@ -148,7 +148,7 @@ export default function NotionIntegrationPage() {
             sx={{ mt: 2 }} 
             onClick={handleSync}
             disabled={syncing}
-            startIcon={syncing ? <SyncIcon className="animate-spin" /> : null}
+            startIcon={syncing ? <RefreshCw className="animate-spin" /> : null}
           >
             {syncing ? 'Sincronizando...' : '🔄 Sincronizar Agora'}
           </Button>
