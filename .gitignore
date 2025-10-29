@@ -42,3 +42,9 @@ yarn-error.log*
 
 # Build artifacts
 _ci_build_artifacts/
+
+# Temporary and backup files
+*.swp
+*.bak
+*.tmp
+~*
