@@ -31,6 +31,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { neonClient, Order } from '@/lib/neonClient';
+import { safeCurrency } from '@/lib/utils/number-validation';
 
 const statusColors: Record<Order['status'], 'default' | 'primary' | 'warning' | 'success' | 'error'> = {
   pending: 'warning',
@@ -236,7 +237,7 @@ export default function OrdersPage() {
                     />
                   </TableCell>
                   <TableCell align="right">
-                    R$ {order.total.toFixed(2)}
+                    {safeCurrency(order.total)}
                   </TableCell>
                   <TableCell>
                     {new Date(order.created_at).toLocaleString('pt-BR')}

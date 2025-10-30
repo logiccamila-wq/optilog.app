@@ -37,6 +37,7 @@ import {
   CheckCircle,
   PlayArrow
 } from '@mui/icons-material';
+import { safeNumber, safeToFixed, safeCurrency } from '@/lib/utils/number-validation';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -283,7 +284,9 @@ export default function FleetManagementPage() {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <AttachMoney color="success" />
                 <Typography variant="h6">
-                  R$ {fuelSupplies.reduce((sum, f) => sum + (f.total_value || 0), 0).toFixed(2)}
+                  {safeCurrency(
+                    fuelSupplies.reduce((sum, f) => sum + safeNumber(f.total_value), 0)
+                  )}
                 </Typography>
               </Box>
               <Typography variant="body2" color="text.secondary">
@@ -335,12 +338,12 @@ export default function FleetManagementPage() {
                   <TableCell>{new Date(supply.supply_date).toLocaleDateString('pt-BR')}</TableCell>
                   <TableCell>{supply.vehicle_plate}</TableCell>
                   <TableCell>{supply.driver_name || '-'}</TableCell>
-                  <TableCell align="right">{supply.odometer?.toLocaleString()} km</TableCell>
-                  <TableCell align="right">{supply.liters} L</TableCell>
-                  <TableCell align="right">R$ {supply.unit_price?.toFixed(2)}</TableCell>
-                  <TableCell align="right">R$ {supply.total_value?.toFixed(2)}</TableCell>
+                  <TableCell align="right">{safeNumber(supply.odometer).toLocaleString()} km</TableCell>
+                  <TableCell align="right">{safeNumber(supply.liters)} L</TableCell>
+                  <TableCell align="right">{safeCurrency(supply.unit_price)}</TableCell>
+                  <TableCell align="right">{safeCurrency(supply.total_value)}</TableCell>
                   <TableCell align="right">
-                    {supply.consumption ? `${supply.consumption.toFixed(2)} km/L` : '-'}
+                    {supply.consumption ? `${safeToFixed(supply.consumption, 2)} km/L` : '-'}
                   </TableCell>
                 </TableRow>
               ))}
@@ -475,7 +478,7 @@ export default function FleetManagementPage() {
                     </TableCell>
                     <TableCell>{alert.document_number || '-'}</TableCell>
                     <TableCell align="right">
-                      {alert.cost ? `R$ ${alert.cost.toFixed(2)}` : '-'}
+                      {alert.cost ? safeCurrency(alert.cost) : '-'}
                     </TableCell>
                     <TableCell>
                       <IconButton

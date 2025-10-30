@@ -32,6 +32,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import { neonClient, FinanceEntry } from '@/lib/neonClient';
+import { safeNumber, safeToFixed, safeCurrency } from '@/lib/utils/number-validation';
 
 const typeColors: Record<FinanceEntry['type'], 'success' | 'error'> = {
   income: 'success',
@@ -222,13 +223,13 @@ export default function FinancePage() {
         <Paper sx={{ p: 3, borderRadius: 3, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
           <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)' }}>Receitas</Typography>
           <Typography variant="h5" sx={{ fontWeight: 700, color: 'white', mt: 1 }}>
-            R$ {totals.income.toFixed(2)}
+            {safeCurrency(totals.income)}
           </Typography>
         </Paper>
         <Paper sx={{ p: 3, borderRadius: 3, background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
           <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)' }}>Despesas</Typography>
           <Typography variant="h5" sx={{ fontWeight: 700, color: 'white', mt: 1 }}>
-            R$ {totals.expense.toFixed(2)}
+            {safeCurrency(totals.expense)}
           </Typography>
         </Paper>
         <Paper sx={{ 
@@ -240,7 +241,7 @@ export default function FinancePage() {
         }}>
           <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)' }}>Saldo</Typography>
           <Typography variant="h5" sx={{ fontWeight: 700, color: 'white', mt: 1 }}>
-            R$ {balance.toFixed(2)}
+            {safeCurrency(balance)}
           </Typography>
         </Paper>
       </Box>
@@ -281,7 +282,7 @@ export default function FinancePage() {
                     fontWeight: 600,
                     color: entry.type === 'income' ? 'success.main' : 'error.main'
                   }}>
-                    {entry.type === 'income' ? '+' : '-'} R$ {entry.amount.toFixed(2)}
+                    {entry.type === 'income' ? '+' : '-'} {safeCurrency(entry.amount)}
                   </TableCell>
                   <TableCell align="right">
                     <IconButton
