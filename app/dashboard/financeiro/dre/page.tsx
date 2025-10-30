@@ -22,6 +22,7 @@ import AssessmentIcon from '@mui/icons-material/Assessment';
 import DownloadIcon from '@mui/icons-material/Download';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
+import { safeToFixed, safePercentage } from '@/lib/utils/number-validation';
 
 interface DRELine {
   id: string;
@@ -122,7 +123,7 @@ export default function DREPage() {
               </Typography>
             </Box>
             <Typography variant="h4" sx={{ fontWeight: 700, color: 'white' }}>
-              {margemBruta.toFixed(1)}%
+              {safeToFixed(margemBruta, 1)}%
             </Typography>
           </Paper>
         </Grid>
@@ -135,7 +136,7 @@ export default function DREPage() {
               </Typography>
             </Box>
             <Typography variant="h4" sx={{ fontWeight: 700, color: 'white' }}>
-              {margemOperacional.toFixed(1)}%
+              {safeToFixed(margemOperacional, 1)}%
             </Typography>
           </Paper>
         </Grid>
@@ -148,7 +149,7 @@ export default function DREPage() {
               </Typography>
             </Box>
             <Typography variant="h4" sx={{ fontWeight: 700, color: 'white' }}>
-              {margemLiquida.toFixed(1)}%
+              {safeToFixed(margemLiquida, 1)}%
             </Typography>
           </Paper>
         </Grid>
@@ -192,7 +193,7 @@ export default function DREPage() {
                 </TableCell>
                 <TableCell align="right">
                   {line.type !== 'total' && line.value !== 425000 ? 
-                    ((Math.abs(line.value) / 425000) * 100).toFixed(1) + '%' : 
+                    safeToFixed(safePercentage(Math.abs(line.value), 425000), 1) + '%' : 
                     line.value === 425000 ? '100.0%' : '-'}
                 </TableCell>
               </TableRow>

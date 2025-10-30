@@ -19,6 +19,7 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
+import { safeToFixed, safePercentage } from '@/lib/utils/number-validation';
 
 interface CostCenter {
   id: number;
@@ -81,7 +82,7 @@ export default function CentrosDeCustoPage() {
           <Paper sx={{ p: 2, borderRadius: 2, background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }}>
             <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)' }}>% Realizado</Typography>
             <Typography variant="h5" sx={{ fontWeight: 700, color: 'white', mt: 1 }}>
-              {avgPercentage.toFixed(1)}%
+              {safeToFixed(avgPercentage, 1)}%
             </Typography>
           </Paper>
         </Grid>
@@ -109,7 +110,7 @@ export default function CentrosDeCustoPage() {
                 <TableCell align="right">R$ {cc.budget.toLocaleString('pt-BR')}</TableCell>
                 <TableCell align="right">R$ {cc.spent.toLocaleString('pt-BR')}</TableCell>
                 <TableCell align="right" sx={{ fontWeight: 600, color: cc.percentage > 80 ? 'error.main' : 'text.primary' }}>
-                  {cc.percentage.toFixed(1)}%
+                  {safeToFixed(cc.percentage, 1)}%
                 </TableCell>
                 <TableCell align="right">
                   <IconButton size="small" color="primary">
