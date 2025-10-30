@@ -1,0 +1,1 @@
+Predictive analysis page with revenue prediction charts, churn analysis dashboard, opportunity detection, and ML model information

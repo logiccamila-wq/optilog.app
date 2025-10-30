@@ -1,0 +1,1 @@
+Module navigation card component with icon, title, description, hover effects, and link to module page

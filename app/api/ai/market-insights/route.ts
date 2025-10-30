@@ -1,0 +1,1 @@
+Market intelligence API analyzing chemical transport sector with competitive analysis, opportunities detection, and trend prediction

@@ -1,0 +1,1 @@
+Reusable KPI card component with icon, title, value, trend indicator (up/down), change percentage, and color coding
