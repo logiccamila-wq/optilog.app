@@ -58,7 +58,11 @@ jobs:
           npm install -g vercel@latest
           vercel pull --yes --environment=production --token "$VERCEL_TOKEN"
           vercel build --prod --token "$VERCEL_TOKEN"
-          DEPLOY_URL=$(vercel deploy --prebuilt --prod --yes --token "$VERCEL_TOKEN" 2>&1 | tee /dev/stderr | grep -oP 'https://[^\s]+' | tail -1)
+          
+          # Capture deploy output and extract URL
+          DEPLOY_OUTPUT=$(vercel deploy --prebuilt --prod --yes --token "$VERCEL_TOKEN" 2>&1 | tee /dev/stderr)
+          DEPLOY_URL=$(echo "$DEPLOY_OUTPUT" | grep -oE 'https://[^[:space:]]+' | tail -1)
+          
           if [ -n "$DEPLOY_URL" ]; then
             echo "DEPLOY_URL=$DEPLOY_URL" >> $GITHUB_OUTPUT
             echo "✅ Deploy concluído: $DEPLOY_URL"
