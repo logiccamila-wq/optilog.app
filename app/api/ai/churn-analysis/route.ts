@@ -1,1 +1,1 @@
-Customer churn prediction API with risk scoring, retention recommendations, and ML-based client risk analysis
+export async function GET(req: Request) { return new Response(JSON.stringify({ message: 'Churn Analysis API', status: 'available' }), { status: 200, headers: { 'Content-Type': 'application/json' } }); }
