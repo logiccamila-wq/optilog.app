@@ -1,1 +1,1 @@
-Market intelligence API analyzing chemical transport sector with competitive analysis, opportunities detection, and trend prediction
+export async function GET(req: Request) { return new Response(JSON.stringify({ message: 'Market Insights API', status: 'available' }), { status: 200, headers: { 'Content-Type': 'application/json' } }); }
