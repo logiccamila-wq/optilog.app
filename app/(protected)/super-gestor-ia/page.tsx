@@ -1,1 +1,1 @@
-Main Super Gestor IA/ML dashboard with KPI cards (revenue prediction, churn risk, opportunities, efficiency), module cards (predictive analysis, chemical transport, SEO prediction, market insights, route optimization, sentiment analysis), and monetization plan cards (Basic R$0, Premium R$497, Super Gestor IA/ML R$1997)
+'use client'; import { Suspense } from 'react'; export default function SuperGestorPage() { return <div className='p-8'><h1>Super Gestor IA/ML</h1><p>Dashboard loading...</p></div>; }
