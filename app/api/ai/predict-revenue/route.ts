@@ -1,1 +1,1 @@
-ML revenue prediction API with Random Forest simulation, confidence scoring, factors analysis, and recommendations
+export async function GET(req: Request) { return new Response(JSON.stringify({ message: 'Predict Revenue API', status: 'available' }), { status: 200, headers: { 'Content-Type': 'application/json' } }); }
