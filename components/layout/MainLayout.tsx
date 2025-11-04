@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import { useAuth } from '@/app/providers/AuthProvider';
 import {
   Box,
   Drawer,
@@ -49,6 +50,7 @@ interface MenuItem {
   path?: string;
   icon: JSX.Element;
   children?: MenuItem[];
+  requiredRoles?: string[]; // Roles que podem ver este item
 }
 
 const menuItems: MenuItem[] = [
@@ -79,6 +81,18 @@ const menuItems: MenuItem[] = [
       { label: 'Importar Motoristas', path: '/modules/importar-motoristas', icon: <Person /> },
       { label: 'Importação/Exportação', path: '/cadastro/importacao', icon: <Article /> }
     ]
+  },
+  {
+    label: '🚛 Portal do Motorista',
+    path: '/motorista',
+    icon: <Person />,
+    requiredRoles: ['admin', 'driver']
+  },
+  {
+    label: '🔧 Portal do Mecânico',
+    path: '/mechanic',
+    icon: <Build />,
+    requiredRoles: ['admin', 'mechanic']
   },
   {
     label: 'Operacional',
@@ -161,10 +175,11 @@ const menuItems: MenuItem[] = [
   {
     label: 'Administração',
     icon: <AdminPanelSettings />,
+    requiredRoles: ['admin'],
     children: [
-      { label: 'Admin', path: '/admin', icon: <Settings /> },
-      { label: 'Usuários', path: '/usuarios', icon: <Person /> },
-      { label: 'Dev Tools', path: '/dev', icon: <Settings /> }
+      { label: 'Admin', path: '/admin', icon: <Settings />, requiredRoles: ['admin'] },
+      { label: 'Usuários', path: '/usuarios', icon: <Person />, requiredRoles: ['admin'] },
+      { label: 'Dev Tools', path: '/dev', icon: <Settings />, requiredRoles: ['admin'] }
     ]
   }
 ];
@@ -176,9 +191,58 @@ interface MainLayoutProps {
 export default function MainLayout({ children }: MainLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const { user } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openMenus, setOpenMenus] = useState<string[]>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  // Filtrar menu items baseado no role do usuário
+  const filteredMenuItems = useMemo(() => {
+    if (!user) return menuItems;
+
+    const userRole = user.role || 'viewer';
+    
+    // Admin vê tudo
+    if (userRole === 'admin') return menuItems;
+
+    // Filtrar recursivamente os menu items
+    const filterItems = (items: MenuItem[]): MenuItem[] => {
+      return items.filter(item => {
+        // Se não tem requiredRoles, é visível para todos
+        if (!item.requiredRoles || item.requiredRoles.length === 0) {
+          // Se tem children, filtrar eles também
+          if (item.children) {
+            const filteredChildren = filterItems(item.children);
+            // Só mostrar o item se tiver children visíveis
+            if (filteredChildren.length === 0) return false;
+            return { ...item, children: filteredChildren };
+          }
+          return true;
+        }
+
+        // Verificar se o usuário tem o role necessário
+        const hasRole = item.requiredRoles.includes(userRole);
+        if (!hasRole) return false;
+
+        // Se tem children, filtrar eles também
+        if (item.children) {
+          const filteredChildren = filterItems(item.children);
+          // Só mostrar o item se tiver children visíveis
+          if (filteredChildren.length === 0) return false;
+          return { ...item, children: filteredChildren };
+        }
+
+        return true;
+      }).map(item => {
+        if (item.children) {
+          return { ...item, children: filterItems(item.children) };
+        }
+        return item;
+      });
+    };
+
+    return filterItems(menuItems);
+  }, [user]);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -259,7 +323,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
       </Toolbar>
       <Divider />
       <List sx={{ pt: 0 }}>
-        {renderMenuItems(menuItems)}
+        {renderMenuItems(filteredMenuItems)}
       </List>
     </Box>
   );
