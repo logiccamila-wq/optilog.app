@@ -9,10 +9,6 @@ const ToastProvider = dynamic(() => import('@/components/ui/ToastProvider'), { s
 const ServiceWorkerRegister = dynamic(() => import('@/app/providers/ServiceWorker'), { ssr: false });
 const SWUpdateSnackbar = dynamic(() => import('@/components/pwa/SWUpdateSnackbar'), { ssr: false });
 
-// Configurações para server-side rendering e edge runtime
-export const runtime = 'edge';
-export const preferredRegion = ['gru1', 'iad1']; // São Paulo e Virginia
-
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://optilog-app-logiccamila-wqs-projects.vercel.app';
 
 export const metadata = {
