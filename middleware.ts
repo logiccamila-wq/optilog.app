@@ -61,6 +61,19 @@ export async function middleware(request: NextRequest) {
     const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'dev-secret');
     const { payload } = await jwtVerify(token, secret);
     
+    // Redirect automático por role após autenticação
+    if (pathname === '/' || pathname === '/dashboard') {
+      const role = payload.role as string;
+      
+      if (role === 'driver') {
+        return NextResponse.redirect(new URL('/motorista', request.url));
+      }
+      if (role === 'mechanic') {
+        return NextResponse.redirect(new URL('/mechanic', request.url));
+      }
+      // Admin e Manager continuam no /dashboard
+    }
+    
     // Verifica permissões baseadas nos roles do usuário
     const userRoles = payload.roles as string[] || ['usuario'];
     return verifyAccess(request, userRoles);
