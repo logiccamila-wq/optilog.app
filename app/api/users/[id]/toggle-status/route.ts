@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { sql } from '@vercel/postgres';
 
+export const runtime = 'nodejs';
+
 export async function POST(request: Request, { params }: { params: { id: string } }) {
     const userId = params.id;
 
