@@ -75,7 +75,8 @@ export async function middleware(request: NextRequest) {
     }
     
     // Verifica permissões baseadas nos roles do usuário
-    const userRoles = payload.roles as string[] || ['usuario'];
+    // O payload pode ter um array 'roles' ou um único 'role', priorizamos 'roles'
+    const userRoles = (payload.roles as string[]) || (payload.role ? [payload.role as string] : ['usuario']);
     return verifyAccess(request, userRoles);
   } catch (error) {
     console.error('Erro ao verificar autenticação:', error);

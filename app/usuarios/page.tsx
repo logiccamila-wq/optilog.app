@@ -77,7 +77,14 @@ export default function UsuariosPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
-  const [formData, setFormData] = useState({ name: '', email: '', role: 'operator' as any, password: '', phone: '', cpf: '' });
+  const [formData, setFormData] = useState<{ name: string; email: string; role: User['role']; password: string; phone: string; cpf: string }>({ 
+    name: '', 
+    email: '', 
+    role: 'operator', 
+    password: '', 
+    phone: '', 
+    cpf: '' 
+  });
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
 
@@ -284,7 +291,7 @@ export default function UsuariosPage() {
               <Select 
                 label="Função" 
                 value={formData.role}
-                onChange={(e) => setFormData({...formData, role: e.target.value as any})}
+                onChange={(e) => setFormData({...formData, role: e.target.value as User['role']})}
               >
                 {Object.entries(ROLE_LABELS).map(([key, label]) => (
                   <MenuItem key={key} value={key}>{label}</MenuItem>
