@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { Boxes, Package, Truck, ShoppingCart, Users, DollarSign, Wrench, Settings } from 'lucide-react';
 
