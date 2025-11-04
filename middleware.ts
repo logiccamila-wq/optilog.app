@@ -27,13 +27,20 @@ const publicRoutes = [
   '/icons',
 ];
 
-// Mapeamento de rotas para roles permitidos
+// Mapeamento de rotas para roles permitidos (RBAC)
 const routePermissions: Record<string, string[]> = {
-  '/supergestor': ['super_gestor'],
-  '/admin': ['super_gestor', 'administrador'],
-  '/financeiro': ['super_gestor', 'administrador', 'financeiro'],
-  '/operacoes': ['super_gestor', 'administrador', 'operador_logistico'],
-  '/motorista': ['super_gestor', 'administrador', 'operador_logistico', 'motorista'],
+  '/usuarios': ['admin'], // Apenas admins podem gerenciar usuários
+  '/supergestor': ['admin'],
+  '/admin': ['admin'],
+  '/financeiro': ['admin', 'manager'],
+  '/finance': ['admin', 'manager'],
+  '/operacoes': ['admin', 'manager', 'operator'],
+  '/motorista': ['admin', 'driver'], // Motoristas acessam seu portal
+  '/mechanic': ['admin', 'mechanic'], // Mecânicos acessam seu portal
+  '/dashboard/operational': ['admin', 'operator'], // Dashboard operacional
+  '/control-tower': ['admin', 'manager', 'operator'],
+  '/bi': ['admin', 'manager'],
+  '/relatorios': ['admin', 'manager'],
 };
 
 export async function middleware(request: NextRequest) {
@@ -61,8 +68,15 @@ export async function middleware(request: NextRequest) {
     const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'dev-secret');
     const { payload } = await jwtVerify(token, secret);
     
-    // Verifica permissões baseadas nos roles do usuário
-    const userRoles = payload.roles as string[] || ['usuario'];
+    // Verifica permissões baseadas no role do usuário
+    const userRole = payload.role as string || 'viewer';
+    const userRoles = [userRole]; // Compatibilidade
+    
+    // Redirecionar após login baseado no role
+    if (pathname === '/' || pathname === '/login') {
+      return redirectBasedOnRole(request, userRole);
+    }
+    
     return verifyAccess(request, userRoles);
   } catch (error) {
     console.error('Erro ao verificar autenticação:', error);
@@ -90,5 +104,29 @@ function redirectToLogin(request: NextRequest) {
   const url = request.nextUrl.clone();
   url.pathname = '/login';
   url.search = `?next=${encodeURIComponent(request.nextUrl.pathname)}`;
+  return NextResponse.redirect(url);
+}
+
+function redirectBasedOnRole(request: NextRequest, role: string) {
+  const url = request.nextUrl.clone();
+  
+  switch (role) {
+    case 'admin':
+    case 'manager':
+      url.pathname = '/dashboard';
+      break;
+    case 'driver':
+      url.pathname = '/motorista';
+      break;
+    case 'mechanic':
+      url.pathname = '/mechanic';
+      break;
+    case 'operator':
+      url.pathname = '/dashboard/operational';
+      break;
+    default:
+      url.pathname = '/dashboard';
+  }
+  
   return NextResponse.redirect(url);
 }
