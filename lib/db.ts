@@ -20,12 +20,15 @@ export function isDatabaseConfigured(): boolean {
   return !!process.env.DATABASE_URL;
 }
 
-// Default export for query execution
-async function db(query: string, params?: any[]) {
+// Type for database query results
+export type QueryResult<T = Record<string, unknown>> = T[];
+
+// Default export for query execution with generic type support
+async function db<T = Record<string, unknown>>(query: string, params?: unknown[]): Promise<QueryResult<T>> {
   const sql = getSql();
   try {
     const result = await sql(query, params);
-    return result as any[];
+    return result as QueryResult<T>;
   } catch (error) {
     console.error('Database query error:', error);
     throw error;

@@ -48,8 +48,9 @@ export async function GET(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
     
-    // Apenas admins e managers podem listar usuários
-    if (!auth.authorized || !['admin', 'manager'].includes(auth.role || '')) {
+    // Apenas admins podem listar e gerenciar usuários
+    // Managers podem visualizar mas não editar (futuro: implementar permissão de view-only)
+    if (!auth.authorized || !['admin'].includes(auth.role || '')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
@@ -142,8 +143,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Email already exists' }, { status: 409 });
     }
 
-    // Hash da senha (em produção, usar bcrypt)
-    // Por simplicidade, vamos usar uma hash básica - DEVE SER SUBSTITUÍDO POR BCRYPT
+    // TODO CRITICAL: Substituir por bcrypt antes de produção
+    // ATENÇÃO: Base64 NÃO é seguro! Apenas para desenvolvimento
+    // Usar: import bcrypt from 'bcrypt'; const hash = await bcrypt.hash(password, 10);
     const passwordHash = Buffer.from(password).toString('base64');
 
     // Criar usuário

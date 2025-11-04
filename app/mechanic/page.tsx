@@ -41,7 +41,8 @@ interface ServiceOrder {
 export default function MechanicAppPage() {
   const [serviceOrders, setServiceOrders] = useState<ServiceOrder[]>([]);
   const [loading, setLoading] = useState(true);
-  const [mechanicName] = useState('Carlos Oliveira'); // TODO: Get from auth
+  // TODO: Get from auth context when available
+  const mechanicName = 'Mecânico'; // Placeholder
 
   useEffect(() => {
     fetchServiceOrders();

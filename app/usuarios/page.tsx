@@ -151,8 +151,9 @@ export default function UsuariosPage() {
       await fetchUsers();
       setDialogOpen(false);
       resetForm();
-    } catch (err: any) {
-      setError(err.message || 'Erro ao criar usuário');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao criar usuário';
+      setError(errorMessage);
     }
   };
 

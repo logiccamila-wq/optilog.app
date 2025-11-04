@@ -207,38 +207,27 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
     // Filtrar recursivamente os menu items
     const filterItems = (items: MenuItem[]): MenuItem[] => {
-      return items.filter(item => {
-        // Se não tem requiredRoles, é visível para todos
-        if (!item.requiredRoles || item.requiredRoles.length === 0) {
+      return items
+        .filter(item => {
+          // Se não tem requiredRoles, é visível para todos
+          if (!item.requiredRoles || item.requiredRoles.length === 0) {
+            return true;
+          }
+          // Verificar se o usuário tem o role necessário
+          return item.requiredRoles.includes(userRole);
+        })
+        .map(item => {
           // Se tem children, filtrar eles também
           if (item.children) {
             const filteredChildren = filterItems(item.children);
-            // Só mostrar o item se tiver children visíveis
-            if (filteredChildren.length === 0) return false;
-            return { ...item, children: filteredChildren };
+            // Só retornar o item se tiver children visíveis
+            return filteredChildren.length > 0 
+              ? { ...item, children: filteredChildren }
+              : null;
           }
-          return true;
-        }
-
-        // Verificar se o usuário tem o role necessário
-        const hasRole = item.requiredRoles.includes(userRole);
-        if (!hasRole) return false;
-
-        // Se tem children, filtrar eles também
-        if (item.children) {
-          const filteredChildren = filterItems(item.children);
-          // Só mostrar o item se tiver children visíveis
-          if (filteredChildren.length === 0) return false;
-          return { ...item, children: filteredChildren };
-        }
-
-        return true;
-      }).map(item => {
-        if (item.children) {
-          return { ...item, children: filterItems(item.children) };
-        }
-        return item;
-      });
+          return item;
+        })
+        .filter((item): item is MenuItem => item !== null);
     };
 
     return filterItems(menuItems);

@@ -70,7 +70,8 @@ export async function middleware(request: NextRequest) {
     
     // Verifica permissões baseadas no role do usuário
     const userRole = payload.role as string || 'viewer';
-    const userRoles = [userRole]; // Compatibilidade
+    // TODO: Remover userRoles array após migração completa para role único (target: Q1 2026)
+    const userRoles = [userRole]; // Compatibilidade com código legado
     
     // Redirecionar após login baseado no role
     if (pathname === '/' || pathname === '/login') {

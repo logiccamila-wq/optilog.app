@@ -47,13 +47,14 @@ CREATE TRIGGER update_users_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
--- Inserir usuário admin padrão (senha: Multi12345678)
--- Hash bcrypt da senha Multi12345678: $2b$10$XgHfP3YFGmQfLV9gQ.xbHOqL3o7Y6KZ8xJ8YvGH1nK9gQ1uO7Y6KZ
+-- Inserir usuários admin iniciais
+-- NOTA: Usar variáveis de ambiente para senhas em produção
+-- Para desenvolvimento, use a senha padrão configurada no sistema
 INSERT INTO users (name, email, password_hash, role, status, email_verified)
 VALUES 
-  ('Camila Lareste', 'logiccamila@gmail.com', '$2b$10$XgHfP3YFGmQfLV9gQ.xbHOqL3o7Y6KZ8xJ8YvGH1nK9gQ1uO7Y6KZ', 'admin', 'active', TRUE),
-  ('Camila E Teste', 'camila.eteste@gmail.com', '$2b$10$XgHfP3YFGmQfLV9gQ.xbHOqL3o7Y6KZ8xJ8YvGH1nK9gQ1uO7Y6KZ', 'admin', 'active', TRUE),
-  ('Camila E Tseral', 'camila.etseral@gmail.com', '$2b$10$XgHfP3YFGmQfLV9gQ.xbHOqL3o7Y6KZ8xJ8YvGH1nK9gQ1uO7Y6KZ', 'admin', 'active', TRUE)
+  ('Camila Lareste', 'logiccamila@gmail.com', 'CHANGE_ME_IN_PRODUCTION', 'admin', 'active', TRUE),
+  ('Camila E Teste', 'camila.eteste@gmail.com', 'CHANGE_ME_IN_PRODUCTION', 'admin', 'active', TRUE),
+  ('Camila E Tseral', 'camila.etseral@gmail.com', 'CHANGE_ME_IN_PRODUCTION', 'admin', 'active', TRUE)
 ON CONFLICT (email) DO NOTHING;
 
 COMMENT ON TABLE users IS 'Usuários do sistema OptiLog com controle de acesso baseado em roles (RBAC)';
