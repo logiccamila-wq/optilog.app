@@ -1,12 +1,50 @@
-// Sistema de permissões e roles
+// Sistema de permissões e roles (RBAC)
 
 export enum UserRole {
   ADMIN = 'admin',
   MANAGER = 'manager',
   DRIVER = 'driver',
   MECHANIC = 'mechanic',
+  OPERATOR = 'operator',
   VIEWER = 'viewer',
 }
+
+// Definição de permissões por role
+export const ROLE_PERMISSIONS: Record<string, string[]> = {
+  admin: ['*'], // Acesso total
+  manager: [
+    'dashboard',
+    'control-tower',
+    'relatorios',
+    'frota:view',
+    'finance:view',
+    'operacoes',
+    'bi'
+  ],
+  driver: [
+    'motorista',
+    'motorista:dashboard',
+    'motorista:checkin',
+    'motorista:nao-conformidade'
+  ],
+  mechanic: [
+    'mechanic',
+    'frota:ordens',
+    'frota:manutencoes',
+    'frota:estoque',
+    'frota:ferramentas'
+  ],
+  operator: [
+    'dashboard:operational',
+    'control-tower:view',
+    'operacoes',
+    'viagens'
+  ],
+  viewer: [
+    'dashboard',
+    'relatorios'
+  ]
+};
 
 export interface UserPermissions {
   email: string;
@@ -114,4 +152,22 @@ export function addAuthorizedUser(
   };
   
   authorizedPasswords[normalizedEmail] = password;
+}
+
+// Verificar permissão específica para um role
+export function hasPermission(role: string, permission: string): boolean {
+  const rolePermissions = ROLE_PERMISSIONS[role];
+  if (!rolePermissions) return false;
+  
+  // Admin tem acesso total
+  if (rolePermissions.includes('*')) return true;
+  
+  // Verificar permissão exata
+  if (rolePermissions.includes(permission)) return true;
+  
+  // Verificar permissão com wildcard (ex: 'frota:*' cobre 'frota:view')
+  const basePermission = permission.split(':')[0];
+  if (rolePermissions.includes(`${basePermission}:*`)) return true;
+  
+  return false;
 }
