@@ -1,13 +1,24 @@
 #!/bin/bash
 set -euo pipefail
 
+echo "======================================"
+echo "Optilog.app Codespace Setup"
+echo "======================================"
+
 install_deps() {
   local dir="$1"
-  echo "[postcreate] Installing dependencies in $dir..."
-  (cd "$dir" && if [ -f package-lock.json ]; then npm ci || npm install; else npm install; fi)
+  if [ -d "$dir" ]; then
+    echo "[postcreate] Installing dependencies in $dir..."
+    (cd "$dir" && if [ -f package-lock.json ]; then npm ci || npm install; else npm install; fi)
+  else
+    echo "[postcreate] Skipping $dir (directory not found)"
+  fi
 }
 
+# Install root dependencies (required)
 install_deps .
+
+# Install optional subdirectory dependencies (if they exist)
 install_deps "frontend"
 install_deps "functions"
 
@@ -20,4 +31,17 @@ else
   echo "[postcreate] Skipping Playwright install (npx not found)"
 fi
 
-echo "[postcreate] Done."
+# Cleanup to save space
+echo "[postcreate] Cleaning up to save storage..."
+rm -rf /tmp/* 2>/dev/null || true
+npm cache clean --force 2>/dev/null || true
+
+# Show storage usage
+echo "======================================"
+echo "Current workspace size:"
+du -sh /workspaces/${CODESPACE_NAME:-optilog.app} 2>/dev/null || du -sh . 2>/dev/null || echo "Unknown"
+echo "======================================"
+echo "✅ Setup complete!"
+echo "📖 See CODESPACES_MANAGEMENT.md for tips on managing codespace storage"
+echo "======================================"
+
