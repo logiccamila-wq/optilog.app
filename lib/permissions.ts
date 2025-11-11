@@ -1,11 +1,14 @@
 // Sistema de permissões e roles
 
 export enum UserRole {
-  ADMIN = 'admin',
-  MANAGER = 'manager',
-  DRIVER = 'driver',
-  MECHANIC = 'mechanic',
-  VIEWER = 'viewer',
+// Exportação padrão para centralização de roles
+  SUPER_GESTOR = 'super_gestor',
+  ADMINISTRADOR = 'administrador',
+  FINANCEIRO = 'financeiro',
+  OPERADOR_LOGISTICO = 'operador_logistico',
+  MOTORISTA = 'motorista',
+  MECANICO = 'mecanico',
+  VISUALIZADOR = 'visualizador',
 }
 
 export interface UserPermissions {
@@ -20,28 +23,28 @@ export interface UserPermissions {
 const authorizedUsers: Record<string, UserPermissions> = {
   'logiccamila@gmail.com': {
     email: 'logiccamila@gmail.com',
-    role: UserRole.ADMIN,
+    role: UserRole.ADMINISTRADOR,
     modules: ['*'], // Acesso a todos os módulos
     verified: true,
     active: true,
   },
   'camila.eteste@gmail.com': {
     email: 'camila.eteste@gmail.com',
-    role: UserRole.ADMIN,
+    role: UserRole.ADMINISTRADOR,
     modules: ['*'],
     verified: true,
     active: true,
   },
   'camila.etseral@gmail.com': {
     email: 'camila.etseral@gmail.com',
-    role: UserRole.ADMIN,
+    role: UserRole.SUPER_GESTOR,
     modules: ['*'],
     verified: true,
     active: true,
   },
   'teste@teste.com': {
     email: 'teste@teste.com',
-    role: UserRole.VIEWER,
+    role: UserRole.VISUALIZADOR,
     modules: ['dashboard', 'relatorios'],
     verified: true,
     active: true,
@@ -94,13 +97,13 @@ export function getUserRole(email: string): UserRole | null {
 
 export function canAccessAdmin(email: string): boolean {
   const role = getUserRole(email);
-  return role === UserRole.ADMIN || role === UserRole.MANAGER;
+  return role === UserRole.ADMINISTRADOR || role === UserRole.SUPER_GESTOR;
 }
 
 export function addAuthorizedUser(
   email: string,
   password: string,
-  role: UserRole = UserRole.VIEWER,
+  role: UserRole = UserRole.VISUALIZADOR,
   modules: string[] = ['dashboard']
 ): void {
   const normalizedEmail = email.toLowerCase();

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
+import { UserRole } from './lib/permissions';
 
 // Rotas públicas que não precisam de autenticação
 const publicRoutes = [
@@ -29,11 +30,12 @@ const publicRoutes = [
 
 // Mapeamento de rotas para roles permitidos
 const routePermissions: Record<string, string[]> = {
-  '/supergestor': ['super_gestor'],
-  '/admin': ['super_gestor', 'administrador'],
-  '/financeiro': ['super_gestor', 'administrador', 'financeiro'],
-  '/operacoes': ['super_gestor', 'administrador', 'operador_logistico'],
-  '/motorista': ['super_gestor', 'administrador', 'operador_logistico', 'motorista'],
+  '/supergestor': [UserRole.SUPER_GESTOR],
+  '/admin': [UserRole.SUPER_GESTOR, UserRole.ADMINISTRADOR],
+  '/financeiro': [UserRole.SUPER_GESTOR, UserRole.ADMINISTRADOR, UserRole.FINANCEIRO],
+  '/operacoes': [UserRole.SUPER_GESTOR, UserRole.ADMINISTRADOR, UserRole.OPERADOR_LOGISTICO],
+  '/motorista': [UserRole.SUPER_GESTOR, UserRole.ADMINISTRADOR, UserRole.OPERADOR_LOGISTICO, UserRole.MOTORISTA],
+  // Adicione outras rotas e roles conforme necessário  npx vitest run  npx vitest run
 };
 
 export async function middleware(request: NextRequest) {
@@ -76,6 +78,8 @@ function verifyAccess(request: NextRequest, roles: string[]) {
   // Verifica permissões para rotas protegidas
   for (const [route, allowedRoles] of Object.entries(routePermissions)) {
     if (pathname.startsWith(route) && !roles.some((role) => allowedRoles.includes(role))) {
+      // Log de auditoria para tentativas de acesso negadas
+      console.warn(`Acesso negado: rota='${pathname}', roles do usuário='${roles.join(',')}', roles permitidas='${allowedRoles.join(',')}'`);
       return new NextResponse(null, {
         status: 403,
         statusText: 'Forbidden',
