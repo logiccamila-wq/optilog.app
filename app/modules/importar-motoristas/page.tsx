@@ -1,5 +1,7 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { stackAuth } from '@/lib/stackAuth';
 import Link from 'next/link';
 import { Upload, User, Phone, MapPin, FileText, CreditCard, CheckCircle, XCircle, Search, Filter, UserPlus, ArrowLeft } from 'lucide-react';
 
@@ -16,6 +18,13 @@ interface Motorista {
 }
 
 export default function ImportarMotoristasPage() {
+  const router = useRouter();
+  useEffect(() => {
+    const user = stackAuth.getCurrentUser();
+    if (!user) {
+      router.replace('/login?next=/modules/importar-motoristas');
+    }
+  }, [router]);
   const [importing, setImporting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterAtivo, setFilterAtivo] = useState('todos');

@@ -1,3 +1,6 @@
+const alertasRouter = require('./routes/alertas');
+
+app.use('/api/alertas', alertasRouter);
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -26,6 +29,7 @@ const inventoryRouter = require('./routes/inventory');
 const equipamentosRouter = require('./routes/equipamentos');
 const inspecoesRouter = require('./routes/inspecoes');
 const alertasInspecoesRouter = require('./routes/alertas-inspecoes');
+const relatoriosRouter = require('./routes/relatorios');
 
 const app = express();
 const PORT = process.env.PORT || 3001; // evita conflito com Next dev em 3000
@@ -105,9 +109,11 @@ app.use('/payables', payablesRouter);
 app.use('/alerts', alertsRouter);
 app.use('/checklist', checklistRouter);
 app.use('/inventory', inventoryRouter);
+app.use('/api/alertas', alertasRouter);
 app.use('/equipamentos', equipamentosRouter);
 app.use('/inspecoes', inspecoesRouter);
 app.use('/alertas-inspecoes', alertasInspecoesRouter);
+app.use('/api/relatorios', relatoriosRouter);
 
 // iniciar DB e servidor
 initDb(() => {

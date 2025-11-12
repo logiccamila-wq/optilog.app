@@ -1,5 +1,6 @@
 import './globals.css';
 import { ReactNode } from 'react';
+import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { ThemeProvider } from '@/app/providers/ThemeProvider';
 
@@ -63,6 +64,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <ThemeProvider>
           <ToastProvider>
             <LayoutWrapper>
+            <nav style={{ display: 'flex', gap: 16, margin: '16px 0' }}>
+              <Link href="/onboarding">Onboarding</Link>
+              <Link href="/faq">FAQ</Link>
+              <Link href="/relatorios">Relatórios</Link>
+              <Link href="/alertas">Alertas</Link>
+            </nav>
               {children}
             </LayoutWrapper>
             <ServiceWorkerRegister />

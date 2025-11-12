@@ -1,3 +1,4 @@
+export const runtime = 'nodejs';
 import { NextResponse } from 'next/server';
 import { sql } from '@vercel/postgres';
 import bcrypt from 'bcrypt';

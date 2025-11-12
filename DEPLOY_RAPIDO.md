@@ -78,6 +78,23 @@ NEXT_PUBLIC_API_URL=https://seu-projeto.vercel.app
 
 ---
 
+## 🚦 LINKS RÁPIDOS DOS PORTAIS
+
+- App Motorista: https://optilog-app.vercel.app/driver
+- App Mecânico: https://optilog-app.vercel.app/mechanic
+
+
+## 👤 LOGINS DE TESTE
+
+- Motorista: motorista@teste.com / senha: motorista123
+- Mecânico: mecanico@teste.com / senha: mecanico123
+- Admin: logiccamila@gmail.com / senha: Multi12345678
+- Admin 2: camila.eteste@gmail.com / senha: Multi@#$%362748
+- Super Gestor: camila.etseral@gmail.com / senha: Multi@#$%362748
+- Visualizador: teste@teste.com / senha: teste123
+
+---
+
 ## 🚀 COMANDOS DE ATALHO
 
 ### **Se quiser fazer tudo via CLI:**

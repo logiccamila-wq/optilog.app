@@ -22,6 +22,8 @@ const publicRoutes = [
   '/api/vehicles',
   '/api/trips', // App Motorista
   '/motorista', // App Motorista PWA
+  '/mechanic', // App Mecânico PWA
+  '/tire-service', // App Borracheiro PWA
   '/manifest.json',
   '/service-worker.js',
   '/offline.html',

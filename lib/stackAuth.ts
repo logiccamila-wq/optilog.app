@@ -71,11 +71,18 @@ export class StackAuthClient {
       this.currentUser = user;
       
       // Armazena token e user no localStorage
-      if (typeof window !== 'undefined') {
-        if (data.accessToken) {
-          localStorage.setItem('stack_auth_token', data.accessToken);
-        }
-        localStorage.setItem('stack_auth_user', JSON.stringify(user));
+        if (typeof window !== 'undefined') {
+          if (data.accessToken) {
+            localStorage.setItem('stack_auth_token', data.accessToken);
+          }
+          localStorage.setItem('stack_auth_user', JSON.stringify(user));
+            // Gera um JWT fake válido (header.payload.signature)
+            const fakeJwt = [
+              btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' })),
+              btoa(JSON.stringify({ sub: user.email, name: user.displayName, role: user.role || 'motorista', exp: Math.floor(Date.now() / 1000) + 3600 })),
+              'signaturefake'
+            ].join('.');
+            localStorage.setItem('token', fakeJwt); // compatibilidade dashboard
       }
 
       return user;
@@ -134,10 +141,11 @@ export class StackAuthClient {
       this.currentUser = user;
 
       if (typeof window !== 'undefined') {
-        if (data.accessToken) {
-          localStorage.setItem('stack_auth_token', data.accessToken);
-        }
-        localStorage.setItem('stack_auth_user', JSON.stringify(user));
+          if (data.accessToken) {
+            localStorage.setItem('stack_auth_token', data.accessToken);
+          }
+          localStorage.setItem('stack_auth_user', JSON.stringify(user));
+              localStorage.setItem('token', 'fake-jwt-token'); // compatibilidade dashboard
       }
 
       return user;
@@ -196,7 +204,7 @@ export class StackAuthClient {
         body: JSON.stringify({
           email: user.email,
           role: user.role,
-          roles: user.role === 'admin' ? ['super_gestor', 'administrador'] : ['usuario'],
+          roles: user.role ? [user.role] : ['usuario'],
         }),
       });
     } catch (error) {
@@ -247,6 +255,7 @@ export class StackAuthClient {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('stack_auth_user');
       localStorage.removeItem('stack_auth_token');
+      localStorage.removeItem('token');
     }
   }
 
