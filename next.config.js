@@ -14,7 +14,7 @@ const nextConfig = {
   // Otimizações gerais
   compress: true,
   distDir: '.next',
-  output: 'standalone',
+  // output: 'standalone', // Desabilitado para resolver 404 no Vercel - incompatível com Edge Runtime
   poweredByHeader: false,
   reactStrictMode: false,  // Desativar strict mode temporariamente
 
