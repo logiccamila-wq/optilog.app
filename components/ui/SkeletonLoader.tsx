@@ -1,35 +1,49 @@
 import React from 'react';
-import './SkeletonLoader.css'; // Import your CSS styles here
 
-const SkeletonLoader = ({ type }) => {
-  const skeletonClass = `skeleton ${type}`;
+interface SkeletonLoaderProps {
+  variant?: 'table' | 'card' | 'list' | 'text';
+  rows?: number;
+}
 
-  return <div className={skeletonClass}></div>;
+const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({ variant = 'text', rows = 3 }) => {
+  if (variant === 'table') {
+    return (
+      <div className="space-y-3">
+        {Array.from({ length: rows }).map((_, i) => (
+          <div key={i} className="h-16 bg-gray-200 dark:bg-gray-700 animate-pulse rounded" />
+        ))}
+      </div>
+    );
+  }
+
+  if (variant === 'card') {
+    return (
+      <div className="space-y-4">
+        {Array.from({ length: rows }).map((_, i) => (
+          <div key={i} className="h-32 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-lg" />
+        ))}
+      </div>
+    );
+  }
+
+  if (variant === 'list') {
+    return (
+      <div className="space-y-2">
+        {Array.from({ length: rows }).map((_, i) => (
+          <div key={i} className="h-12 bg-gray-200 dark:bg-gray-700 animate-pulse rounded" />
+        ))}
+      </div>
+    );
+  }
+
+  // Default text variant
+  return (
+    <div className="space-y-2">
+      {Array.from({ length: rows }).map((_, i) => (
+        <div key={i} className="h-4 bg-gray-200 dark:bg-gray-700 animate-pulse rounded" />
+      ))}
+    </div>
+  );
 };
 
 export default SkeletonLoader;
-
-// CSS styles (SkeletonLoader.css)
-// .skeleton {
-//   background: #e0e0e0;
-//   border-radius: 4px;
-//   animation: pulse 1.5s infinite;
-// }
-// 
-// @keyframes pulse {
-//   0% {
-//     opacity: 1;
-//   }
-//   50% {
-//     opacity: 0.5;
-//   }
-//   100% {
-//     opacity: 1;
-//   }
-// }
-
-// Usage: 
-// <SkeletonLoader type="card" />
-// <SkeletonLoader type="table" />
-// <SkeletonLoader type="list" />
-// <SkeletonLoader type="text" />
