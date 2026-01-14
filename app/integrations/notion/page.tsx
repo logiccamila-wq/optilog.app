@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Box, Typography, Button, TextField, Table, TableHead, TableRow, TableCell, TableBody, Chip, Switch } from '@mui/material';
 import Card from '@/components/ui/card';
-import { CheckCircle2Icon, AlertCircleIcon, SyncIcon } from 'lucide-react';
+import { CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
 
 export default function NotionIntegrationPage() {
   const [connected, setConnected] = useState(false);
@@ -51,7 +51,7 @@ export default function NotionIntegrationPage() {
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000'%3E%3Cpath d='M4 4h16v16H4z'/%3E%3C/svg%3E" alt="Notion" style={{ width: 40, height: 40 }} />
         <Typography variant="h4">Integração Notion</Typography>
-        {connected ? <Chip label="Conectado" color="success" icon={<CheckCircle2Icon size={16} />} /> : <Chip label="Desconectado" color="error" icon={<AlertCircleIcon size={16} />} />}
+        {connected ? <Chip label="Conectado" color="success" icon={<CheckCircle2 size={16} />} /> : <Chip label="Desconectado" color="error" icon={<AlertCircle size={16} />} />}
       </Box>
 
       {/* KPIs */}
@@ -148,7 +148,7 @@ export default function NotionIntegrationPage() {
             sx={{ mt: 2 }} 
             onClick={handleSync}
             disabled={syncing}
-            startIcon={syncing ? <SyncIcon className="animate-spin" /> : null}
+            startIcon={syncing ? <RefreshCw className="animate-spin" /> : null}
           >
             {syncing ? 'Sincronizando...' : '🔄 Sincronizar Agora'}
           </Button>

@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { Tire, Plus, Search, TrendingDown, AlertTriangle } from 'lucide-react';
+import { Circle, Plus, Search, TrendingDown, AlertTriangle } from 'lucide-react';
 
 interface Pneu {
   id: number;
@@ -66,7 +66,7 @@ export default function GestPneusPage() {
     <div style={{ maxWidth: 1800, margin: '0 auto', padding: 24 }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 32 }}>
-        <Tire size={56} color="#64748b" />
+        <Circle size={56} color="#64748b" />
         <div style={{ flex: 1 }}>
           <h1 style={{ margin: 0, fontSize: 36, color: '#e5e7eb' }}>
             🛞 Gestão de Pneus
@@ -398,7 +398,7 @@ export default function GestPneusPage() {
           padding: '60px 0',
           color: '#9aa3b0'
         }}>
-          <Tire size={64} style={{ marginBottom: 16, opacity: 0.3 }} />
+          <Circle size={64} style={{ marginBottom: 16, opacity: 0.3 }} />
           <div style={{ fontSize: 18 }}>Nenhum pneu encontrado</div>
         </div>
       )}
