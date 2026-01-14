@@ -42,3 +42,24 @@ yarn-error.log*
 
 # Build artifacts
 _ci_build_artifacts/
+
+# Scripts de desenvolvimento que podem conter credenciais
+# Proteger scripts que podem ter secrets hardcoded acidentalmente
+scripts/fix-*.cjs
+scripts/fix-*.js
+scripts/fix-*.mjs
+scripts/test-*.cjs
+scripts/test-*.js
+scripts/test-*.mjs
+scripts/update-*.cjs
+scripts/update-*.js
+scripts/update-*.mjs
+scripts/*-user.cjs
+scripts/*-user.js
+scripts/*-user.mjs
+scripts/check-schema.cjs
+scripts/check-schema.js
+scripts/check-schema.mjs
+
+# Netlify build cache
+.netlify/

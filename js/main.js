@@ -1,5 +1,8 @@
 // js/main.js
-const SUPABASE_REF = 'gctoafawwupbzlqykdmr';
+// Browser-side JavaScript for calling Supabase Edge Functions
+// The Supabase project ref is public information (visible in URLs)
+// For production, consider injecting this via server-side templating or build-time replacement
+const SUPABASE_REF = window.SUPABASE_REF || 'gctoafawwupbzlqykdmr';
 const FUNCTION_SLUG = 'quick-endpoint';
 
 // Se sua função requer auth (verify_jwt: true), ajuste includeAuth para true
