@@ -177,7 +177,19 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [openMenus, setOpenMenus] = useState<string[]>([]);
+  // Abrir TODOS os menus por padrão para exibir os 48+ módulos
+  const [openMenus, setOpenMenus] = useState<string[]>([
+    '🔐 SuperGestor',
+    'Cadastros',
+    'Operacional',
+    'Gestão de Frota',
+    'Financeiro',
+    'Relatórios',
+    '🚀 Inovação',
+    'Módulos',
+    'Gestão',
+    'Administração'
+  ]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleDrawerToggle = () => {
