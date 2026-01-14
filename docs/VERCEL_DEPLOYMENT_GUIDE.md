@@ -7,15 +7,15 @@ O projeto OptiLog está configurado para deploy automático na Vercel quando hou
 ### Configuração Atual
 
 **Projeto Vercel:**
-- Project ID: `prj_LcG2ePKSRbnb0DgrYyV9Anv7APBy`
+- Project ID: `prj_vJJ0qzBS9ER4UjAOTc64OlcThJTn`
 - Organization ID: `team_0Vj5veTqtcl8M6tQ1VB8UEUj`
-- Project Name: `optilog-app`
+- Project Name: `logic-view-bright-main`
 - Framework: Next.js
 - Node Version: 22.x
 
 **URLs de Deploy:**
-- **Preview (este PR):** `https://optilog-app-git-copilot-consolidate-pending-fixes-features-logiccamila-wqs-projects.vercel.app`
-- **Produção (main):** `https://optilog-app.vercel.app` ou `https://optilog-app-logiccamila-wqs-projects.vercel.app`
+- **Preview (este PR):** `https://logic-view-bright-main-git-copilot-consolidate-pending-fixes-features-logiccamila-wqs-projects.vercel.app`
+- **Produção (main):** `https://logic-view-bright-main.vercel.app` ou `https://logic-view-bright-main-logiccamila-wqs-projects.vercel.app`
 
 ---
 
@@ -53,7 +53,7 @@ vercel --prod
 
 ### Opção 3: Deploy via Dashboard Vercel
 
-1. Acesse: https://vercel.com/logiccamila-wqs-projects/optilog-app
+1. Acesse: https://vercel.com/logiccamila-wqs-projects/logic-view-bright-main
 2. Clique em "Deployments"
 3. Clique em "Redeploy" no último deployment bem-sucedido
 4. OU clique em "Deploy" e selecione a branch
@@ -105,10 +105,10 @@ NODE_OPTIONS=--max-old-space-size=4096
 
 Após o deploy, verifique:
 
-1. **Homepage:** `https://optilog-app.vercel.app`
-2. **Component Showcase:** `https://optilog-app.vercel.app/component-showcase`
-3. **Dashboard:** `https://optilog-app.vercel.app/dashboard`
-4. **Login:** `https://optilog-app.vercel.app/login`
+1. **Homepage:** `https://logic-view-bright-main.vercel.app`
+2. **Component Showcase:** `https://logic-view-bright-main.vercel.app/component-showcase`
+3. **Dashboard:** `https://logic-view-bright-main.vercel.app/dashboard`
+4. **Login:** `https://logic-view-bright-main.vercel.app/login`
 
 ### Teste de Funcionalidades
 
@@ -198,7 +198,7 @@ vercel --force
 
 ## 📞 Suporte
 
-**Vercel Dashboard:** https://vercel.com/logiccamila-wqs-projects/optilog-app
+**Vercel Dashboard:** https://vercel.com/logiccamila-wqs-projects/logic-view-bright-main
 **Documentação Vercel:** https://vercel.com/docs
 **Status Vercel:** https://www.vercel-status.com/
 
