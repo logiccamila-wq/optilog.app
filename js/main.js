@@ -1,9 +1,8 @@
 // js/main.js
-// Use environment variable or fallback to a default for demo purposes
-// The Supabase project ref is public information (it's in the URL), but using env var is best practice
-const SUPABASE_REF = typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_SUPABASE_REF 
-  ? process.env.NEXT_PUBLIC_SUPABASE_REF 
-  : 'gctoafawwupbzlqykdmr';
+// Browser-side JavaScript for calling Supabase Edge Functions
+// The Supabase project ref is public information (visible in URLs)
+// For production, consider injecting this via server-side templating or build-time replacement
+const SUPABASE_REF = window.SUPABASE_REF || 'gctoafawwupbzlqykdmr';
 const FUNCTION_SLUG = 'quick-endpoint';
 
 // Se sua função requer auth (verify_jwt: true), ajuste includeAuth para true

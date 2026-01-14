@@ -8,12 +8,6 @@
   SECRETS_SCAN_OMIT_KEYS = "VITE_SUPABASE_ANON_KEY,NEXT_PUBLIC_SUPABASE_ANON_KEY"
   NODE_VERSION = "18"
 
-# Redirects para Next.js App Router (SPA fallback)
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
-# Plugin Next.js (se necessário)
+# Plugin Next.js para SSR e rotas dinâmicas
 [[plugins]]
   package = "@netlify/plugin-nextjs"

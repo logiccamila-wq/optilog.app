@@ -9,7 +9,7 @@ This folder contains deployment/ops scripts for the Optilog app.
 ### ❌ WRONG (Hardcoded Secrets)
 ```javascript
 // NEVER DO THIS!
-const supabaseUrl = 'https://eixkvksttadhukucohda.supabase.co'
+const supabaseUrl = 'https://your-project-id.supabase.co'
 const supabaseKey = 'eyJhbGc...' // This will fail Netlify security scan!
 const dbPassword = 'mypassword123' // Exposed in git history forever!
 ```
