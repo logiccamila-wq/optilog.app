@@ -1,0 +1,19 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  # Permitir que a chave anônima (pública) do Supabase apareça no bundle
+  # Esta é uma chave pública segura para exposição client-side
+  SECRETS_SCAN_OMIT_KEYS = "VITE_SUPABASE_ANON_KEY,NEXT_PUBLIC_SUPABASE_ANON_KEY"
+  NODE_VERSION = "18"
+
+# Redirects para Next.js App Router (SPA fallback)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Plugin Next.js (se necessário)
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
