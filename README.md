@@ -168,20 +168,36 @@ npm run db:migrate
 
 ## 🚢 Deploy
 
-### Vercel (Recomendado)
+### Netlify (Recomendado) ⭐
+
+**Mais estável e menos erros no frontend!**
+
+1. Conecte seu repositório no [Netlify](https://app.netlify.com)
+2. Configure build: `npm run build`, publish: `.next`, Node: `22`
+3. Adicione as variáveis de ambiente
+4. Deploy automático em cada push na `main`
+
+#### Deploy Rápido:
+```bash
+./deploy-netlify.sh
+```
+
+**Guia completo:** [`DEPLOY_NETLIFY.md`](./DEPLOY_NETLIFY.md) 📚
+
+### Vercel (Alternativa)
 
 1. Conecte seu repositório no [Vercel](https://vercel.com)
 2. Configure as variáveis de ambiente
-3. Deploy automático em cada push na `main`
+3. Deploy automático
 
-#### Variáveis Obrigatórias no Vercel:
+Consulte [`DEPLOY_GUIDE.md`](./DEPLOY_GUIDE.md) para Vercel.
+
+#### Variáveis de Ambiente (Netlify ou Vercel):
 - `DATABASE_URL` (Neon pooler)
 - `DATABASE_URL_UNPOOLED` (Neon direct)
 - `JWT_SECRET` (min 32 chars)
 - `NEXTAUTH_SECRET`
 - `NEXT_PUBLIC_API_URL`
-
-Consulte [`DEPLOY_GUIDE.md`](./DEPLOY_GUIDE.md) para instruções detalhadas.
 
 ## 📁 Estrutura do Projeto
 
