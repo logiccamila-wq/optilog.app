@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { Circle, Plus, Search, TrendingDown, AlertTriangle } from 'lucide-react';
+import { Circle, Plus, Search, AlertTriangle } from 'lucide-react';
 
 interface Pneu {
   id: number;

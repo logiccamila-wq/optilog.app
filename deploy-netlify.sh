@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e  # Exit on error
+
 echo "🚀 OptiLog.app - Deploy Rápido Netlify"
 echo "======================================"
 echo ""
@@ -8,7 +10,10 @@ echo ""
 if ! command -v netlify &> /dev/null
 then
     echo "📦 Instalando Netlify CLI..."
-    npm install -g netlify-cli
+    npm install -g netlify-cli || {
+        echo "❌ Erro ao instalar Netlify CLI"
+        exit 1
+    }
 fi
 
 echo "✅ Netlify CLI instalado!"
@@ -16,11 +21,17 @@ echo ""
 
 # Login
 echo "🔐 Fazendo login no Netlify..."
-netlify login
+netlify login || {
+    echo "❌ Erro ao fazer login no Netlify"
+    exit 1
+}
 
 echo ""
 echo "🏗️  Linkando projeto ao site Netlify..."
-netlify link
+netlify link || {
+    echo "❌ Erro ao linkar projeto"
+    exit 1
+}
 
 echo ""
 echo "⚙️  Configurando variáveis de ambiente..."
@@ -40,7 +51,10 @@ read -p "Pressione ENTER quando terminar de configurar as variáveis... "
 
 echo ""
 echo "🚀 Iniciando deploy..."
-netlify deploy --prod
+netlify deploy --prod || {
+    echo "❌ Erro ao fazer deploy"
+    exit 1
+}
 
 echo ""
 echo "✅ Deploy concluído!"

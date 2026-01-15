@@ -145,14 +145,14 @@ Agora cada PR terá uma URL de preview! 🎉
 
 | Recurso | Netlify ✅ | Vercel |
 |---------|-----------|--------|
-| **Estabilidade Frontend** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
 | **Facilidade** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
 | **Plano Grátis** | 300 min build/mês | 100 GB bandwidth |
 | **Edge Functions** | ✅ Sim | ✅ Sim |
 | **Deploy Time** | ~3 min | ~2-4 min |
-| **Erros no Build** | Menos comum | Mais comum |
 
-**Para OptiLog.app:** Netlify é **melhor escolha** se você teve problemas com Vercel!
+**Nossa experiência com OptiLog.app:** Netlify apresentou menos erros de build frontend comparado ao Vercel. Sua experiência pode variar dependendo da configuração do projeto.
+
+**Recomendação:** Netlify é uma boa alternativa se você está tendo problemas recorrentes com deploy em outra plataforma.
 
 ---
 
